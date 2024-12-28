@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Select Book - Bible Reader{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb" class="d-none d-md-block">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('routes.index') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active">Select Book</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="books-container">
+                <h2 class="text-center mb-4">Select a Book</h2>
+                <div class="testament-section">
+                    <h3 class="text-center mb-3">Old Testament</h3>
+                    <div class="books-grid">
+                        {% for book in books %}
+                            {% if loop.index <= 39 %}
+                            <div class="book-card" data-book="{{ book }}">
+                                <div class="book-content">
+                                    <span class="book-name">{{ book }}</span>
+                                    <div class="hover-effect"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="testament-section mt-5">
+                    <h3 class="text-center mb-3">New Testament</h3>
+                    <div class="books-grid">
+                        {% for book in books %}
+                            {% if loop.index > 39 %}
+                            <div class="book-card" data-book="{{ book }}">
+                                <div class="book-content">
+                                    <span class="book-name">{{ book }}</span>
+                                    <div class="hover-effect"></div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chapter Selection Modal -->
+<div class="modal fade" id="chapterModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select Chapter</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="loadingIndicator" class="text-center d-none">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Loading chapters...</p>
+                </div>
+                <div id="errorMessage" class="alert alert-danger d-none"></div>
+                <div class="chapter-grid">
+                    <!-- Chapters will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.books-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.book-card {
+    position: relative;
+    background: var(--bg-darker);
+    border: 2px solid var(--glow-primary);
+    border-radius: 10px;
+    padding: 1.5rem;
+    color: var(--text-primary);
+    transition: all var(--transition-speed);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.book-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+}
+
+.book-name {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.1rem;
+}
+
+.hover-effect {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 243, 255, 0.2),
+        transparent
+    );
+    transition: var(--transition-speed);
+}
+
+.book-card:hover .hover-effect {
+    left: 100%;
+}
+
+.testament-section h3 {
+    color: var(--glow-primary);
+    font-family: 'Orbitron', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+}
+
+.chapter-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.chapter-btn {
+    background: var(--bg-darker);
+    border: 1px solid var(--glow-primary);
+    color: var(--text-primary);
+    padding: 0.5rem;
+    border-radius: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: all var(--transition-speed);
+}
+
+.chapter-btn:hover {
+    background: var(--glow-primary);
+    color: var(--bg-dark);
+    transform: scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .book-card {
+        padding: 1rem;
+    }
+
+    .book-name {
+        font-size: 0.9rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chapterModal = new bootstrap.Modal(document.getElementById('chapterModal'));
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const errorMessage = document.getElementById('errorMessage');
+    const chapterGrid = document.querySelector('.chapter-grid');
+    let selectedBook = '';
+
+    // Function to show loading state
+    function showLoading() {
+        loadingIndicator.classList.remove('d-none');
+        errorMessage.classList.add('d-none');
+        chapterGrid.innerHTML = '';
+    }
+
+    // Function to show error
+    function showError(message) {
+        loadingIndicator.classList.add('d-none');
+        errorMessage.classList.remove('d-none');
+        errorMessage.textContent = message;
+        chapterGrid.innerHTML = '';
+    }
+
+    // Function to show chapters
+    function showChapters(chapters) {
+        loadingIndicator.classList.add('d-none');
+        errorMessage.classList.add('d-none');
+
+        if (!Array.isArray(chapters) || chapters.length === 0) {
+            showError('No chapters available for this book');
+            return;
+        }
+
+        chapterGrid.innerHTML = chapters.map(chapter => `
+            <button class="chapter-btn" data-chapter="${chapter}">
+                ${chapter}
+            </button>
+        `).join('');
+
+        // Handle chapter selection
+        chapterGrid.querySelectorAll('.chapter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const chapter = btn.dataset.chapter;
+                window.location.href = `/chapter/${encodeURIComponent(selectedBook)}/${chapter}`;
+            });
+        });
+    }
+
+    // Handle book card clicks
+    document.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('click', async function() {
+            try {
+                selectedBook = this.dataset.book;
+                const modalTitle = document.querySelector('.modal-title');
+                modalTitle.textContent = `Select Chapter - ${selectedBook}`;
+
+                showLoading();
+                chapterModal.show();
+
+                const response = await fetch(`/get_chapters/${encodeURIComponent(selectedBook)}`);
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Error loading chapters');
+                }
+
+                showChapters(data);
+
+            } catch (error) {
+                console.error('Error fetching chapters:', error);
+                showError(error.message || 'Error loading chapters. Please try again.');
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

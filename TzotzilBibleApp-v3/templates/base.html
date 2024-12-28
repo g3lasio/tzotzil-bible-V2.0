@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="es" data-bs-theme="dark">
+    <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}Tzotzil Bible{% endblock %}</title>
+        <link
+            rel="icon"
+            type="image/png"
+            href="{{ url_for('static', filename='images/Designer.png') }}"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+        <link
+            href="{{ url_for('static', filename='css/style.css') }}"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            #promise-container {
+                position: relative;
+                background-size: cover;
+                background-position: center;
+                padding: 40px 20px;
+                border-radius: 15px;
+                color: white;
+                text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+                margin-bottom: 50px;
+            }
+            #promise-container::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                border-radius: 15px;
+                background: linear-gradient(
+                    to bottom right,
+                    rgba(0, 0, 0, 0.5),
+                    rgba(0, 0, 0, 0.8)
+                );
+                z-index: 1;
+            }
+            #promise-content {
+                position: relative;
+                z-index: 2;
+            }
+            .share-button {
+                margin-top: 20px;
+            }
+            .signature {
+                margin-top: 15px;
+                font-style: italic;
+                font-size: 0.9em;
+            }
+        </style>
+    </head>
+    <body class="{% block body_class %}{% endblock %}">
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark">
+            <div class="container">
+                <a class="navbar-brand" href="{{ url_for('routes.index') }}">
+                    <img
+                        src="{{ url_for('static', filename='images/Designer.png') }}"
+                        alt="Tzotzil Bible"
+                        width="48"
+                        height="48"
+                        class="d-inline-block align-text-top me-2"
+                    />
+                    Tzotzil Bible
+                </a>
+                <button
+                    class="navbar-toggler"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#navbarNav"
+                >
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav ms-auto">
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('routes.index') }}"
+                            >
+                                <i class="bi bi-house"></i> Home
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('routes.books') }}"
+                            >
+                                <i class="bi bi-book"></i> Explorar la Biblia
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('routes.search') }}"
+                            >
+                                <i class="bi bi-search"></i> Buscar
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('nevin_bp.nevin_page') }}"
+                            >
+                                <i class="bi bi-robot"></i> Nevin AI
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('routes.settings') }}"
+                            >
+                                <i class="bi bi-gear"></i> Ajustes
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a
+                                class="nav-link"
+                                href="{{ url_for('auth.logout') }}"
+                            >
+                                <i class="bi bi-box-arrow-right"></i> Salir
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="py-4 mb-nav-spacing">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <div class="nav-grid">
+                <a
+                    href="{{ url_for('routes.search') }}"
+                    class="nav-item {% if request.endpoint == 'routes.search' %}active{% endif %}"
+                >
+                    <div class="nav-icon"><i class="bi bi-search"></i></div>
+                    <span>Buscar</span>
+                </a>
+                <a
+                    href="{{ url_for('routes.books') }}"
+                    class="nav-item {% if request.endpoint == 'routes.chapter' %}active{% endif %}"
+                >
+                    <div class="nav-icon"><i class="bi bi-book"></i></div>
+                    <span>Leer</span>
+                </a>
+                <a
+                    href="{{ url_for('nevin_bp.nevin_page') }}"
+                    class="nav-item {% if request.endpoint == 'nevin_bp.nevin_page' %}active{% endif %}"
+                >
+                    <div class="nav-icon"><i class="bi bi-robot"></i></div>
+                    <span>Nevin</span>
+                </a>
+
+                <a
+                    href="{{ url_for('routes.settings') }}"
+                    class="nav-item {% if request.endpoint == 'routes.settings' %}active{% endif %}"
+                >
+                    <div class="nav-icon"><i class="bi bi-gear"></i></div>
+                    <span>Ajustes</span>
+                </a>
+            </div>
+        </nav>
+
+        <!-- Particle Background Canvas -->
+        <canvas id="particle-background"></canvas>
+
+        <!-- JavaScript Dependencies -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="{{ url_for('static', filename='js/bible.js') }}"></script>
+        <script>
+            // Toast notification helper
+            window.createToast = function (message, type = "success") {
+                const toast = document.createElement("div");
+                toast.className = `toast align-items-center text-white bg-${type} border-0`;
+                toast.setAttribute("role", "alert");
+                toast.setAttribute("aria-live", "assertive");
+                toast.setAttribute("aria-atomic", "true");
+
+                const content = document.createElement("div");
+                content.className = "d-flex";
+
+                const body = document.createElement("div");
+                body.className = "toast-body";
+                body.textContent = message;
+
+                const closeButton = document.createElement("button");
+                closeButton.type = "button";
+                closeButton.className = "btn-close btn-close-white me-2 m-auto";
+                closeButton.setAttribute("data-bs-dismiss", "toast");
+
+                content.appendChild(body);
+                content.appendChild(closeButton);
+                toast.appendChild(content);
+
+                const container = document.createElement("div");
+                container.className =
+                    "toast-container position-fixed top-0 end-0 p-3";
+                container.appendChild(toast);
+                document.body.appendChild(container);
+
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+
+                toast.addEventListener("hidden.bs.toast", () =>
+                    container.remove(),
+                );
+            };
+
+            // Initialize any global functionality if needed
+            if (typeof initializeGlobalFunctionality === "function") {
+                window.onload = initializeGlobalFunctionality;
+            }
+        </script>
+        {% block scripts %}{% endblock %}
+    </body>
+</html>

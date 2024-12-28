@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('routes.books') }}">Libros</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ book }}</li>
+        </ol>
+    </nav>
+
+    <h2 class="mb-4">Capítulos de {{ book }}</h2>
+    
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4">
+        {% for chapter in chapters %}
+        <div class="col">
+            <a href="{{ url_for('routes.chapter', book=book, chapter=chapter) }}" 
+               class="btn btn-outline-primary w-100">
+                Capítulo {{ chapter }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

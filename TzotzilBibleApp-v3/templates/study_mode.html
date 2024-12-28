@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href="/static/css/study_mode.css" />
+        <title>Modo Estudio Bíblico - Nevin</title>
+    </head>
+    <body>
+        <header>
+            <div class="nevin-header">
+                <img
+                    src="/static/images/nevin-icon.svg"
+                    alt="Icono de Nevin"
+                    class="nevin-icon"
+                />
+                <h1 class="nevin-title">Modo Estudio Bíblico</h1>
+            </div>
+        </header>
+
+        <main id="study-content">
+            <h2>Estudio Bíblico</h2>
+            <textarea
+                id="user-question"
+                placeholder="Escribe tu pregunta aquí..."
+            ></textarea>
+            <button id="ask-button">Preguntar</button>
+            <div id="answers" class="answers-container"></div>
+        </main>
+
+        <footer>
+            <button id="continue-button" class="continue-button">
+                Continuar Estudio
+            </button>
+        </footer>
+
+        <script src="/static/js/study_mode.js"></script>
+    </body>
+</html>

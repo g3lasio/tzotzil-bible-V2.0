@@ -1,0 +1,336 @@
+{% extends "base.html" %} {% block content %}
+<div class="container settings-container py-4">
+    <div class="settings-header mb-5">
+        <h1 class="display-6 text-center">Configuración</h1>
+        <p class="text-muted text-center">
+            Personaliza tu experiencia según tus preferencias
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Profile Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-person-circle me-2 settings-icon"></i>
+                    <h5 class="mb-0">Perfil</h5>
+                </div>
+                <div class="card-body">
+                    <form id="profileForm">
+                        <div class="mb-3">
+                            <label for="profileName" class="form-label"
+                                >Nombre</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="profileName"
+                                name="name"
+                                value="{{ current_user.first_name if current_user.first_name }}"
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="profileEmail" class="form-label"
+                                >Email</label
+                            >
+                            <input
+                                type="email"
+                                class="form-control"
+                                id="profileEmail"
+                                name="email"
+                                value="{{ current_user.email if current_user.email }}"
+                                readonly
+                            />
+                        </div>
+                        <div class="mb-3">
+                            <label for="profilePhone" class="form-label"
+                                >Teléfono</label
+                            >
+                            <input
+                                type="tel"
+                                class="form-control"
+                                id="profilePhone"
+                                name="phone"
+                                value="{{ current_user.phone if current_user.phone }}"
+                            />
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">
+                            Guardar
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appearance Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-palette me-2 settings-icon"></i>
+                    <h5 class="mb-0">Apariencia</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="themeMode"
+                            id="darkModeToggle"
+                            value="dark"
+                        />
+                        <label class="form-check-label" for="darkModeToggle"
+                            >Modo Oscuro</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="themeMode"
+                            id="lightModeToggle"
+                            value="light"
+                        />
+                        <label class="form-check-label" for="lightModeToggle"
+                            >Modo Claro</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="themeMode"
+                            id="dustModeToggle"
+                            value="dust"
+                        />
+                        <label class="form-check-label" for="dustModeToggle"
+                            >Modo Polvo</label
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Language Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-translate me-2 settings-icon"></i>
+                    <h5 class="mb-0">Idioma</h5>
+                </div>
+                <div class="card-body">
+                    <select class="form-select mb-3" id="languageSelect">
+                        <option value="es">Español</option>
+                        <option value="tz">Tzotzil</option>
+                        <option value="en">Inglés</option>
+                    </select>
+                    <div class="form-check form-switch">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="bilingualMode"
+                        />
+                        <label class="form-check-label" for="bilingualMode"
+                            >Modo Bilingüe</label
+                        >
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-chat-dots me-2 settings-icon"></i>
+                    <h5 class="mb-0">Feedback</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Envíanos tus comentarios para mejorar la aplicación.
+                    </p>
+                    <a
+                        href="mailto:info@chyrris.com?subject=Feedback%20Tzotzil%20Bible"
+                        class="btn btn-primary w-100"
+                        >Enviar Feedback</a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- About the App Section -->
+        <div class="col-12">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-info-circle me-2 settings-icon"></i>
+                    <h5 class="mb-0">Sobre la Aplicación</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Tzotzil Bible: Lo que comenzó como una simple idea
+                        pronto se transformó en un sueño hecho realidad. Más que
+                        un proyecto, este trabajo se enfrentó a retos que
+                        parecían imposibles de superar, especialmente por la
+                        falta de material en el dialecto Tzotzil y la necesidad
+                        de realizar una revisión manual y minuciosa de cada
+                        texto bíblico.
+                    </p>
+                    <p class="collapse" id="aboutAppMore">
+                        Se llevaron a cabo exhaustivas correcciones semánticas y
+                        de sintaxis con el objetivo de ofrecer lo mejor de lo
+                        mejor. Después de un arduo trabajo que incluyó la
+                        conversión y organización de numerosos metadatos, hoy
+                        podemos decir con gratitud: "Hasta aquí nos ayudó
+                        Jehová."
+                    </p>
+                    <p class="collapse" id="aboutAppMore">
+                        El proyecto Tzotzil Bible no solo ofrece las funciones
+                        básicas que cualquier aplicación bíblica debe tener,
+                        como ajustes personalizables, sino que también destaca
+                        por incluir versículos aleatorios. Estos versículos
+                        pueden servir como promesas divinas para compartir con
+                        amigos y familiares, añadiendo un toque personal y
+                        espiritual a cada experiencia.
+                    </p>
+                    <p class="collapse" id="aboutAppMore">
+                        Además, la aplicación ha incorporado a Nevin, una
+                        inteligencia artificial avanzada, entrenada bajo
+                        estrictas reglas y principios de interpretación bíblica.
+                        Respetando las normas de la hermenéutica y el exégesis
+                        adecuados, Nevin es más que un asistente virtual: es un
+                        amigo, confidente y mentor espiritual. Sus capacidades
+                        lo convierten en un guía capaz de responder preguntas
+                        bíblicas, incluso aquellas consideradas difíciles,
+                        ofreciendo respuestas claras, fundamentadas y llenas de
+                        profundidad teológica. Desarrollada por G. Sánchez.
+                    </p>
+                    <a
+                        class="btn btn-secondary w-100"
+                        data-bs-toggle="collapse"
+                        href="#aboutAppMore"
+                        role="button"
+                        aria-expanded="false"
+                        aria-controls="aboutAppMore"
+                        >Ver más</a
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Support Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-headset me-2 settings-icon"></i>
+                    <h5 class="mb-0">Soporte</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        ¿Necesitas ayuda? Contáctanos para asistencia técnica.
+                    </p>
+                    <a
+                        href="mailto:info@chyrris.com?subject=Soporte%20Tzotzil%20Bible"
+                        class="btn btn-primary w-100"
+                        >Contactar Soporte</a
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    @import url("https://fonts.googleapis.com/css2?family=Audiowide&display=swap");
+
+    body {
+        font-family: "Audiowide", sans-serif !important;
+    }
+
+    .settings-container {
+        background-color: #121212;
+        color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+    .settings-card {
+        background: linear-gradient(135deg, #1f1f2e, #2c2c3a);
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+        border-radius: 12px;
+        transition:
+            transform 0.4s ease,
+            box-shadow 0.4s ease;
+    }
+    .settings-card:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.8);
+    }
+    .settings-icon {
+        font-size: 2rem;
+        color: #4facfe;
+        animation: glow 2s infinite alternate;
+    }
+
+    @keyframes glow {
+        from {
+            text-shadow:
+                0 0 5px #4facfe,
+                0 0 10px #4facfe,
+                0 0 15px #4facfe;
+        }
+        to {
+            text-shadow:
+                0 0 10px #00f2fe,
+                0 0 20px #00f2fe,
+                0 0 30px #00f2fe;
+        }
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #181820;
+        color: #ffffff;
+        border: 1px solid #4facfe;
+        border-radius: 6px;
+    }
+    .form-control:focus,
+    .form-select:focus {
+        border-color: #4facfe;
+        box-shadow: 0 0 8px #4facfe;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4facfe, #00f2fe);
+        border: none;
+        border-radius: 6px;
+        transition:
+            background 0.4s ease,
+            transform 0.4s ease;
+    }
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #00f2fe, #4facfe);
+        transform: scale(1.05);
+    }
+
+    .btn-secondary {
+        background: linear-gradient(135deg, #282c34, #3a3f47);
+        border: none;
+        color: #ffffff;
+        transition:
+            background 0.4s ease,
+            transform 0.4s ease;
+    }
+    .btn-secondary:hover {
+        background: linear-gradient(135deg, #3a3f47, #4facfe);
+        transform: scale(1.05);
+    }
+
+    @media (max-width: 768px) {
+        .settings-card {
+            margin-bottom: 20px;
+        }
+    }
+</style>
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %} {% endblock %}

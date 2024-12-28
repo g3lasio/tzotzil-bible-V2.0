@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mb-4">{{ book.name_spanish }} / {{ book.name_tzotzil }}</h1>
+    
+    <!-- Quick Chapter Navigation -->
+    <div class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-3 mb-4">
+        {% for chapter in chapters %}
+        <div class="col">
+            <a href="{{ url_for('chapter', book_id=book.id, chapter_number=chapter.number) }}" 
+               class="btn btn-outline-primary w-100">
+                Capítulo {{ chapter.number }}
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="mt-4">
+        <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Volver a Libros
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+{% endblock %}

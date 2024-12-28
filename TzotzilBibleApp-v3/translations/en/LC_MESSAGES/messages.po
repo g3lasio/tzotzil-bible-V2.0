@@ -1,0 +1,75 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Inicio"
+msgstr "Home"
+
+msgid "Búsqueda"
+msgstr "Search"
+
+msgid "Configuración"
+msgstr "Settings"
+
+msgid "Favoritos"
+msgstr "Favorites"
+
+msgid "Leer"
+msgstr "Read"
+
+msgid "Modo Oscuro"
+msgstr "Dark Mode"
+
+msgid "Tamaño de Texto"
+msgstr "Font Size"
+
+msgid "Idioma"
+msgstr "Language"
+
+msgid "Modo Bilingüe"
+msgstr "Bilingual Mode"
+
+msgid "Perfil"
+msgstr "Profile"
+
+msgid "Nombre"
+msgstr "Name"
+
+msgid "Guardar Perfil"
+msgstr "Save Profile"
+
+msgid "Preferencias de Lectura"
+msgstr "Reading Preferences"
+
+msgid "Mostrar Números de Versículos"
+msgstr "Show Verse Numbers"
+
+msgid "Vista Paralela"
+msgstr "Parallel View"
+
+msgid "Idioma Principal"
+msgstr "Primary Language"
+
+msgid "Notificaciones"
+msgstr "Notifications"
+
+msgid "Versículo Diario"
+msgstr "Daily Verse"
+
+msgid "Recordatorios de Estudio"
+msgstr "Study Reminders"
+
+msgid "Hora de Notificación"
+msgstr "Notification Time"
+
+msgid "Respaldo y Sincronización"
+msgstr "Backup & Sync"
+
+msgid "Respaldar Favoritos"
+msgstr "Backup Favorites"
+
+msgid "Restaurar Favoritos"
+msgstr "Restore Favorites"
+
+msgid "Sincronización Automática"
+msgstr "Auto Sync"

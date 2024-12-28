@@ -1,0 +1,146 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #f4f4f4;
+    color: #333;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    background-color: #2b3e50;
+    color: #ffffff;
+    padding: 20px;
+    text-align: center;
+    width: 100%;
+}
+
+.study-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nevin-icon {
+    width: 60px;
+    margin-bottom: 10px;
+}
+
+.study-title {
+    font-size: 2em;
+    margin: 5px 0;
+}
+
+.study-subtitle {
+    font-size: 1.2em;
+    font-weight: 300;
+}
+
+main {
+    width: 90%;
+    max-width: 800px;
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+.study-content h3 {
+    margin-top: 0;
+    font-size: 1.8em;
+    color: #0056b3;
+}
+
+.study-content ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.study-content li {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+}
+
+blockquote {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-left: 5px solid #007bff;
+}
+
+#interaction {
+    margin-top: 30px;
+}
+
+.question-input {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.ask-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.ask-button:hover {
+    background-color: #0056b3;
+}
+
+.answers-container p {
+    margin-top: 15px;
+    background-color: #e9ecef;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.actions-section {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.action-button {
+    flex-grow: 1;
+    padding: 10px 15px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.action-button:hover {
+    background-color: #218838;
+}
+
+footer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.continue-button {
+    padding: 10px 20px;
+    background-color: #17a2b8;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.continue-button:hover {
+    background-color: #138496;
+}

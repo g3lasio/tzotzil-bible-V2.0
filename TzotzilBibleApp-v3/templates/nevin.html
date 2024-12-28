@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="user-id" content="{{ current_user.id if current_user.is_authenticated else '' }}">
+        <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, user-scalable=no"
+        />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/nevin.css') }}"
+        />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Poppins:wght@500&display=swap"
+            rel="stylesheet"
+        />
+        <title>Nevin - Tu Asistente Bíblico</title>
+    </head>
+    <body>
+        <header>
+            <div id="nav-bar">
+                <a
+                    href="{{ url_for('routes.index') }}"
+                    id="home-button"
+                    class="nav-button"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                    >
+                        <path
+                            d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"
+                            fill="#ffffff"
+                        />
+                    </svg>
+                </a>
+                <img
+                    src="{{ url_for('static', filename='images/nevin-icon.svg') }}"
+                    alt="Icono de Nevin"
+                    class="nevin-icon"
+                />
+                <h1 class="nevin-title">Nevin</h1>
+                <button id="chat-history-icon" onclick="showChatHistory()">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        height="24"
+                    >
+                        <path
+                            d="M20 2H4a2 2 0 00-2 2v16l4-4h14a2 2 0 002-2V4a2 2 0 00-2-2z"
+                            fill="#ffffff"
+                        />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <main id="chat-container">
+            <div id="chat-history" class="chat-history"></div>
+            <div id="suggestions-container"></div>
+        </main>
+
+        <div id="input-container">
+            <button id="new-chat-button" onclick="startNewChat()">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                >
+                    <path
+                        d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm1 9v-2h-2v2H9v2h2v2h2v-2h2v-2h-2zm-1 9a8 8 0 1 0 0-16 8 8 0 0 0 0 16z"
+                        fill="#ffffff"
+                    />
+                    <path d="M15 9h-3V6H12v3H9v1h3v3h1v-3h3z" fill="#ffffff" />
+                </svg>
+            </button>
+            <input
+                type="text"
+                id="user-input"
+                placeholder="Escribe tu pregunta aquí..."
+            />
+            <button id="send-button" onclick="sendMessage()">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="24"
+                    height="24"
+                >
+                    <path
+                        d="M3 13.5V21l18-9L3 3v7.5l13.5 1.5L3 13.5z"
+                        fill="#ffffff"
+                    />
+                </svg>
+            </button>
+        </div>
+
+        <script src="{{ url_for('static', filename='js/nevin.js') }}"></script>
+        <script>
+            window.userId = {{ user_id }};
+        </script>
+    </body>
+</html>

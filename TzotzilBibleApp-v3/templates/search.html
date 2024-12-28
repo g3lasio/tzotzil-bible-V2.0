@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="display-4">Búsqueda Bíblica</h1>
+            <p class="lead">Busca versículos en Tzotzil y Español</p>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-body">
+                    <form action="{{ url_for('routes.search') }}" method="get" id="searchForm">
+                        <div class="search-bar-large mb-3">
+                            <div class="input-group">
+                                <input type="text" name="keyword" class="form-control form-control-lg" 
+                                       placeholder="Buscar versículo, palabra clave o referencia..."
+                                       value="{{ request.args.get('keyword', '') }}">
+                                <button class="btn btn-lg btn-outline-secondary" type="button" 
+                                        data-bs-toggle="collapse" data-bs-target="#searchFilters" 
+                                        aria-expanded="false" aria-controls="searchFilters">
+                                    <i class="bi bi-sliders"></i>
+                                </button>
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="bi bi-search"></i> Buscar
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="collapse" id="searchFilters">
+                            <div class="card card-body border-0">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">Idiomas</h6>
+                                        <div class="form-check form-switch mb-2">
+                                            <input type="checkbox" name="version" value="tzotzil" 
+                                                   class="form-check-input" id="filter-tzotzil" 
+                                                   {% if 'tzotzil' in versions %}checked{% endif %}>
+                                            <label class="form-check-label" for="filter-tzotzil">Tzotzil</label>
+                                        </div>
+                                        <div class="form-check form-switch">
+                                            <input type="checkbox" name="version" value="spanish" 
+                                                   class="form-check-input" id="filter-spanish"
+                                                   {% if 'spanish' in versions %}checked{% endif %}>
+                                            <label class="form-check-label" for="filter-spanish">Español</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <h6 class="mb-3">Filtros</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">Testamento</label>
+                                            <select name="testament" class="form-select">
+                                                <option value="both" {% if testament == 'both' %}selected{% endif %}>
+                                                    Ambos Testamentos
+                                                </option>
+                                                <option value="old" {% if testament == 'old' %}selected{% endif %}>
+                                                    Antiguo Testamento
+                                                </option>
+                                                <option value="new" {% if testament == 'new' %}selected{% endif %}>
+                                                    Nuevo Testamento
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label class="form-label">Libro</label>
+                                            <select name="book" class="form-select">
+                                                <option value="all" {% if book == 'all' %}selected{% endif %}>
+                                                    Todos los Libros
+                                                </option>
+                                                {% for book_option in books %}
+                                                <option value="{{ book_option }}" 
+                                                        {% if book == book_option %}selected{% endif %}>
+                                                    {{ book_option }}
+                                                </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Loading Spinner (hidden by default) -->
+            <div id="searchLoader" class="text-center my-4 d-none">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Buscando...</span>
+                </div>
+                <p class="mt-2">Buscando versículos...</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchForm = document.getElementById('searchForm');
+    const searchLoader = document.getElementById('searchLoader');
+    
+    // Show loader when form is submitted
+    searchForm.addEventListener('submit', function() {
+        if (this.checkValidity()) {
+            searchLoader.classList.remove('d-none');
+        }
+    });
+    
+    // Ensure at least one language is selected
+    const tzotzilCheck = document.getElementById('filter-tzotzil');
+    const spanishCheck = document.getElementById('filter-spanish');
+    
+    function updateCheckboxes() {
+        if (!tzotzilCheck.checked && !spanishCheck.checked) {
+            tzotzilCheck.checked = true;
+        }
+    }
+    
+    tzotzilCheck.addEventListener('change', updateCheckboxes);
+    spanishCheck.addEventListener('change', updateCheckboxes);
+});
+</script>
+{% endblock %}

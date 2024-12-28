@@ -1,0 +1,90 @@
+{% extends "base.html" %} {% block title %}Login - Bible Reader{% endblock %} {%
+block content %}
+<div class="container my-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title text-center mb-4">Login</h1>
+
+                    {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('auth.login') }}">
+                        <!-- Campo de Usuario/Email -->
+                        <div class="mb-3">
+                            <label for="username" class="form-label"
+                                >Username or Email</label
+                            >
+                            <input
+                                type="text"
+                                class="form-control"
+                                id="username"
+                                name="username"
+                                required
+                            />
+                        </div>
+
+                        <!-- Campo de Contraseña con botón integrado -->
+                        <div class="mb-3">
+                            <label for="password" class="form-label"
+                                >Contraseña</label
+                            >
+                            <div class="input-group">
+                                <input
+                                    type="password"
+                                    class="form-control"
+                                    id="password"
+                                    name="password"
+                                    required
+                                />
+                                <button
+                                    class="btn btn-outline-secondary"
+                                    type="button"
+                                    onclick="document.getElementById('password').type = document.getElementById('password').type === 'password' ? 'text' : 'password'"
+                                >
+                                    👁️
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Checkbox Remember me -->
+                        <div class="mb-3 form-check">
+                            <input
+                                type="checkbox"
+                                class="form-check-input"
+                                id="remember"
+                                name="remember"
+                            />
+                            <label class="form-check-label" for="remember"
+                                >Remember me</label
+                            >
+                        </div>
+
+                        <!-- Botón de Login -->
+                        <button type="submit" class="btn btn-primary w-100">
+                            Login
+                        </button>
+                    </form>
+
+                    <hr />
+
+                    <!-- Enlaces adicionales -->
+                    <div class="text-center">
+                        <p>
+                            Don't have an account?
+                            <a href="{{ url_for('auth.signup') }}">Sign up</a>
+                        </p>
+                        <p>
+                            <a href="{{ url_for('auth.forgot_password') }}"
+                                >Forgot password?</a
+                            >
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

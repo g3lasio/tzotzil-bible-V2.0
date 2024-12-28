@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32">
+  <defs>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2F4F4F;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3D5B5B;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pageGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFDD0;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#F5F5DC;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Book base -->
+  <path fill="url(#bookGradient)" d="M4 4v24h24v-24h-24zM26 26h-20v-20h20v20z"/>
+  
+  <!-- Pages fanning out -->
+  <path fill="url(#pageGradient)" d="M8 20c0 0 4 6 8 6s8-6 8-6v-12h-16v12z"/>
+  
+  <!-- Cross -->
+  <path fill="url(#pageGradient)" d="M14 8v4h-3v4h3v8h4v-8h3v-4h-3v-4z"/>
+  
+  <!-- Book shadow -->
+  <path fill="rgba(0,0,0,0.1)" d="M26 6v20h2v-20z"/>
+</svg>

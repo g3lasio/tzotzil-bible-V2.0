@@ -1,0 +1,301 @@
+{
+    "interpretation_principles": [
+        {
+            "type": "Narrativas (Libros Históricos)",
+            "principles": [
+                {
+                    "name": "Lectura Atenta del Texto",
+                    "description": "La lectura minuciosa de un texto narrativo es esencial para captar no solo los detalles evidentes, sino también las implicaciones sutiles que el autor bíblico busca transmitir. Esto incluye observar repeticiones, contrastes y descripciones específicas. Por ejemplo, la referencia al cabello de Absalón en 2 Samuel 14:26 no es un detalle trivial, sino un elemento que presagia su caída trágica en 2 Samuel 18:9-15. Esta lectura profunda permite descubrir conexiones intencionadas y mensajes teológicos ocultos en el relato."
+                },
+                {
+                    "name": "Análisis de la Trama",
+                    "description": "La narrativa bíblica utiliza tramas cuidadosamente diseñadas para comunicar propósitos teológicos. Identificar los eventos clave, sus causas y consecuencias, permite comprender el mensaje subyacente. Por ejemplo, en la historia de Rut, cada decisión y acción refleja la soberanía de Dios obrando en medio de circunstancias comunes para cumplir su propósito redentor (Rut 1-4). Este análisis revela la interconexión entre la historia humana y el plan divino."
+                },
+                {
+                    "name": "Contexto Histórico y Cultural",
+                    "description": "Las narrativas bíblicas se desarrollaron en contextos históricos y culturales específicos que moldean su significado. Entender estos contextos ilumina las acciones y decisiones de los personajes, así como el propósito del autor. Por ejemplo, el contraste entre el caos de la época de los jueces y la estabilidad en la historia de Rut (Rut 1:1) enriquece la comprensión del papel de Dios como sustentador en medio de la inestabilidad."
+                },
+                {
+                    "name": "Perspectiva del Narrador",
+                    "description": "El narrador bíblico no es un observador neutral, sino un guía teológico que presenta los eventos desde la perspectiva de Dios. Interpretar la narrativa requiere discernir esta perspectiva, que a menudo se expresa en comentarios editoriales o decisiones estilísticas. Por ejemplo, Génesis 50:20 no solo relata los eventos finales de la historia de José, sino que también interpreta el sufrimiento y la redención a través del prisma de la providencia divina."
+                },
+                {
+                    "name": "Caracterización de los Personajes",
+                    "description": "Los personajes bíblicos no son meros individuos históricos, sino representaciones teológicas y morales diseñadas para enseñar lecciones específicas. Analizar su desarrollo, fortalezas y debilidades permite entender cómo sus vidas reflejan la interacción de la gracia divina con la humanidad caída. Por ejemplo, la vida de Sansón (Jueces 13-16) ilustra el conflicto entre el llamado divino y la debilidad humana, destacando la misericordia y la justicia de Dios."
+                }
+            ],
+            "examples": [
+                {
+                    "text": "Éxodo 14:10-31 (Cruzando el Mar Rojo)",
+                    "steps": [
+                        "Identificar la trama: La liberación de Israel frente a los egipcios como un acto decisivo de redención divina.",
+                        "Reconocer el marco histórico: El éxodo de Egipto como cumplimiento de la promesa hecha a Abraham (Génesis 15:13-14).",
+                        "Analizar la perspectiva del narrador: Dios se revela como Salvador y Juez al destruir al ejército egipcio.",
+                        "Reflexionar sobre la caracterización: Moisés actúa como mediador obediente mientras los israelitas manifiestan temor y debilidad, pero experimentan la salvación por gracia."
+                    ]
+                },
+                {
+                    "text": "Génesis 12:1-3 (Llamado de Abraham)",
+                    "steps": [
+                        "Identificar el llamado de Dios como el inicio del pacto abrahámico que tendrá implicaciones eternas.",
+                        "Contextualizar el evento en un entorno politeísta, destacando la singularidad de la fe de Abraham en el único Dios verdadero.",
+                        "Relacionar la promesa de bendición con su cumplimiento final en Cristo (Gálatas 3:16) y su impacto global en la redención de la humanidad."
+                    ]
+                }
+            ],
+            "common_errors": [
+                "Ignorar el contexto histórico y cultural del relato, lo que puede llevar a interpretaciones fuera de lugar.",
+                "Desconectar los eventos narrativos de su propósito teológico, reduciéndolos a meras historias moralizantes.",
+                "Pasar por alto detalles clave que contribuyen al significado del relato, lo que limita la comprensión completa del mensaje bíblico."
+            ]
+        },
+        {
+            "type": "Alegorías",
+            "principles": [
+                {
+                    "name": "Identificación de la Alegoría",
+                    "description": "Una alegoría utiliza personajes, eventos o lugares como símbolos para transmitir verdades espirituales más profundas. Por ejemplo, en Gálatas 4:21-31, Pablo utiliza a Sara y Agar como figuras que representan dos pactos diferentes: el de la esclavitud bajo la ley y el de la libertad bajo la gracia."
+                },
+                {
+                    "name": "Discernimiento de la Intención del Autor",
+                    "description": "Es esencial comprender si el autor tenía la intención de escribir una alegoría o si el texto se presta a ese análisis. No todas las narrativas tienen significado alegórico, y forzar este tipo de interpretación puede llevar a errores. Por ejemplo, interpretar literalmente el Cantar de los Cantares sin considerar su lenguaje figurativo puede desviar su mensaje sobre el amor y la fidelidad."
+                },
+                {
+                    "name": "Conexión con el Plan de Redención",
+                    "description": "Las alegorías en la Biblia a menudo apuntan al plan redentor de Dios y su interacción con la humanidad. Un ejemplo notable es la parábola de la viña en Isaías 5:1-7, que representa a Israel como una viña plantada por Dios pero que produjo uvas silvestres. Esto ilustra la relación quebrantada entre Dios y su pueblo."
+                },
+                {
+                    "name": "Interpretación en su Contexto",
+                    "description": "El contexto inmediato y el marco teológico general deben guiar la interpretación de una alegoría. Por ejemplo, interpretar Ezequiel 37:1-14 (el valle de los huesos secos) sin considerar el contexto histórico del exilio y la promesa de restauración puede llevar a conclusiones erróneas."
+                },
+                {
+                    "name": "Evitar la Alegorización Innecesaria",
+                    "description": "No todos los textos bíblicos son alegorías. Interpretar una narrativa histórica como alegoría sin justificación textual puede desviar el propósito original del autor. Esto fue un problema común en la interpretación medieval, donde se alegorizaban detalles sin base bíblica sólida."
+                }
+            ],
+            "examples": [
+                {
+                    "text": "Gálatas 4:21-31 (Sara y Agar)",
+                    "steps": [
+                        "Identificar el uso de Sara y Agar como representaciones de dos pactos: ley y gracia.",
+                        "Relacionar el significado espiritual con la libertad en Cristo como cumplimiento del pacto de gracia.",
+                        "Aplicar la enseñanza a la vida cristiana moderna, enfatizando la dependencia de la promesa de Dios."
+                    ]
+                },
+                {
+                    "text": "Isaías 5:1-7 (La Viña del Señor)",
+                    "steps": [
+                        "Identificar la viña como una representación de Israel.",
+                        "Reconocer los frutos silvestres como un símbolo del pecado y la desobediencia del pueblo.",
+                        "Conectar la parábola con el juicio de Dios sobre Israel y su llamado al arrepentimiento."
+                    ]
+                }
+            ],
+            "common_errors": [
+                "Forzar una alegoría donde no la hay, desviando el propósito literal del texto.",
+                "Ignorar el contexto histórico y teológico al interpretar alegorías bíblicas.",
+                "Separar el simbolismo de su aplicación práctica y espiritual en la vida cristiana."
+            ]
+        },
+        {
+            "type": "Parábolas",
+            "principles": [
+                {
+                    "name": "Identificación del Mensaje Central",
+                    "description": "Cada parábola tiene un mensaje principal que refleja un aspecto del reino de Dios o una enseñanza moral profunda. Por ejemplo, la parábola del sembrador (Mateo 13:1-23) destaca la receptividad del corazón humano ante la Palabra de Dios. La interpretación debe centrarse en este mensaje y no en detalles secundarios."
+                },
+                {
+                    "name": "Contexto Cultural e Histórico",
+                    "description": "Las parábolas de Jesús están profundamente arraigadas en la cultura y las prácticas agrícolas, sociales y económicas de su tiempo. Entender estos contextos ilumina su significado. Por ejemplo, el conocimiento de las prácticas agrícolas de Palestina en el siglo I enriquece la comprensión de la parábola del trigo y la cizaña (Mateo 13:24-30)."
+                },
+                {
+                    "name": "Evitar la Alegorización Excesiva",
+                    "description": "Las parábolas no están diseñadas para que cada detalle tenga un significado alegórico. Por ejemplo, en la parábola del buen samaritano (Lucas 10:25-37), el propósito no es identificar a cada personaje con figuras específicas, sino enseñar el amor práctico hacia el prójimo."
+                },
+                {
+                    "name": "Conexión con el Reino de Dios",
+                    "description": "Muchas parábolas son enseñanzas sobre la naturaleza, crecimiento y cumplimiento del reino de Dios. Por ejemplo, la parábola del grano de mostaza (Mateo 13:31-32) ilustra cómo algo aparentemente insignificante puede crecer y tener un impacto global."
+                },
+                {
+                    "name": "Uso del Lenguaje Figurativo",
+                    "description": "El lenguaje figurativo de las parábolas está diseñado para evocar una respuesta emocional y espiritual. Por ejemplo, la imagen del padre corriendo hacia su hijo pródigo (Lucas 15:20) comunica la compasión y el perdón de Dios de manera poderosa."
+                }
+            ],
+            "examples": [
+                {
+                    "text": "Mateo 13:1-23 (La Parábola del Sembrador)",
+                    "steps": [
+                        "Identificar el mensaje central: La receptividad del corazón humano ante la Palabra de Dios.",
+                        "Analizar los diferentes tipos de suelo como representaciones de actitudes espirituales.",
+                        "Relacionar la interpretación de Jesús con la respuesta de los discípulos y oyentes."
+                    ]
+                },
+                {
+                    "text": "Lucas 10:25-37 (El Buen Samaritano)",
+                    "steps": [
+                        "Identificar el mensaje principal: Amar al prójimo sin distinción.",
+                        "Reconocer el contraste cultural entre el samaritano y el sacerdote/levita.",
+                        "Aplicar la enseñanza en el contexto del mandamiento de amar a Dios y al prójimo."
+                    ]
+                }
+            ],
+            "common_errors": [
+                "Alegorizar cada detalle de la parábola, desviándose del mensaje central.",
+                "Ignorar el contexto cultural, lo que puede llevar a malinterpretar las imágenes usadas por Jesús.",
+                "Separar la enseñanza de la parábola de su aplicación práctica en la vida cristiana."
+            ]
+        },
+        {
+            "type": "Poesía y Literatura Sapiencial",
+            "principles": [
+                {
+                    "name": "Análisis del Paralelismo Hebreo",
+                    "description": "El paralelismo es una característica distintiva de la poesía hebrea, donde las líneas se complementan, contrastan o amplifican entre sí. Por ejemplo, en el Salmo 1:6, el contraste entre 'los justos' y 'los impíos' resalta el destino de cada grupo. Comprender estos patrones mejora la apreciación del mensaje central."
+                },
+                {
+                    "name": "Interpretación del Simbolismo Poético",
+                    "description": "La poesía bíblica utiliza símbolos para comunicar verdades profundas de manera evocadora. Por ejemplo, 'Jehová es mi pastor' en el Salmo 23:1 simboliza la provisión y el cuidado de Dios. Interpretar correctamente estos símbolos requiere considerar el contexto y la intención del autor."
+                },
+                {
+                    "name": "Reconocimiento de la Estructura Literaria",
+                    "description": "Los patrones estructurales, como los quiasmos, ayudan a identificar el enfoque principal de un pasaje. Por ejemplo, en el Salmo 23, la estructura resalta 'aunque ande en valle de sombra de muerte' como el clímax de confianza en medio de la adversidad."
+                },
+                {
+                    "name": "Contexto de Sabiduría Práctica",
+                    "description": "La literatura sapiencial, como Proverbios, ofrece enseñanzas prácticas para la vida diaria. Interpretar estos textos implica entender que los principios generales no garantizan resultados específicos. Por ejemplo, Proverbios 22:6 no asegura resultados inmediatos, sino que presenta un ideal basado en la formación espiritual."
+                },
+                {
+                    "name": "Uso de Imágenes Ricas",
+                    "description": "Las imágenes poéticas intensifican el impacto emocional y espiritual del mensaje. Por ejemplo, 'el cielo proclama la gloria de Dios' en el Salmo 19:1 usa la creación como un testimonio visible del poder divino."
+                }
+            ],
+            "examples": [
+                {
+                    "text": "Salmo 23:1-6",
+                    "steps": [
+                        "Identificar las imágenes clave: 'pastor', 'valle de sombra de muerte', 'copa rebosante'.",
+                        "Analizar el paralelismo entre los versículos para resaltar la confianza en Dios en todas las circunstancias.",
+                        "Relacionar la promesa del cuidado de Dios con el pacto eterno."
+                    ]
+                },
+                {
+                    "text": "Proverbios 3:5-6",
+                    "steps": [
+                        "Interpretar 'confía en Jehová con todo tu corazón' como una invitación a depender completamente de Dios.",
+                        "Reconocer el simbolismo de 'enderezará tus veredas' como una guía espiritual y práctica."
+                    ]
+                }
+            ],
+            "common_errors": [
+                "Alegorizar sin fundamento las imágenes poéticas, ignorando el contexto del autor.",
+                "Aplicar los proverbios como promesas absolutas en lugar de principios generales de sabiduría.",
+                "Pasar por alto la riqueza literaria de los textos, reduciendo su mensaje a interpretaciones simplistas."
+            ]
+        },
+        {
+            "type": "Profecías Apocalípticas",
+            "principles": [
+                {
+                    "name": "Principio Día por Año",
+                    "description": "Este principio establece que un día profético equivale a un año literal. Se basa en los textos de Números 14:34 y Ezequiel 4:6, donde Dios utiliza días para representar años. Este principio se aplica exclusivamente a profecías simbólicas y apocalípticas como las encontradas en Daniel y Apocalipsis. Por ejemplo, los 1260 días en Daniel 7:25 representan 1260 años de persecución (538-1798 d.C.)."
+                },
+                {
+                    "name": "Identificación de Símbolos Proféticos",
+                    "description": "Los símbolos en las profecías apocalípticas tienen significados específicos que representan realidades mayores. Por ejemplo, las bestias simbolizan reinos o poderes políticos (Daniel 7:17), las aguas representan multitudes y naciones (Apocalipsis 17:15), y los cuernos indican reyes o poderes (Daniel 8:20-21). Es crucial interpretar estos símbolos en armonía con el contexto bíblico y no de manera aislada."
+                },
+                {
+                    "name": "Conexión con el Contexto Histórico",
+                    "description": "La interpretación de las profecías requiere un análisis del contexto histórico en el que fueron reveladas y se cumplieron. Por ejemplo, la caída de Babilonia en Daniel 5 está vinculada al cumplimiento de la profecía de Isaías 45:1-2 sobre Ciro. Este principio ayuda a validar el cumplimiento de las predicciones y a comprender su relevancia histórica y espiritual."
+                },
+                {
+                    "name": "Paralelismo Profético",
+                    "description": "Las profecías apocalípticas suelen repetirse con detalles adicionales para ampliar su significado. Este principio, conocido como recapitulación, está presente en Daniel 2, 7 y 8, donde las visiones describen los mismos reinos con símbolos diferentes, añadiendo más información en cada repetición."
+                },
+                {
+                    "name": "Cumplimiento Progresivo",
+                    "description": "Algunas profecías tienen un cumplimiento inicial literal y otro más amplio y espiritual en el futuro. Un ejemplo es la promesa del regreso de Elías antes del día de Jehová (Malaquías 4:5-6), que se cumple en Juan el Bautista (Mateo 11:14) y también apunta al mensaje del tiempo del fin."
+                },
+                {
+                    "name": "Cristo como Centro",
+                    "description": "Todas las profecías apocalípticas tienen a Cristo como figura central, destacando su obra redentora, su papel como Juez y su victoria final sobre el pecado y la muerte (Apocalipsis 5:5-6). Esto asegura que las interpretaciones no se desvíen hacia especulaciones humanas y permanezcan centradas en el propósito divino."
+                },
+                {
+                    "name": "Estructura Literaria",
+                    "description": "La organización literaria de las profecías, como quiasmos o paralelismos, es clave para entender su mensaje. Por ejemplo, el quiasmo en Daniel 7 resalta la centralidad del juicio celestial (versículos 9-10). Este principio guía al lector a identificar el punto culminante de las visiones."
+                },
+                {
+                    "name": "Simbología Numérica",
+                    "description": "Los números en las profecías tienen significados simbólicos. Por ejemplo, el 7 indica plenitud y perfección (Apocalipsis 1:20), el 12 representa al pueblo de Dios (Apocalipsis 21:12-14) y el 3.5 simboliza un período de prueba o persecución (Daniel 7:25). Comprender estos símbolos numéricos es esencial para interpretar correctamente los mensajes proféticos."
+                },
+                {
+                    "name": "Principio de Aplicación Dual",
+                    "description": "Algunas profecías tienen un cumplimiento literal inicial y un cumplimiento espiritual posterior. Por ejemplo, la restauración de Israel en Ezequiel 37 se aplica tanto al regreso del cautiverio babilónico como a la resurrección espiritual del pueblo de Dios en el tiempo del fin."
+                },
+                {
+                    "name": "Comparación Escritural",
+                    "description": "La interpretación de símbolos y pasajes difíciles requiere comparar Escritura con Escritura. Por ejemplo, Daniel 7 y Apocalipsis 13 contienen símbolos relacionados como el cuerno pequeño y la bestia, los cuales representan poderes perseguidoras. Esta comparación asegura una interpretación coherente y bíblicamente fundamentada."
+                },
+                {
+                    "name": "Uso del Lenguaje Figurativo",
+                    "description": "El lenguaje figurativo es predominante en las profecías apocalípticas. Por ejemplo, las bestias representan reinos (Daniel 7:17) y las aguas simbolizan multitudes (Apocalipsis 17:15). Interpretar correctamente estas figuras requiere distinguir entre lenguaje simbólico y literal, basado en el contexto."
+                },
+                {
+                    "name": "El Tiempo del Fin",
+                    "description": "Muchas profecías apocalípticas están destinadas a los eventos finales de la historia humana. Daniel 12:4 menciona que estas visiones serían selladas hasta el tiempo del fin, cuando serían comprendidas con claridad gracias al contexto histórico y las señales proféticas."
+                },
+                {
+                    "name": "Testimonio de Jesús",
+                    "description": "Apocalipsis 19:10 declara que el testimonio de Jesús es el espíritu de la profecía. Este principio resalta la importancia de las profecías como un medio para revelar la obra y el carácter de Cristo, especialmente en los eventos finales."
+                },
+                {
+                    "name": "Unidad Escritural",
+                    "description": "Todas las profecías deben armonizar con el resto de las Escrituras, respetando su coherencia interna. Por ejemplo, la interpretación de las 2300 tardes y mañanas en Daniel 8:14 debe concordar con el mensaje de juicio en Apocalipsis 14:7."
+                },
+                {
+                    "name": "Contexto Cultural e Histórico",
+                    "description": "Las profecías deben interpretarse considerando el entorno cultural e histórico de su tiempo. Por ejemplo, los metales en Daniel 2 reflejan la economía y la política de las naciones representadas (Babilonia, Persia, Grecia y Roma)."
+                }
+            ],
+            "examples": [
+                {
+                    "text": "Daniel 7:25",
+                    "steps": [
+                        "Identificar el cuerno pequeño como un símbolo de un poder político-religioso basado en Daniel 7:24-25.",
+                        "Aplicar el principio día por año a los 1260 días proféticos (Apocalipsis 12:6).",
+                        "Conectar el cumplimiento con el periodo de supremacía papal (538-1798 d.C.)."
+                    ]
+                },
+                {
+                    "text": "Apocalipsis 12:6",
+                    "steps": [
+                        "Interpretar la mujer como símbolo de la iglesia fiel (Apocalipsis 12:1-2).",
+                        "Aplicar el principio día por año para entender los 1260 días como años literales.",
+                        "Conectar con la persecución de la iglesia durante la Edad Media, en armonía con Daniel 7:25."
+                    ]
+                },
+                {
+                    "text": "Daniel 8:14",
+                    "steps": [
+                        "Identificar los 2300 días como años proféticos (Ezequiel 4:6).",
+                        "Relacionar el periodo con la purificación del santuario celestial (Hebreos 9:23).",
+                        "Conectar con el inicio del juicio investigativo en 1844, en cumplimiento del mensaje de Apocalipsis 14:7."
+                    ]
+                },
+                {
+                    "text": "Apocalipsis 13:1-10",
+                    "steps": [
+                        "Interpretar la bestia como un poder político-religioso (Daniel 7:7-8).",
+                        "Relacionar sus características con las acciones del cuerno pequeño en Daniel 7.",
+                        "Conectar con eventos históricos como la persecución y la supremacía papal."
+                    ]
+                }
+            ],
+            "common_errors": [
+                "Interpretar símbolos proféticos literalmente, ignorando el contexto apocalíptico.",
+                "Aplicar el principio día por año en textos narrativos en lugar de apocalípticos.",
+                "Separar las profecías de su contexto histórico y teológico.",
+                "Ignorar las repeticiones y ampliaciones en las visiones apocalípticas."
+            ]
+        }
+    ]
+}

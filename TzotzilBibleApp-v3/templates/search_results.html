@@ -1,0 +1,167 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('routes.index') }}" class="text-decoration-none">Home</a></li>
+                    <li class="breadcrumb-item active">Search Results</li>
+                </ol>
+            </nav>
+            <h1 class="display-4 mb-4">Search Results</h1>
+            <p class="lead">
+                Found {{ results|length }} results for "{{ keyword }}"
+            </p>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    {% for verse in results %}
+                    <div class="verse-container mb-4" data-verse-id="{{ verse.id }}">
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <h5 class="text-primary mb-0">
+                                        <a href="{{ url_for('routes.chapter', book=verse.book, chapter=verse.chapter) }}#verse-{{ verse.verse }}" class="text-decoration-none">
+                                            {{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}
+                                        </a>
+                                    </h5>
+                                    <div class="verse-actions">
+                                        <div class="btn-group">
+                                            <button class="btn btn-outline-primary btn-sm dropdown-toggle" data-bs-toggle="dropdown">
+                                                <i class="bi bi-three-dots-vertical"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <div class="dropdown-item">
+                                                        <span class="d-block mb-2">Resaltar</span>
+                                                        <div class="d-flex gap-2 highlight-colors">
+                                                            <button class="color-btn" style="background: #ffd700" data-color="yellow"></button>
+                                                            <button class="color-btn" style="background: #90cdf4" data-color="blue"></button>
+                                                            <button class="color-btn" style="background: #68d391" data-color="green"></button>
+                                                            <button class="color-btn" style="background: #fc8181" data-color="red"></button>
+                                                            <button class="color-btn" style="background: #d6bcfa" data-color="purple"></button>
+                                                        </div>
+                                                    </div>
+                                                </li>
+                                                <li><button class="dropdown-item share-btn" 
+                                                    data-verse-text="{{ verse.tzotzil_text }}"
+                                                    data-verse-ref="{{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}"
+                                                    data-lang="tzotzil">
+                                                    <i class="bi bi-share"></i> Compartir Tzotzil
+                                                </button></li>
+                                                <li><button class="dropdown-item share-btn" 
+                                                    data-verse-text="{{ verse.spanish_text }}"
+                                                    data-verse-ref="{{ verse.book }} {{ verse.chapter }}:{{ verse.verse }}"
+                                                    data-lang="spanish">
+                                                    <i class="bi bi-share"></i> Compartir Español
+                                                </button></li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a href="{{ url_for('routes.chapter', book=verse.book, chapter=verse.chapter) }}#verse-{{ verse.verse }}" 
+                                                       class="dropdown-item">
+                                                        <i class="bi bi-book"></i> Ver Capítulo Completo
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="verse-text">
+                                    <p class="mb-0">{{ verse.tzotzil_text }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="verse-text">
+                                    <p class="mb-0">{{ verse.spanish_text }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <p class="lead text-muted">No results found</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle highlighting
+    document.querySelectorAll('.color-btn').forEach(btn => {
+        btn.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const color = this.dataset.color;
+            const verseContainer = this.closest('.verse-container');
+            const verseTexts = verseContainer.querySelectorAll('.verse-text p');
+            
+            verseTexts.forEach(text => {
+                text.classList.remove('highlight-yellow', 'highlight-blue', 'highlight-green', 'highlight-red', 'highlight-purple');
+            });
+            
+            if (!verseTexts[0].classList.contains(`highlight-${color}`)) {
+                verseTexts.forEach(text => {
+                    text.classList.add(`highlight-${color}`);
+                });
+            }
+        });
+    });
+
+    // Handle sharing
+    document.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', async function() {
+            const text = this.dataset.verseText;
+            const ref = this.dataset.verseRef;
+            const lang = this.dataset.lang;
+            const currentUrl = window.location.href.split('#')[0];
+            const verseUrl = `${currentUrl}#verse-${ref.split(':')[1]}`;
+            
+            const shareText = `${ref}
+${text}
+
+Leído en la aplicación Biblia Bilingüe.
+Ver el versículo aquí: ${verseUrl}`;
+            
+            try {
+                await navigator.clipboard.writeText(shareText);
+                
+                const toast = document.createElement('div');
+                toast.className = 'toast align-items-center text-white bg-success border-0';
+                toast.innerHTML = `
+                    <div class="d-flex">
+                        <div class="toast-body">
+                            Versículo en ${lang === 'tzotzil' ? 'Tzotzil' : 'Español'} copiado al portapapeles
+                        </div>
+                        <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                
+                if (typeof bootstrap !== 'undefined') {
+                    const bsToast = new bootstrap.Toast(toast, {
+                        delay: 3000
+                    });
+                    bsToast.show();
+                }
+                
+                toast.addEventListener('hidden.bs.toast', () => toast.remove());
+            } catch (error) {
+                console.error('Error copying text:', error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

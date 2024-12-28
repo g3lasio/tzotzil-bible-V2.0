@@ -1,0 +1,726 @@
+{
+    "categories": [
+        {
+            "category": "Doctrina de la iglesia",
+            "doctrines": [
+                {
+                    "doctrine_name": "El Bautismo",
+                    "description": "El bautismo es una ordenanza establecida por Cristo que simboliza la muerte al pecado, el nuevo nacimiento en Cristo y la unión con el cuerpo de creyentes.",
+                    "biblical_references": [
+                        {
+                            "verse": "Mateo 28:19",
+                            "context": "Jesús instruye a sus discípulos a bautizar en el nombre del Padre, del Hijo y del Espíritu Santo.",
+                            "application": "Reconocer el bautismo como un paso de obediencia y fe en Cristo."
+                        },
+                        {
+                            "verse": "Romanos 6:3-4",
+                            "context": "El bautismo simboliza la muerte al pecado y el nuevo nacimiento en Cristo.",
+                            "application": "Vivir una vida transformada que refleje el compromiso con Cristo."
+                        },
+                        {
+                            "verse": "Hechos 2:38",
+                            "context": "Pedro llama al arrepentimiento y al bautismo para el perdón de los pecados y el recibimiento del Espíritu Santo.",
+                            "application": "Experimentar la restauración espiritual a través del arrepentimiento y el bautismo."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Simbolismo del bautismo",
+                            "explanation": "El bautismo simboliza la limpieza del pecado, el nuevo nacimiento y la incorporación al cuerpo de Cristo."
+                        },
+                        {
+                            "principle": "El bautismo como acto de obediencia",
+                            "explanation": "Cristo mismo fue bautizado y nos llamó a seguir su ejemplo, haciendo del bautismo un acto esencial de fe."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Considerar el bautismo como innecesario para el creyente.",
+                            "example": "Negar el mandato de Cristo en Mateo 28:19 puede conducir a una desobediencia espiritual."
+                        },
+                        {
+                            "error": "Ver el bautismo como un medio de salvación en lugar de un símbolo de fe.",
+                            "example": "Creer que el acto físico por sí solo salva contradice enseñanzas como Efesios 2:8-9."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Estudiar el significado del bautismo a través de pasajes como Mateo 28:19 y Romanos 6:3-4.",
+                            "advanced": "Reflexionar sobre el ejemplo de Cristo en su bautismo (Mateo 3:13-17) y su significado para nuestra vida."
+                        }
+                    ],
+                    "historical_context": "Desde la iglesia primitiva, el bautismo ha sido una señal de identificación con Cristo y con la comunidad de fe. Durante la Reforma, los anabaptistas enfatizaron el bautismo de adultos basado en la profesión personal de fe.",
+                    "faq": [
+                        {
+                            "question": "¿Es necesario el bautismo para la salvación?",
+                            "answer": "El bautismo no salva, pero es un paso importante de obediencia y fe, como enseña Mateo 28:19."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "La Cena del Señor",
+                        "El Arrepentimiento",
+                        "La Justificación por la Fe"
+                    ]
+                },
+                {
+                    "doctrine_name": "La Cena del Señor",
+                    "description": "La Cena del Señor es una ordenanza establecida por Cristo como un recordatorio de su sacrificio, un acto de comunión y una proclamación de su regreso.",
+                    "biblical_references": [
+                        {
+                            "verse": "1 Corintios 11:23-26",
+                            "context": "Pablo relata la institución de la Cena del Señor, destacando su significado como memorial del sacrificio de Cristo.",
+                            "application": "Participar en la Cena con gratitud y reverencia, recordando el sacrificio de Cristo."
+                        },
+                        {
+                            "verse": "Mateo 26:26-28",
+                            "context": "Jesús instituye la Cena del Señor durante la última Pascua con sus discípulos.",
+                            "application": "Reconocer el pan y el vino como símbolos del cuerpo y la sangre de Cristo."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Memorial del sacrificio de Cristo",
+                            "explanation": "La Cena del Señor nos recuerda el sacrificio de Cristo en la cruz por nuestros pecados."
+                        },
+                        {
+                            "principle": "Proclamación de la segunda venida",
+                            "explanation": "Participar en la Cena proclama la muerte de Cristo hasta que él vuelva."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Participar de la Cena sin discernir su significado.",
+                            "example": "Tomar el pan y el vino como un acto rutinario contradice la enseñanza de Pablo en 1 Corintios 11:27-29."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Estudiar los pasajes de la institución de la Cena del Señor en los evangelios y las epístolas.",
+                            "advanced": "Reflexionar sobre el sacrificio de Cristo y la esperanza de su regreso mientras participamos en la Cena."
+                        }
+                    ],
+                    "historical_context": "Desde la iglesia primitiva, la Cena del Señor ha sido un acto central de adoración cristiana, aunque ha habido debates sobre su naturaleza y significado, especialmente durante la Reforma Protestante.",
+                    "faq": [
+                        {
+                            "question": "¿Es la Cena del Señor necesaria para todos los creyentes?",
+                            "answer": "Aunque no salva, es una ordenanza importante para recordar el sacrificio de Cristo y fortalecer la comunión con él y con otros creyentes."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "El Bautismo",
+                        "La Expiación",
+                        "La Segunda Venida de Cristo"
+                    ]
+                },
+                {
+                    "doctrine_name": "Los Dones Espirituales",
+                    "description": "Los dones espirituales son capacidades otorgadas por el Espíritu Santo para edificar la iglesia y glorificar a Dios a través del servicio y la unidad del cuerpo de Cristo.",
+                    "biblical_references": [
+                        {
+                            "verse": "1 Corintios 12:4-7",
+                            "context": "Pablo explica que hay diversidad de dones, pero el mismo Espíritu los distribuye para provecho común.",
+                            "application": "Descubrir y usar los dones que el Espíritu Santo nos ha dado para servir a otros y fortalecer la iglesia."
+                        },
+                        {
+                            "verse": "Efesios 4:11-13",
+                            "context": "Dios dio a algunos como apóstoles, profetas, evangelistas, pastores y maestros para edificar el cuerpo de Cristo y llevarlo a la madurez espiritual.",
+                            "application": "Colaborar en la obra de la iglesia con los dones que Dios nos ha confiado."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Diversidad en los dones",
+                            "explanation": "El Espíritu Santo distribuye diferentes dones a cada creyente para cumplir un propósito específico en la iglesia."
+                        },
+                        {
+                            "principle": "Unidad en el cuerpo de Cristo",
+                            "explanation": "Aunque los dones son diversos, todos contribuyen a la unidad y misión de la iglesia como cuerpo de Cristo."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Envidiar los dones de otros.",
+                            "example": "Desear los dones ajenos puede causar divisiones en lugar de unidad en la iglesia."
+                        },
+                        {
+                            "error": "Despreciar los dones espirituales.",
+                            "example": "Ignorar o no usar los dones limita el crecimiento espiritual de la iglesia y su impacto en el mundo."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Orar para que el Espíritu Santo revele y desarrolle los dones espirituales en nuestra vida.",
+                            "advanced": "Estudiar cómo los dones espirituales han fortalecido la misión de la iglesia a lo largo de la historia."
+                        }
+                    ],
+                    "historical_context": "Desde Pentecostés, los dones espirituales han sido fundamentales para el avance de la iglesia y su misión. A lo largo de la historia, estos dones han inspirado movimientos misioneros y reavivamientos espirituales.",
+                    "faq": [
+                        {
+                            "question": "¿Cómo puedo saber cuál es mi don espiritual?",
+                            "answer": "Mediante oración, estudio de la Palabra y participación activa en la iglesia, podemos descubrir los dones que Dios nos ha dado."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "El Espíritu Santo",
+                        "La Misión de la Iglesia",
+                        "La Unidad del Cuerpo de Cristo"
+                    ]
+                },
+                {
+                    "doctrine_name": "La Biblia como Autoridad",
+                    "description": "La Biblia es la Palabra de Dios, inspirada por el Espíritu Santo, y es la norma suprema de fe y conducta para los creyentes.",
+                    "biblical_references": [
+                        {
+                            "verse": "2 Timoteo 3:16",
+                            "context": "Toda la Escritura es inspirada por Dios y útil para enseñar, redargüir, corregir y entrenar en justicia.",
+                            "application": "Estudiar la Biblia como la guía principal para la vida cristiana."
+                        },
+                        {
+                            "verse": "Hebreos 4:12",
+                            "context": "La Palabra de Dios es viva y eficaz, más cortante que cualquier espada de dos filos.",
+                            "application": "Permitir que la Biblia transforme nuestra vida y nos guíe en las decisiones."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Inspiración divina",
+                            "explanation": "La Biblia fue escrita bajo la inspiración del Espíritu Santo, garantizando su veracidad."
+                        },
+                        {
+                            "principle": "Autoridad absoluta",
+                            "explanation": "La Biblia es la norma suprema que regula nuestra fe, conducta y creencias."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Rechazar la autoridad de la Biblia.",
+                            "example": "Negar la inspiración divina de las Escrituras conduce a la pérdida de la verdad fundamental."
+                        },
+                        {
+                            "error": "Interpretar la Biblia fuera de contexto.",
+                            "example": "Tomar versículos aislados puede llevar a conclusiones incorrectas sobre las enseñanzas de la Palabra."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Leer diariamente la Biblia y memorizar versículos clave.",
+                            "advanced": "Estudiar las doctrinas fundamentales y las profecías bíblicas bajo la guía del Espíritu Santo."
+                        }
+                    ],
+                    "historical_context": "A lo largo de la historia, la Biblia ha sido la fuente de avivamientos espirituales, desde la Reforma Protestante hasta los movimientos misioneros modernos.",
+                    "faq": [
+                        {
+                            "question": "¿Por qué debemos considerar la Biblia como la autoridad final?",
+                            "answer": "Porque es la Palabra de Dios inspirada, infalible y suficiente para guiarnos en toda buena obra (2 Timoteo 3:16-17)."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "La Inspiración Bíblica",
+                        "La Gracia y la Ley",
+                        "La Misión de la Iglesia"
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Doctrinas de la Salvación",
+            "doctrines": [
+                {
+                    "doctrine_name": "El Pecado y la Caída",
+                    "description": "Esta doctrina explica el origen del pecado en la desobediencia de Adán y Eva, su impacto en la humanidad y la necesidad de redención a través de Cristo.",
+                    "biblical_references": [
+                        {
+                            "verse": "Génesis 3:6",
+                            "context": "Adán y Eva comieron del fruto prohibido, trayendo pecado y muerte al mundo.",
+                            "application": "Reconocer la seriedad del pecado y su impacto en nuestra relación con Dios y con otros."
+                        },
+                        {
+                            "verse": "Romanos 3:23",
+                            "context": "Pablo declara que todos han pecado y están destituidos de la gloria de Dios.",
+                            "application": "Admitir nuestra condición pecaminosa y buscar la gracia de Dios para ser restaurados."
+                        },
+                        {
+                            "verse": "Romanos 6:23",
+                            "context": "La paga del pecado es muerte, pero el regalo de Dios es vida eterna en Cristo Jesús.",
+                            "application": "Apreciar el sacrificio de Cristo como la única solución para el pecado."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "El pecado como separación de Dios",
+                            "explanation": "El pecado rompe nuestra comunión con Dios y distorsiona su imagen en nosotros, necesitando redención."
+                        },
+                        {
+                            "principle": "La universalidad del pecado",
+                            "explanation": "Toda la humanidad ha sido afectada por el pecado, lo que nos coloca a todos en necesidad de un Salvador."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Minimizar la gravedad del pecado.",
+                            "example": "Creer que algunos pecados son demasiado pequeños para necesitar arrepentimiento, ignorando textos como Santiago 2:10."
+                        },
+                        {
+                            "error": "Culpar exclusivamente a Adán y Eva por el pecado en lugar de reconocer nuestra responsabilidad personal.",
+                            "example": "Negar nuestra propia necesidad de redención contradice Romanos 3:23."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Leer Génesis 3 y reflexionar sobre cómo el pecado afecta nuestra relación con Dios y con otros.",
+                            "advanced": "Estudiar cómo el pecado original se entiende en el contexto del plan de redención, usando textos como Romanos 5:12-21."
+                        }
+                    ],
+                    "historical_context": "La doctrina del pecado ha sido central en la teología cristiana desde los Padres de la Iglesia, quienes debatieron temas como el pecado original y su transmisión a través de las generaciones. La Reforma Protestante enfatizó la total depravación del hombre sin la gracia de Dios."
+                },
+                {
+                    "doctrine_name": "La Expiación",
+                    "description": "Esta doctrina explica el sacrificio de Cristo como el medio por el cual los pecados de la humanidad son perdonados, restaurando la relación entre Dios y los hombres.",
+                    "biblical_references": [
+                        {
+                            "verse": "Juan 1:29",
+                            "context": "Juan el Bautista señala a Jesús como el Cordero de Dios que quita el pecado del mundo.",
+                            "application": "Aceptar a Jesús como el sacrificio perfecto que elimina nuestra culpa y pecado."
+                        },
+                        {
+                            "verse": "Hebreos 9:12",
+                            "context": "Cristo entró una vez para siempre en el Lugar Santísimo, no con sangre de machos cabríos, sino con su propia sangre, obteniendo redención eterna.",
+                            "application": "Confiar en el sacrificio de Cristo como suficiente para nuestra salvación."
+                        },
+                        {
+                            "verse": "Romanos 3:24-25",
+                            "context": "Somos justificados gratuitamente por su gracia mediante la redención que es en Cristo Jesús, a quien Dios propuso como propiciación por medio de la fe en su sangre.",
+                            "application": "Vivir en gratitud por la gracia de Dios manifestada en la expiación de Cristo."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "La sustitución",
+                            "explanation": "Cristo murió en nuestro lugar, llevando el castigo que merecíamos por nuestros pecados."
+                        },
+                        {
+                            "principle": "La propiciación",
+                            "explanation": "El sacrificio de Cristo satisface la justicia divina, reconciliando a Dios y la humanidad."
+                        },
+                        {
+                            "principle": "La redención",
+                            "explanation": "Por medio de la expiación, Cristo nos libera del pecado y restaura nuestra relación con Dios."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Negar la suficiencia del sacrificio de Cristo.",
+                            "example": "Creer que las buenas obras o sacrificios adicionales son necesarios para la salvación."
+                        },
+                        {
+                            "error": "Considerar la expiación como limitada a ciertos grupos.",
+                            "example": "Enseñar que el sacrificio de Cristo no fue hecho por toda la humanidad, contradiciendo textos como Juan 3:16."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Meditar en los evangelios sobre el sacrificio de Jesús y su significado personal para nuestra vida.",
+                            "advanced": "Estudiar la carta a los Hebreos para comprender el papel del sacrificio de Cristo en el contexto del santuario celestial."
+                        }
+                    ],
+                    "historical_context": "Desde los sacrificios en el Antiguo Testamento hasta el sacrificio de Cristo, la expiación ha sido central en el plan de salvación. La Reforma Protestante reafirmó la suficiencia del sacrificio de Cristo frente a las enseñanzas de las indulgencias y obras humanas."
+                },
+                {
+                    "doctrine_name": "La Justificación por la Fe",
+                    "description": "Esta doctrina enseña que los pecadores son declarados justos ante Dios por medio de la fe en Jesucristo, no por obras, sino por la gracia divina.",
+                    "biblical_references": [
+                        {
+                            "verse": "Romanos 5:1",
+                            "context": "Justificados, pues, por la fe, tenemos paz para con Dios por medio de nuestro Señor Jesucristo.",
+                            "application": "Confiar en que la fe en Cristo nos asegura nuestra posición delante de Dios."
+                        },
+                        {
+                            "verse": "Efesios 2:8-9",
+                            "context": "Porque por gracia sois salvos por medio de la fe; y esto no de vosotros, pues es don de Dios; no por obras, para que nadie se gloríe.",
+                            "application": "Apreciar la gracia inmerecida de Dios como el fundamento de nuestra salvación."
+                        }
+                    ]
+                },
+                {
+                    "doctrine_name": "El Origen del Mal",
+                    "description": "Esta doctrina explora el surgimiento del mal en el universo a través de la rebelión de Lucifer y su impacto en el mundo creado.",
+                    "biblical_references": [
+                        {
+                            "verse": "Isaías 14:12-14",
+                            "context": "Lucifer, lleno de orgullo, deseó ser como Dios, lo que llevó a su caída.",
+                            "application": "Reconocer que el orgullo y la autosuficiencia conducen a la separación de Dios."
+                        },
+                        {
+                            "verse": "Ezequiel 28:15-17",
+                            "context": "Lucifer fue creado perfecto hasta que se halló maldad en él, lo que causó su expulsión del cielo.",
+                            "application": "Permanecer humildes y dependientes de Dios para evitar caer en la tentación del orgullo."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "El libre albedrío",
+                            "explanation": "Dios creó a sus seres con libertad de elección, lo que hace posible tanto el amor genuino como la rebelión."
+                        },
+                        {
+                            "principle": "El origen del pecado",
+                            "explanation": "El mal surgió como consecuencia del orgullo y la rebelión en un ser creado perfecto."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Estudiar Isaías 14 y Ezequiel 28 para entender el origen del mal y sus implicaciones en nuestra vida.",
+                            "advanced": "Reflexionar sobre el papel del libre albedrío en el amor de Dios y en nuestra responsabilidad personal frente al pecado."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "category": "Doctrinas sobre Dios",
+            "doctrines": [
+                {
+                    "doctrine_name": "La Trinidad",
+                    "description": "Esta doctrina afirma la existencia de un único Dios en tres personas: Padre, Hijo y Espíritu Santo, coeternos, coiguales y consustanciales. Es central para entender el carácter de Dios como amor y su obra redentora.",
+                    "biblical_references": [
+                        {
+                            "verse": "Mateo 28:19",
+                            "context": "Jesús instruye a sus discípulos a bautizar en el nombre del Padre, del Hijo y del Espíritu Santo, mostrando la unidad de las tres personas.",
+                            "application": "Reconocer la Trinidad en la vida cristiana diaria al orar y bautizar en el nombre de las tres personas divinas."
+                        },
+                        {
+                            "verse": "2 Corintios 13:14",
+                            "context": "Pablo cierra su carta mencionando la gracia del Señor Jesús, el amor de Dios y la comunión del Espíritu Santo, reflejando la Trinidad.",
+                            "application": "Buscar vivir la gracia, el amor y la comunión que caracterizan a la Trinidad en nuestras relaciones humanas."
+                        },
+                        {
+                            "verse": "Juan 1:1-3",
+                            "context": "El apóstol Juan describe al Hijo como el Verbo eterno, que estaba con Dios y era Dios.",
+                            "application": "Afirmar la divinidad de Cristo como base de nuestra fe y salvación."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Unidad en diversidad",
+                            "explanation": "La Trinidad es una relación perfecta de amor y unidad, reflejando el carácter de Dios como amor (1 Juan 4:8). Este principio muestra cómo la diversidad puede coexistir en armonía absoluta. Para la iglesia, implica una misión unida y la necesidad de colaborar respetando las diferencias individuales."
+                        },
+                        {
+                            "principle": "Roles distintos pero complementarios",
+                            "explanation": "El Padre, el Hijo y el Espíritu Santo tienen roles distintos en la creación, redención y santificación, pero actúan en perfecta sincronía. Esto anima a los creyentes a cumplir su llamado único dentro del cuerpo de Cristo, reconociendo su interdependencia."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Negar la coeternidad de las personas de la Trinidad.",
+                            "example": "El arrianismo negaba la divinidad y coeternidad de Cristo, contradiciendo textos como Juan 1:1 y Hebreos 1:3."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Orar considerando la obra del Padre, el Hijo y el Espíritu Santo en la vida diaria.",
+                            "advanced": "Estudiar cómo los credos históricos (como el de Nicea) defendieron la doctrina de la Trinidad frente a las herejías como el arrianismo."
+                        }
+                    ],
+                    "historical_context": "Durante los primeros siglos del cristianismo, los concilios de Nicea (325 d.C.) y Calcedonia (451 d.C.) definieron la doctrina de la Trinidad para refutar herejías como el arrianismo, que negaba la coeternidad de Cristo. Estos concilios establecieron una base sólida para la comprensión ortodoxa de Dios como Trinidad."
+                },
+                {
+                    "doctrine_name": "La Naturaleza de Cristo",
+                    "description": "Esta doctrina aborda la divinidad y humanidad de Cristo, dos naturalezas unidas en una sola persona, esencial para comprender su obra redentora.",
+                    "biblical_references": [
+                        {
+                            "verse": "Juan 1:14",
+                            "context": "El Verbo se hizo carne y habitó entre nosotros, mostrando la encarnación de Cristo como Dios hecho hombre.",
+                            "application": "Afirmar que Cristo entiende nuestras luchas humanas, habiendo vivido como uno de nosotros."
+                        },
+                        {
+                            "verse": "Filipenses 2:6-8",
+                            "context": "Cristo, siendo en forma de Dios, se humilló a sí mismo tomando forma de siervo, destacando su divinidad y humanidad.",
+                            "application": "Adoptar una actitud de humildad siguiendo el ejemplo de Cristo."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Divinidad y humanidad unidas",
+                            "explanation": "Cristo es completamente Dios y completamente hombre, lo que le permite ser el mediador perfecto entre Dios y la humanidad."
+                        },
+                        {
+                            "principle": "Humildad en la encarnación",
+                            "explanation": "Cristo, siendo igual a Dios, eligió humillarse para redimirnos, enseñando el valor del sacrificio y el servicio."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Negar la divinidad de Cristo.",
+                            "example": "El arrianismo enseñaba que Cristo era un ser creado, inferior al Padre, contradiciendo textos como Juan 1:1 y Colosenses 2:9."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Estudiar los evangelios para conocer cómo Cristo vivió como ejemplo de vida cristiana.",
+                            "advanced": "Analizar las implicaciones de la unión de las naturalezas divina y humana en el plan de redención."
+                        }
+                    ],
+                    "historical_context": "Durante los primeros siglos, el Concilio de Calcedonia (451 d.C.) definió la doctrina de las dos naturalezas de Cristo para contrarrestar herejías como el arrianismo y el docetismo, estableciendo que Cristo es completamente Dios y completamente hombre."
+                },
+                {
+                    "doctrine_name": "El Espíritu Santo",
+                    "description": "Esta doctrina presenta al Espíritu Santo como la tercera persona de la Trinidad, plenamente divino, quien actúa como Consolador, Guía y Santificador en la vida cristiana.",
+                    "biblical_references": [
+                        {
+                            "verse": "Juan 14:26",
+                            "context": "Jesús promete que el Espíritu Santo enseñará todas las cosas y recordará a los discípulos las palabras de Jesús.",
+                            "application": "Confiar en el Espíritu Santo para entender y aplicar la Palabra de Dios en la vida diaria."
+                        },
+                        {
+                            "verse": "Hechos 1:8",
+                            "context": "Jesús asegura que los creyentes recibirán poder al venir sobre ellos el Espíritu Santo para ser testigos en todo el mundo.",
+                            "application": "Depender del Espíritu Santo para cumplir la misión de predicar el evangelio."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "El Espíritu Santo como Consolador",
+                            "explanation": "El Espíritu Santo consuela a los creyentes en sus pruebas, asegurándoles la presencia constante de Dios."
+                        },
+                        {
+                            "principle": "Santificación a través del Espíritu",
+                            "explanation": "El Espíritu Santo transforma el carácter del creyente, haciéndolo más semejante a Cristo."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Negar la personalidad del Espíritu Santo.",
+                            "example": "Considerar al Espíritu Santo como una fuerza impersonal contradice textos como Juan 14:26, donde se describe su obra personal."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Orar diariamente pidiendo la guía del Espíritu Santo en las decisiones cotidianas.",
+                            "advanced": "Estudiar cómo los dones del Espíritu han sido utilizados a lo largo de la historia de la iglesia para avanzar el evangelio."
+                        }
+                    ],
+                    "historical_context": "Desde Pentecostés, el Espíritu Santo ha jugado un papel central en la expansión de la iglesia y en la vida de los creyentes, tal como se evidencia en el libro de Hechos y en la historia cristiana posterior."
+                },
+                {
+                    "doctrine_name": "La Creación",
+                    "description": "Esta doctrina afirma que Dios es el creador de todo lo que existe, habiendo creado el universo en seis días literales y descansado el séptimo, estableciendo el sábado como un memorial eterno de su obra creadora.",
+                    "biblical_references": [
+                        {
+                            "verse": "Génesis 1:1",
+                            "context": "En el principio, Dios creó los cielos y la tierra, declarando el origen divino del universo.",
+                            "application": "Reconocer a Dios como creador y vivir en gratitud por su provisión y diseño perfecto."
+                        },
+                        {
+                            "verse": "Éxodo 20:8-11",
+                            "context": "El mandamiento del sábado establece el descanso semanal como un recordatorio de la creación en seis días.",
+                            "application": "Guardar el sábado como un acto de lealtad y fe en el Creador."
+                        },
+                        {
+                            "verse": "Salmos 19:1",
+                            "context": "Los cielos cuentan la gloria de Dios, mostrando que la creación revela el carácter divino.",
+                            "application": "Contemplar la naturaleza para aprender más sobre el poder y la bondad de Dios."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Dios como creador soberano",
+                            "explanation": "La creación revela el poder, sabiduría y amor de Dios, estableciendo su autoridad sobre todo lo creado."
+                        },
+                        {
+                            "principle": "El sábado como memorial de la creación",
+                            "explanation": "El séptimo día fue santificado como un recordatorio eterno del poder creador de Dios y su deseo de relación con la humanidad."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Aceptar teorías que niegan la creación literal en seis días.",
+                            "example": "El evolucionismo teísta mezcla la creación divina con procesos evolutivos, contradiciendo Génesis 1:1-31."
+                        },
+                        {
+                            "error": "Negar la santidad del sábado como memorial de la creación.",
+                            "example": "Considerar el sábado como un mandato ceremonial temporal ignora su fundamento en la creación."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Dedicar tiempo cada semana a estudiar Génesis 1-2 y reflexionar sobre el propósito divino en la creación.",
+                            "advanced": "Explorar la conexión entre el sábado y la redención en textos como Hebreos 4:9-10."
+                        }
+                    ],
+                    "historical_context": "Desde la antigüedad, el sábado ha sido guardado como un testimonio de la creación y la relación especial entre Dios y su pueblo. Durante la Reforma, algunos reformadores enfatizaron la importancia de la creación literal frente a ideas filosóficas contrarias."
+                }
+            ]
+        },
+        {
+            "category": "Doctrinas escatologicas",
+            "doctrines": [
+                {
+                    "doctrine_name": "La Segunda Venida de Cristo",
+                    "description": "La Segunda Venida de Cristo es la esperanza bienaventurada del creyente, en la cual Jesús regresará visiblemente, con poder y gloria, para completar el plan de redención y establecer su reino eterno.",
+                    "biblical_references": [
+                        {
+                            "verse": "Juan 14:1-3",
+                            "context": "Jesús promete que regresará para llevar a sus seguidores consigo, un mensaje de esperanza y certeza.",
+                            "application": "Confiar en la promesa de Jesús y vivir con expectativa de su regreso."
+                        },
+                        {
+                            "verse": "Hechos 1:11",
+                            "context": "Los ángeles aseguran a los discípulos que Jesús volverá de la misma manera en que ascendió al cielo.",
+                            "application": "Prepararse espiritualmente para el regreso literal de Cristo."
+                        },
+                        {
+                            "verse": "1 Tesalonicenses 4:16-17",
+                            "context": "Pablo describe el regreso de Cristo como un evento visible y glorioso, donde los muertos en Cristo resucitarán primero.",
+                            "application": "Vivir con esperanza y compartir la promesa del regreso de Cristo con otros."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Certeza del regreso",
+                            "explanation": "La promesa de la Segunda Venida es fundamental para la esperanza cristiana y motiva a los creyentes a vivir con propósito y fidelidad."
+                        },
+                        {
+                            "principle": "Evento visible y glorioso",
+                            "explanation": "El regreso de Cristo será visto por todos y marcará el fin del pecado y la muerte, trayendo restauración total."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Especular sobre la fecha exacta del regreso de Cristo.",
+                            "example": "Intentar predecir la fecha del regreso contradice Mateo 24:36, donde Jesús afirma que nadie sabe el día ni la hora."
+                        },
+                        {
+                            "error": "Negar la literalidad de la Segunda Venida.",
+                            "example": "Algunas interpretaciones simbólicas ignoran textos claros como Hechos 1:11 y 1 Tesalonicenses 4:16-17."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Leer Mateo 24 y reflexionar sobre las señales del tiempo.",
+                            "advanced": "Estudiar las profecías de Daniel y Apocalipsis para comprender el contexto del regreso de Cristo."
+                        }
+                    ],
+                    "historical_context": "A lo largo de la historia, la Segunda Venida ha sido una doctrina central para la iglesia. Durante el siglo XIX, el Gran Despertar renovó el interés en esta verdad, dando origen a movimientos adventistas que enfatizaron la preparación para el regreso de Cristo.",
+                    "faq": [
+                        {
+                            "question": "¿Por qué aún no ha regresado Jesús?",
+                            "answer": "Dios no retarda su promesa, sino que tiene paciencia para que todos se arrepientan (2 Pedro 3:9)."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "El Juicio Final",
+                        "La Resurrección",
+                        "El Reino de Dios"
+                    ]
+                },
+                {
+                    "doctrine_name": "El Juicio Final",
+                    "description": "El Juicio Final es el momento en que Dios vindicará su justicia, recompensará a los fieles y ejecutará juicio sobre los impíos, estableciendo la verdad eterna y el fin del pecado.",
+                    "biblical_references": [
+                        {
+                            "verse": "Apocalipsis 20:11-12",
+                            "context": "Juan describe el gran trono blanco, donde los muertos son juzgados según sus obras escritas en los libros.",
+                            "application": "Reflexionar sobre nuestras acciones y vivir de acuerdo con la voluntad de Dios."
+                        },
+                        {
+                            "verse": "Mateo 25:31-46",
+                            "context": "Jesús enseña que el juicio separará a las ovejas de los cabritos, recompensando a los justos y condenando a los impíos.",
+                            "application": "Servir a los demás con amor, sabiendo que nuestras acciones reflejan nuestra fe."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "Dios como juez justo",
+                            "explanation": "Dios juzga con equidad y conoce el corazón de cada persona, asegurando que su juicio sea justo."
+                        },
+                        {
+                            "principle": "Recompensa y castigo eterno",
+                            "explanation": "El Juicio Final marca la separación definitiva entre los que aceptaron la gracia de Dios y los que la rechazaron."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Negar la realidad del juicio final.",
+                            "example": "Creer que Dios no juzgará contradice textos como Apocalipsis 20:11-15."
+                        },
+                        {
+                            "error": "Basar la salvación únicamente en obras.",
+                            "example": "Ignorar que la salvación es por gracia mediante la fe (Efesios 2:8-9) contradice el evangelio."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Leer Mateo 25:31-46 y reflexionar sobre cómo podemos vivir para reflejar la justicia de Dios.",
+                            "advanced": "Estudiar Apocalipsis 20 para comprender el simbolismo del juicio y su relación con el fin del pecado."
+                        }
+                    ],
+                    "historical_context": "La doctrina del Juicio Final ha sido central en la predicación cristiana desde la iglesia primitiva, enfatizando la necesidad de vivir con fidelidad y preparación para el retorno de Cristo.",
+                    "faq": [
+                        {
+                            "question": "¿Cómo sabemos que Dios juzgará justamente?",
+                            "answer": "La Biblia enseña que Dios es justo, fiel y conoce los pensamientos y las intenciones del corazón (Hebreos 4:12)."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "La Segunda Venida de Cristo",
+                        "La Resurrección",
+                        "El Reino de Dios"
+                    ]
+                },
+                {
+                    "doctrine_name": "El Milenio y la Nueva Tierra",
+                    "description": "El Milenio es el período de mil años durante el cual los santos juzgarán con Cristo, seguido por la destrucción final del pecado y la creación de la nueva tierra, donde Dios vivirá con su pueblo para siempre.",
+                    "biblical_references": [
+                        {
+                            "verse": "Apocalipsis 20:4-6",
+                            "context": "Juan describe el reinado de mil años con Cristo, durante el cual los santos participan en el juicio.",
+                            "application": "Vivir con la esperanza de reinar con Cristo en su reino eterno."
+                        },
+                        {
+                            "verse": "Isaías 65:17",
+                            "context": "Dios promete crear cielos nuevos y tierra nueva, donde no habrá más dolor ni llanto.",
+                            "application": "Confiar en la promesa de un futuro perfecto y sin pecado."
+                        }
+                    ],
+                    "key_principles": [
+                        {
+                            "principle": "El reinado de los santos con Cristo",
+                            "explanation": "Durante el Milenio, los redimidos participarán en el juicio de los impíos, vindicando el carácter de Dios."
+                        },
+                        {
+                            "principle": "La creación de una nueva tierra",
+                            "explanation": "La nueva tierra será el hogar eterno de los redimidos, donde Dios morará con su pueblo y el pecado no existirá más."
+                        }
+                    ],
+                    "errors_to_avoid": [
+                        {
+                            "error": "Considerar el Milenio como un período simbólico y no literal.",
+                            "example": "Negar el cumplimiento literal del reinado milenario contradice Apocalipsis 20:4-6."
+                        },
+                        {
+                            "error": "Creer que el pecado continuará en la nueva tierra.",
+                            "example": "Ignorar textos como Isaías 65:17 y Apocalipsis 21:1-4 distorsiona la promesa de un mundo sin pecado."
+                        }
+                    ],
+                    "practical_applications": [
+                        {
+                            "beginner": "Reflexionar sobre la promesa de un mundo sin pecado estudiando Isaías 65 y Apocalipsis 21.",
+                            "advanced": "Explorar el papel de los santos en el juicio durante el Milenio como se describe en Apocalipsis 20."
+                        }
+                    ],
+                    "historical_context": "La doctrina del Milenio y la Nueva Tierra ha sido un tema de esperanza y debate entre los cristianos, reafirmada por movimientos adventistas que enfatizan la restauración final del plan de redención.",
+                    "faq": [
+                        {
+                            "question": "¿Qué sucederá después del Milenio?",
+                            "answer": "Después del Milenio, el pecado y la muerte serán destruidos para siempre, y Dios creará un nuevo cielo y una nueva tierra donde vivirá con su pueblo (Apocalipsis 21:1-4)."
+                        }
+                    ],
+                    "related_doctrines": [
+                        "El Juicio Final",
+                        "La Resurrección",
+                        "El Reino de Dios"
+                    ]
+                }
+            ]
+        }
+    ]
+}

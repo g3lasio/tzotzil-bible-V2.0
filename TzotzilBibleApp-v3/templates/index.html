@@ -1,0 +1,162 @@
+{% extends "base.html" %} {% block content %}
+
+<!-- Promesa del Día Section -->
+<div
+    id="random-promise-container"
+    class="text-center mb-5 position-relative promise-section"
+>
+    <div class="promise-background" id="promise-background"></div>
+    <div class="promise-overlay">
+        <h3 class="fw-bold text-gradient mb-3">Promesa del día</h3>
+        <p
+            id="random-promise-text"
+            class="lead fs-4"
+            style="font-family: &quot;Dubai Medium&quot;, sans-serif"
+        ></p>
+        <button class="btn btn-outline-light mt-4" id="share-button">
+            <i class="bi bi-share"></i> Compartir
+        </button>
+        <p
+            class="text-muted mt-2"
+            style="font-size: 0.8rem; font-style: italic"
+        >
+            by Tzotzil Bible
+        </p>
+    </div>
+</div>
+
+<!-- Selection Modal (keep existing modal code) -->
+{{ super() }}
+
+<!-- Add to style.css -->
+<style>
+    .hero-section {
+        position: relative;
+        background-color: var(--bs-dark);
+        color: white;
+    }
+
+    .hero-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, #1a1a1a, #2d2d2d);
+        opacity: 0.9;
+        z-index: 0;
+    }
+
+    .text-gradient {
+        background: linear-gradient(45deg, #00ff99, #00ffcc);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+
+    .py-5 {
+        padding-top: 3rem;
+        padding-bottom: 3rem;
+    }
+
+    .promise-section {
+        height: 400px;
+        color: white;
+        overflow: hidden;
+    }
+
+    .promise-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-size: cover;
+        background-position: center;
+        filter: blur(8px) brightness(0.7);
+        z-index: 0;
+    }
+
+    .promise-overlay {
+        position: relative;
+        z-index: 1;
+        padding: 1.5rem;
+        background: linear-gradient(
+            135deg,
+            rgba(0, 0, 0, 0.6),
+            rgba(0, 0, 0, 0.2)
+        );
+        border-radius: 15px;
+        max-width: 700px;
+        margin: 0 auto;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    #share-button {
+        border-color: #00ffcc;
+        color: #00ffcc;
+    }
+
+    #share-button:hover {
+        background-color: #00ffcc;
+        color: #000;
+    }
+
+    @media (min-width: 768px) {
+        .parallel-columns {
+            display: flex;
+            justify-content: space-between;
+        }
+        .parallel-columns .column {
+            width: 48%;
+        }
+    }
+
+    @media (max-width: 767px) {
+        .hero-section {
+            text-align: center;
+        }
+    }
+
+    .verse-container {
+        border: 2px solid #00ffcc;
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        background: rgba(0, 0, 0, 0.7);
+    }
+</style>
+
+<script>
+    // Share button functionality will be initialized by bible.js when the DOM is loaded
+    document.addEventListener("DOMContentLoaded", function () {
+        const shareButton = document.getElementById("share-button");
+        if (shareButton) {
+            shareButton.addEventListener("click", function () {
+                const verseText = document.getElementById(
+                    "random-promise-text",
+                ).innerText;
+                const shareData = {
+                    title: "Promesa del Día",
+                    text: verseText + "\nby Tzotzil Bible",
+                    url: window.location.href,
+                };
+
+                if (navigator.share) {
+                    navigator
+                        .share(shareData)
+                        .then(() =>
+                            console.log("Contenido compartido con éxito"),
+                        )
+                        .catch((error) =>
+                            console.error("Error al compartir:", error),
+                        );
+                } else {
+                    alert("Compartir no es compatible con este navegador.");
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}
