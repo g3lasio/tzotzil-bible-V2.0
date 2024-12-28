@@ -19,7 +19,9 @@ migrate = Migrate()
 
 def create_app():
     """Crear y configurar la aplicación Flask"""
+    logger.info("Iniciando creación de la aplicación Flask...")
     app = Flask(__name__)
+    logger.info("Aplicación Flask creada exitosamente")
 
     # Configuración básica
     app.config.update(
@@ -51,8 +53,12 @@ def create_app():
         try:
             db.create_all()
             logger.info("Base de datos inicializada correctamente")
+            # Verificar conexión
+            with db.engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+                logger.info("Conexión a la base de datos verificada exitosamente")
         except Exception as e:
-            logger.error(f"Error al crear las tablas de la base de datos: {str(e)}")
+            logger.error(f"Error al crear/verificar las tablas de la base de datos: {str(e)}")
             raise
 
     @app.errorhandler(404)
