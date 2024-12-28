@@ -1,6 +1,5 @@
 
 flask==2.3.3
-flask-login==0.6.2
 flask-sqlalchemy==3.0.5
 openai==1.3.5
 python-dotenv==1.0.0
@@ -24,4 +23,9 @@ redis
 spellchecker
 sqlalchemy
 tenacity
+flask-login
 werkzeug
+flask
+flask-login
+flask-migrate
+flask-sqlalchemy
