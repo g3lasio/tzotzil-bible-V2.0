@@ -1,0 +1,72 @@
+Eres un experto en desarrollo de inteligencia artificial y arquitectura de software, y tu tarea es presentar un plan estratégico de reestructuración para "Nevin", un asistente bíblico con problemas significativos en su código y arquitectura lógica. El objetivo es mantener las funcionalidades ya mencionadas, mejorarlas y hacer que "Nevin" sea una herramienta sólida, funcional y doctrinalmente confiable.
+
+Contexto:
+
+"Nevin" es un asistente bíblico diseñado para:
+
+Responder preguntas sobre la Biblia y temas teológicos con precisión.
+Usar referencias de la Biblia y comentarios de Elena G. de White.
+Adaptarse al nivel de conocimiento del usuario, desde principiantes hasta teólogos.
+Ser una guía espiritual confiable, doctrinalmente sólida, basada en principios hermenéuticos.
+Archivos clave:
+
+Nevin_AI/nevin_knowledge: Contiene libros de Elena G. de White.
+Nevin_AI/data: Incluye parámetros y referencias doctrinales.
+Requisitos de funcionalidad actuales:
+
+Nevin debe manejar preguntas teológicas complejas, utilizando la Biblia y los comentarios de EGW como fuentes principales.
+Debe interpretar las Escrituras aplicando principios hermenéuticos y exegéticos, especialmente en pasajes donde no existe material de referencia directo.
+La interfaz debe ser amigable, organizada y visualmente atractiva.
+Las respuestas deben estar estructuradas:
+Versículos bíblicos destacados en cuadros con colores agradables.
+Comentarios de EGW en un diseño claramente diferenciado.
+Referencias en colores degradados para una mejor lectura.
+Se requiere un flujo interactivo donde Nevin pueda adaptarse al usuario:
+Saludar e interactuar de manera personalizada.
+Ofrecer preguntas de seguimiento relevantes.
+Plan de reestructuración:
+
+Análisis del problema actual:
+
+Revisión exhaustiva del código backend y frontend para identificar cuellos de botella.
+Validar la conexión con las rutas de conocimiento (Nevin_AI/nevin_knowledge y Nevin_AI/data).
+Auditar cómo se procesan las preguntas de los usuarios y se generan las respuestas.
+Verificar las dependencias y módulos integrados para resolver posibles incompatibilidades.
+Rediseño de la arquitectura:
+
+Backend:
+Implementar una base de datos estructurada que indexe los contenidos de la Biblia y los libros de EGW.
+Diseñar una lógica robusta para procesar preguntas, aplicar principios hermenéuticos, y generar respuestas personalizadas.
+Integrar algoritmos que permitan analizar preguntas complejas y generar respuestas basadas en contexto histórico, cultural y geográfico.
+Frontend:
+Rediseñar la interfaz para hacerla más intuitiva y atractiva.
+Asegurar que las respuestas estén bien estructuradas y diferenciadas visualmente:
+Cuadros de colores para versículos bíblicos.
+Comentarios de EGW en un diseño distinto con referencias en tonos degradados.
+Icono representativo de Nevin en cada respuesta.
+Flujo de interacción inteligente:
+
+Introducir un sistema de bienvenida para nuevos usuarios:
+Saludo inicial personalizado y pregunta sobre su nombre.
+Para usuarios recurrentes, ofrecer sugerencias de preguntas basadas en su historial.
+Permitir que Nevin se adapte dinámicamente al nivel del usuario.
+Mantenimiento de las funcionalidades:
+
+Asegurar que las funciones actuales como manejo de preguntas teológicas, referencias bíblicas y citas de EGW estén completamente operativas.
+Diseñar un sistema de preguntas de seguimiento que mantenga la interacción fluida.
+Implementación técnica:
+
+Crear un sistema modular para facilitar futuras expansiones o ajustes.
+Priorizar la conexión estable entre las bases de conocimiento y la lógica de respuesta.
+Diseñar una API para manejar solicitudes de usuarios y garantizar tiempos de respuesta rápidos.
+Cronograma sugerido:
+
+Semana 1-2: Auditoría del código actual y planificación detallada.
+Semana 3-5: Rediseño de backend, implementación de base de datos y optimización de rutas.
+Semana 6-7: Rediseño de frontend con enfoque en experiencia de usuario y diseño visual.
+Semana 8: Pruebas exhaustivas e iteración para resolver errores.
+Pruebas y ajustes:
+
+Realizar pruebas en escenarios reales para garantizar que Nevin maneja con precisión preguntas teológicas complejas.
+Recopilar comentarios de usuarios y ajustar el diseño y las funcionalidades según sea necesario.
+Resultado esperado: Nevin será una herramienta revolucionaria, confiable y visualmente atractiva que se convertirá en una guía espiritual para todo tipo de usuarios. Con este plan, la funcionalidad actual no solo será preservada, sino que también se optimizará para superar cualquier expectativa.
