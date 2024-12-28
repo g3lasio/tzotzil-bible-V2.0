@@ -73,11 +73,11 @@ class NevinService:
             logger.error(f"Error cargando índices FAISS: {str(e)}")
             logger.info("El sistema continuará funcionando con capacidades reducidas")
 
-    def process_query(self, question: str, user_id: int) -> Dict[str, Any]:
+    def process_query(self, question: str) -> Dict[str, Any]:
         """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
         try:
-            # Verificar cache
-            cache_key = f"{user_id}_{question}"
+            # Verificar cache usando solo la pregunta como clave
+            cache_key = question
             if cache_key in self.cache:
                 return self.cache[cache_key]
 

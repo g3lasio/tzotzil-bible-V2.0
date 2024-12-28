@@ -1,7 +1,5 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify, current_app
-from flask_login import login_required, current_user
-from extensions import db
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
@@ -26,21 +24,17 @@ def init_nevin_service(app):
         raise
 
 @nevin_bp.route('/')
-@login_required
 def nevin_page():
     """Renderiza la página principal de Nevin."""
     try:
-        username = current_user.username if current_user else 'Amigo'
         return render_template('nevin.html',
-                           welcome_message=f"¡Hola, {username}!",
-                           user_id=current_user.id if current_user else None)
+                           welcome_message="¡Hola! Soy Nevin, tu asistente bíblico.")
     except Exception as e:
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html',
                            error="Hubo un problema al cargar la página."), 500
 
 @nevin_bp.route('/query', methods=['POST'])
-@login_required
 def nevin_query():
     """Procesa consultas enviadas a Nevin."""
     try:
@@ -62,8 +56,8 @@ def nevin_query():
 
         logger.info(f"Procesando consulta: {question[:50]}...")
 
-        # Procesar la consulta de forma síncrona
-        response = nevin_service.process_query(question, current_user.id)
+        # Procesar la consulta sin user_id
+        response = nevin_service.process_query(question)
         return jsonify(response), 200
 
     except Exception as e:

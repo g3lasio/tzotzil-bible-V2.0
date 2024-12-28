@@ -82,5 +82,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.environ.get('PORT', 5000))
+    port = int(os.environ.get('PORT', 5000))  # Volviendo al puerto 5000 por defecto
     app.run(host='0.0.0.0', port=port, debug=True)
