@@ -20,15 +20,26 @@ logging.basicConfig(
               logging.FileHandler('app.log')])
 logger = logging.getLogger(__name__)
 
-
 def table_exists(engine, table_name):
     """Verifica si una tabla existe en la base de datos."""
-    inspector = inspect(engine)
-    return table_name in inspector.get_table_names()
-
+    try:
+        with engine.connect() as conn:
+            result = conn.execute(text(
+                """
+                SELECT EXISTS (
+                    SELECT FROM pg_tables
+                    WHERE schemaname = 'public'
+                    AND tablename = :table_name
+                )
+                """
+            ), {'table_name': table_name})
+            return result.scalar()
+    except Exception as e:
+        logger.error(f"Error verificando existencia de tabla {table_name}: {str(e)}")
+        return False
 
 class DatabaseManager:
-    """Gestor robusto de conexiones a base de datos con manejo de errores y caché distribuido"""
+    """Gestor robusto de conexiones a base de datos con manejo de errores"""
 
     def __init__(self):
         """Inicializa el gestor de base de datos."""
@@ -55,12 +66,10 @@ class DatabaseManager:
                     g.db_session = db.session
                     # Verificar la conexión inmediatamente
                     g.db_session.execute(text('SELECT 1')).scalar()
-                    logger.info(
-                        "Nueva sesión de base de datos creada y verificada")
+                    logger.info("Nueva sesión de base de datos creada y verificada")
                 return g.db_session
             except Exception as e:
-                logger.error(
-                    f"Error al obtener sesión de base de datos: {str(e)}")
+                logger.error(f"Error al obtener sesión de base de datos: {str(e)}")
                 logger.error(traceback.format_exc())
                 if hasattr(g, 'db_session'):
                     try:
@@ -93,38 +102,38 @@ class DatabaseManager:
                     raise Exception("Base de datos incompleta")
                 
                 logger.info(f"Base de datos verificada: {result.total_verses} versículos, {result.total_books} libros")
-
+                
                 logger.info("Iniciando inicialización de la base de datos...")
                 session = self.get_session()
-
+                
                 # Verificar conexión básica
                 session.execute(text('SELECT 1')).scalar()
                 logger.info("Conexión básica verificada")
-
+                
                 # Verificar existencia de tablas
                 tables_result = session.execute(
                     text("""
                     SELECT name 
-                    FROM sqlite_master 
-                    WHERE type='table' AND name='bibleverse'
+                    FROM pg_tables
+                    WHERE schemaname = 'public' AND tablename = 'bibleverse'
                 """)).fetchone()
-
+                
                 if not tables_result:
                     logger.error("Tabla 'bibleverse' no encontrada")
                     raise Exception("Tabla 'bibleverse' no encontrada")
                 logger.info("Estructura de tablas verificada")
-
+                
                 self._health_status.update({
                     'is_healthy': True,
                     'last_check': datetime.utcnow(),
                     'error': None,
                     'initialization_complete': True
                 })
-
+                
                 logger.info(
                     "Inicialización de base de datos completada exitosamente")
                 return self._health_status
-
+                
             except Exception as e:
                 error_msg = f"Error en la inicialización de la base de datos: {str(e)}"
                 logger.error(error_msg)
@@ -135,7 +144,7 @@ class DatabaseManager:
                     'last_check': datetime.utcnow()
                 })
                 return self._health_status
-
+    
     def check_health(self) -> Dict[str, Any]:
         """Verifica el estado de salud de la base de datos"""
         try:
@@ -146,34 +155,26 @@ class DatabaseManager:
             session.execute(text('SELECT 1')).scalar()
             response_time = time.time() - start_time
 
-            # Health check adaptado para SQLite
-            result = session.execute(
-                text("""
-                SELECT 
-                    (SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='bibleverse') as table_exists,
-                    (SELECT COUNT(*) FROM bibleverse) as total_records
-            """))
-            stats = result.fetchone()
+            # Verificar tablas esenciales
+            tables_check = session.execute(text("""
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public' 
+                AND table_name IN ('bibleverse', 'users', 'promise')
+            """)).fetchall()
+
+            tables_exist = len(tables_check) == 3
+            if not tables_exist:
+                missing_tables = {'bibleverse', 'users', 'promise'} - {t[0] for t in tables_check}
+                logger.warning(f"Tablas faltantes: {missing_tables}")
 
             health_status = {
                 'is_healthy': True,
                 'last_check': datetime.utcnow(),
                 'error': None,
                 'response_time': response_time,
-                'table_exists': bool(stats.table_exists),
-                'total_records': stats.total_records if stats else 0
+                'tables_status': tables_exist
             }
-
-            if not stats.table_exists:
-                health_status.update({
-                    'is_healthy': False,
-                    'error': "La tabla 'bibleverse' no existe"
-                })
-            elif stats.total_records < 31000:
-                health_status.update({
-                    'is_healthy': False,
-                    'error': f"Posible pérdida de datos ({stats.total_records} versículos)"
-                })
 
             self._health_status.update(health_status)
             return self._health_status
@@ -195,11 +196,9 @@ class DatabaseManager:
             logger.info("Iniciando consulta para obtener libros...")
 
             if not table_exists(db.engine, "bibleverse"):
-                raise Exception(
-                    "La tabla 'bibleverse' no existe en la base de datos.")
+                raise Exception("La tabla 'bibleverse' no existe en la base de datos.")
 
-            result = session.execute(
-                text("""
+            result = session.execute(text("""
                 SELECT DISTINCT book
                 FROM bibleverse
                 ORDER BY book
@@ -235,10 +234,10 @@ class DatabaseManager:
                     SELECT DISTINCT chapter 
                     FROM bibleverse 
                     WHERE book = :book 
-                    ORDER BY CAST(chapter AS INTEGER)
+                    ORDER BY chapter::integer
                 """
                 chapters_result = session.execute(text(chapters_query),
-                                                  {'book': book})
+                                                {'book': book})
                 chapters = [str(row[0]) for row in chapters_result]
 
                 return {
@@ -259,13 +258,13 @@ class DatabaseManager:
 
             if chapter is not None:
                 base_query += " AND chapter = :chapter"
-                params['chapter'] = chapter
+                params['chapter'] = str(chapter)
 
             if verse is not None:
                 base_query += " AND verse = :verse"
-                params['verse'] = verse
+                params['verse'] = str(verse)
 
-            base_query += " ORDER BY CAST(chapter AS INTEGER), CAST(verse AS INTEGER)"
+            base_query += " ORDER BY chapter::integer, verse::integer"
 
             result = session.execute(text(base_query), params)
             verses = []
@@ -325,23 +324,19 @@ class DatabaseManager:
 # Instancia global del gestor
 db_manager = DatabaseManager()
 
-
 def get_verses(book: str,
                chapter: Optional[int] = None,
                verse: Optional[int] = None) -> Dict:
     """Obtiene versículos según los parámetros especificados"""
     return db_manager.get_verses(book, chapter, verse)
 
-
 def get_books() -> Dict:
     """Obtiene la lista de libros de la base de datos"""
     return db_manager.get_books()
 
-
 def backup_database() -> bool:
     """Realiza una copia de seguridad de la base de datos"""
     return db_manager.backup_database()
-
 
 # Orden bíblico de los libros
 BIBLE_BOOKS_ORDER = [
@@ -358,7 +353,6 @@ BIBLE_BOOKS_ORDER = [
     '2 Pedro', '1 Juan', '2 Juan', '3 Juan', 'Judas', 'Apocalipsis'
 ]
 
-
 def get_sorted_books():
     """Obtiene lista de libros ordenados según el orden bíblico"""
     try:
@@ -369,12 +363,9 @@ def get_sorted_books():
 
         books = result['data']
         return sorted(books,
-                      key=lambda x: BIBLE_BOOKS_ORDER.index(x)
-                      if x in BIBLE_BOOKS_ORDER else 999)
+                     key=lambda x: BIBLE_BOOKS_ORDER.index(x)
+                     if x in BIBLE_BOOKS_ORDER else 999)
 
     except Exception as e:
         logger.error(f"Error en get_sorted_books: {str(e)}")
         return []
-
-
-

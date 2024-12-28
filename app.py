@@ -1,66 +1,70 @@
 """
 Aplicación principal Flask con manejo de base de datos
 """
-from flask import Flask, render_template
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
-from flask_migrate import Migrate
 import os
 import logging
+from flask import Flask, render_template
+from extensions import db, login_manager, migrate, init_extensions
+from sqlalchemy import text
 
 # Configuración básica de logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
-# Inicialización de extensiones
-db = SQLAlchemy()
-login_manager = LoginManager()
-migrate = Migrate()
-
 def create_app():
     """Crear y configurar la aplicación Flask"""
     logger.info("Iniciando creación de la aplicación Flask...")
     app = Flask(__name__)
-    logger.info("Aplicación Flask creada exitosamente")
 
     # Configuración básica
     app.config.update(
         SECRET_KEY=os.environ.get('FLASK_SECRET_KEY', 'default-secret-key'),
         SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
-        SQLALCHEMY_TRACK_MODIFICATIONS=False
+        SQLALCHEMY_TRACK_MODIFICATIONS=False,
+        SQLALCHEMY_ENGINE_OPTIONS={
+            'pool_pre_ping': True,
+            'pool_recycle': 300
+        }
     )
 
+    logger.info("Configuración cargada exitosamente")
+
     # Inicializar extensiones
-    db.init_app(app)
-    login_manager.init_app(app)
-    migrate.init_app(app, db)
+    if not init_extensions(app):
+        logger.error("Error al inicializar las extensiones")
+        raise RuntimeError("Failed to initialize extensions")
 
-    # Configurar login
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Por favor inicie sesión para acceder a esta página.'
-
+    # Importar modelos y configurar login_manager
     with app.app_context():
-        # Importar y registrar blueprints
+        from models import User
+
+        @login_manager.user_loader
+        def load_user(user_id):
+            return User.query.get(int(user_id))
+
+        # Registrar blueprints
         from routes import routes
-        from nevin_routes import nevin_bp
         from auth import auth
+        from nevin_routes import nevin_bp
 
         app.register_blueprint(routes)
-        app.register_blueprint(nevin_bp, url_prefix='/nevin')
         app.register_blueprint(auth, url_prefix='/auth')
+        app.register_blueprint(nevin_bp, url_prefix='/nevin')
 
-        # Crear tablas
+        # Verificar conexión a la base de datos
         try:
+            db.session.execute(text('SELECT 1'))
+            logger.info("Conexión a la base de datos verificada exitosamente")
+
+            # Crear tablas si no existen
             db.create_all()
-            logger.info("Base de datos inicializada correctamente")
-            # Verificar conexión
-            with db.engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
-                logger.info("Conexión a la base de datos verificada exitosamente")
+            logger.info("Tablas de la base de datos creadas/verificadas exitosamente")
+
         except Exception as e:
-            logger.error(f"Error al crear/verificar las tablas de la base de datos: {str(e)}")
+            logger.error(f"Error al inicializar la base de datos: {str(e)}")
             raise
 
+    # Manejadores de error
     @app.errorhandler(404)
     def not_found_error(error):
         return render_template('error.html', error="Página no encontrada"), 404
@@ -70,6 +74,7 @@ def create_app():
         db.session.rollback()
         return render_template('error.html', error="Error interno del servidor"), 500
 
+    logger.info("Aplicación Flask creada exitosamente")
     return app
 
 if __name__ == '__main__':

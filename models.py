@@ -1,10 +1,10 @@
-from app import db
+from extensions import db
 from datetime import datetime
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class User(UserMixin, db.Model):
-    """Modelo de usuario para autenticación y gestión de usuarios"""
+    """Modelo de usuario para autenticación"""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -23,7 +23,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
 class BibleVerse(db.Model):
-    """Modelo para versículos bíblicos en tzotzil y español"""
+    """Modelo para versículos bíblicos"""
     __tablename__ = 'bibleverse'
 
     id = db.Column(db.Integer, primary_key=True)
