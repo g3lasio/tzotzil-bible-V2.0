@@ -1,4 +1,3 @@
-from datetime import datetime
 import logging
 from flask import Blueprint, render_template, request, jsonify, current_app
 from flask_login import login_required, current_user
@@ -26,13 +25,6 @@ def init_nevin_service(app):
         logger.error(f"Error inicializando servicio Nevin: {str(e)}")
         raise
 
-@nevin_bp.before_app_request
-def ensure_nevin_service():
-    """Asegura que el servicio Nevin esté inicializado."""
-    global nevin_service
-    if nevin_service is None:
-        init_nevin_service(current_app)
-
 @nevin_bp.route('/')
 @login_required
 def nevin_page():
@@ -49,7 +41,7 @@ def nevin_page():
 
 @nevin_bp.route('/query', methods=['POST'])
 @login_required
-async def nevin_query():
+def nevin_query():
     """Procesa consultas enviadas a Nevin."""
     try:
         if not nevin_service:
@@ -69,7 +61,9 @@ async def nevin_query():
             }), 400
 
         logger.info(f"Procesando consulta: {question[:50]}...")
-        response = await nevin_service.process_query(question, current_user.id)
+
+        # Procesar la consulta de forma síncrona
+        response = nevin_service.process_query(question, current_user.id)
         return jsonify(response), 200
 
     except Exception as e:
