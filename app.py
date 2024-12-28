@@ -45,11 +45,14 @@ def create_app():
         # Registrar blueprints
         from routes import routes
         from auth import auth
-        from nevin_routes import nevin_bp
+        from nevin_routes import nevin_bp, init_nevin_service
 
         app.register_blueprint(routes)
         app.register_blueprint(auth, url_prefix='/auth')
         app.register_blueprint(nevin_bp, url_prefix='/nevin')
+
+        # Inicializar servicio Nevin
+        init_nevin_service(app)
 
         # Verificar conexión a la base de datos
         try:
