@@ -4,19 +4,12 @@ Centralized extensions configuration
 import os
 import time
 import logging
-import shutil
-import sqlite3
 from datetime import datetime
 from urllib.parse import urlparse
 from flask import request
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from flask_migrate import Migrate
-from flask_cors import CORS
-from flask_babel import Babel
-from flask_mail import Mail
 from sqlalchemy import text
-from tenacity import retry, stop_after_attempt, wait_exponential
 from dotenv import load_dotenv
 
 # Load environment variables
@@ -28,13 +21,10 @@ logger = logging.getLogger(__name__)
 
 # Initialize extensions without binding to app yet
 db = SQLAlchemy()
-login_manager = LoginManager()
 migrate = Migrate()
 
-@retry(stop=stop_after_attempt(3),
-       wait=wait_exponential(multiplier=1, min=4, max=10))
 def configure_database(app):
-    """Configura la base de datos con opciones optimizadas y reintentos."""
+    """Configura la base de datos con opciones optimizadas."""
     try:
         database_url = os.environ.get('DATABASE_URL')
         if not database_url:
@@ -98,36 +88,12 @@ def verify_database_connection(db_session):
         logger.error(error_msg)
         return False, error_msg
 
-def configure_login_manager(app):
-    """Configura el LoginManager con manejo de errores mejorado."""
-    try:
-        login_manager.init_app(app)
-        login_manager.login_view = 'auth.login'
-        login_manager.login_message = 'Por favor inicia sesión para acceder a esta página.'
-        login_manager.login_message_category = 'info'
-
-        from models import User
-
-        @login_manager.user_loader
-        def load_user(user_id):
-            return User.query.get(int(user_id))
-
-        logger.info("LoginManager configurado correctamente")
-        return True
-    except Exception as e:
-        logger.error(f"Error configurando LoginManager: {str(e)}")
-        return False
-
 def init_extensions(app):
     """Initialize Flask extensions"""
     try:
         # Initialize database
         if not configure_database(app):
             raise Exception("Error en la configuración de la base de datos")
-
-        # Initialize login manager
-        if not configure_login_manager(app):
-            raise Exception("Error en la configuración del login manager")
 
         # Initialize migrations
         migrate.init_app(app, db)

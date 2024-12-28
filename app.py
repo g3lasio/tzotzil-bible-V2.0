@@ -4,7 +4,7 @@ Aplicación principal Flask con manejo de base de datos
 import os
 import logging
 from flask import Flask, render_template
-from extensions import db, login_manager, migrate, init_extensions
+from extensions import db, init_extensions
 from sqlalchemy import text
 
 # Configuración básica de logging
@@ -34,38 +34,27 @@ def create_app():
         logger.error("Error al inicializar las extensiones")
         raise RuntimeError("Failed to initialize extensions")
 
-    # Importar modelos y configurar login_manager
-    with app.app_context():
-        from models import User
+    # Registrar blueprints
+    from routes import routes
+    from nevin_routes import nevin_bp, init_nevin_service
 
-        @login_manager.user_loader
-        def load_user(user_id):
-            return User.query.get(int(user_id))
+    app.register_blueprint(routes)
+    app.register_blueprint(nevin_bp, url_prefix='/nevin')
 
-        # Registrar blueprints
-        from routes import routes
-        from auth import auth
-        from nevin_routes import nevin_bp, init_nevin_service
+    # Inicializar servicio Nevin
+    init_nevin_service(app)
 
-        app.register_blueprint(routes)
-        app.register_blueprint(auth, url_prefix='/auth')
-        app.register_blueprint(nevin_bp, url_prefix='/nevin')
-
-        # Inicializar servicio Nevin
-        init_nevin_service(app)
-
-        # Verificar conexión a la base de datos
-        try:
+    # Verificar conexión a la base de datos
+    try:
+        with app.app_context():
             db.session.execute(text('SELECT 1'))
             logger.info("Conexión a la base de datos verificada exitosamente")
-
-            # Crear tablas si no existen
             db.create_all()
             logger.info("Tablas de la base de datos creadas/verificadas exitosamente")
 
-        except Exception as e:
-            logger.error(f"Error al inicializar la base de datos: {str(e)}")
-            raise
+    except Exception as e:
+        logger.error(f"Error al inicializar la base de datos: {str(e)}")
+        raise
 
     # Manejadores de error
     @app.errorhandler(404)
@@ -82,5 +71,5 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.environ.get('PORT', 5000))  # Volviendo al puerto 5000 por defecto
+    port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=True)
