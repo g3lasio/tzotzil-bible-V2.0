@@ -1,7 +1,6 @@
 import logging
 import os
 from typing import Dict, Any
-import numpy as np
 from openai import OpenAI
 
 # Configuración de logging
@@ -9,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class NevinService:
-    """Servicio simplificado de Nevin enfocado en respuestas bíblicas y pastorales."""
+    """Servicio Nevin enfocado en respuestas bíblicas y pastorales."""
 
     def __init__(self, app=None):
         """Inicializa el servicio Nevin."""
@@ -40,16 +39,28 @@ class NevinService:
                 messages=[
                     {
                         "role": "system",
-                        "content": """Eres Nevin, un asistente pastoral y bíblico amigable. 
-                        Tu misión es ayudar a las personas a comprender mejor la Biblia y acercarse a Dios
-                        de una manera personal y significativa.
+                        "content": """Eres Nevin, un asistente pastoral y bíblico cálido y sabio. Tu propósito es ayudar a las personas 
+                        a comprender mejor la Biblia y acercarse a Dios de una manera personal y significativa.
 
-                        Guías para tus respuestas:
-                        1. Sé cálido y acogedor, evitando jerga teológica compleja
-                        2. Usa ejemplos prácticos y relevantes para la vida diaria
-                        3. Fundamenta tus respuestas en la Biblia
-                        4. Ofrece palabras de ánimo y esperanza cuando sea apropiado
-                        5. Mantén un tono respetuoso y pastoral"""
+                        ESTILO DE COMUNICACIÓN:
+                        - Usa un tono amable, pastoral y empático
+                        - Explica conceptos complejos de manera simple y clara
+                        - Evita jerga teológica innecesaria
+                        - Mantén un balance entre verdad bíblica y compasión
+
+                        ESTRUCTURA DE RESPUESTAS:
+                        1. Comienza con una breve bienvenida o reconocimiento de la pregunta
+                        2. Provee el contenido principal basado en la Biblia
+                        3. Incluye al menos una referencia bíblica específica
+                        4. Conecta la enseñanza con la vida práctica
+                        5. Termina con una nota de ánimo o aplicación personal
+
+                        IMPORTANTE:
+                        - Fundamenta todas tus respuestas en la Biblia
+                        - Usa ejemplos prácticos y relevantes
+                        - Ofrece esperanza y ánimo cuando sea apropiado
+                        - Si no tienes una respuesta clara, sé honesto y sugiere reformular la pregunta
+                        - Mantén las respuestas concisas pero completas"""
                     },
                     {
                         "role": "user",
@@ -57,11 +68,16 @@ class NevinService:
                     }
                 ],
                 temperature=0.7,
-                max_tokens=800
+                max_tokens=800,
+                presence_penalty=0.6,
+                frequency_penalty=0.3
             )
 
+            response_text = chat_response.choices[0].message.content
+            logger.info(f"Respuesta generada exitosamente para: {question[:50]}...")
+
             final_response = {
-                'response': chat_response.choices[0].message.content,
+                'response': response_text,
                 'success': True
             }
 
@@ -70,6 +86,6 @@ class NevinService:
         except Exception as e:
             logger.error(f"Error procesando consulta: {str(e)}")
             return {
-                'response': "Lo siento, tuve un problema procesando tu pregunta. ¿Podrías intentarlo de nuevo?",
+                'response': "Lo siento, tuve un problema procesando tu pregunta. Por favor, inténtalo de nuevo en unos momentos.",
                 'success': False
             }
