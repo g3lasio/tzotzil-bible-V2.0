@@ -12,6 +12,7 @@ from cachetools import TTLCache, LRUCache
 from datetime import datetime, timedelta
 import asyncio
 from functools import lru_cache
+import pickle
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -74,7 +75,7 @@ class KnowledgeBaseManager:
     def _load_faiss_indexes(self):
         """Carga los índices FAISS desde el directorio de conocimiento."""
         try:
-            knowledge_dir = Path(self.faiss_index_path)
+            knowledge_dir = Path("Nevin_AI/nevin_knowledge")
             logger.info(f"Inicializando índices FAISS desde: {knowledge_dir}")
             
             if not knowledge_dir.exists():
@@ -102,10 +103,11 @@ class KnowledgeBaseManager:
 
                     self.faiss_indexes[base_name] = index
 
-                    data_file = index_file.with_suffix('.npy')
-                    if data_file.exists():
-                        self.faiss_data[base_name] = np.load(str(data_file),
-                                                             allow_pickle=True)
+                    pkl_file = index_file.with_suffix('.pkl')
+                    if pkl_file.exists():
+                        with open(str(pkl_file), 'rb') as f:
+                            self.faiss_data[base_name] = pickle.load(f)
+
 
                 except Exception as e:
                     logger.warning(

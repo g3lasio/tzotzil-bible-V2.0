@@ -78,14 +78,15 @@ class NevinService:
         """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
         try:
             # Buscar contenido relevante de EGW
-            egw_content = asyncio.run(self.search_egw_content(question))
+            kb_manager = KnowledgeBaseManager()
+            results = kb_manager.search_knowledge_base(question, top_k=3)
             
             # Preparar contexto con citas de EGW
             egw_context = ""
-            if egw_content:
+            if results:
                 egw_context = "\n\nReferencias de Elena G. White relevantes:\n"
-                for content in egw_content[:2]:  # Usar las 2 citas más relevantes
-                    egw_context += f"- {content['content']} ({content['source']})\n"
+                for result in results:  # Usar las 3 citas más relevantes
+                    egw_context += f"- {result['content']} ({result.get('metadata', {}).get('source', 'Unknown')})\n"
 
             # Generar respuesta con GPT-4
             chat_response = self.client.chat.completions.create(
