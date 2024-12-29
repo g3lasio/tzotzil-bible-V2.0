@@ -71,14 +71,20 @@ class NevinChat {
 
     async showWelcomeMessage() {
         const username = localStorage.getItem("username");
+        const hour = new Date().getHours();
         let welcomeText = "";
 
         if (username && username !== "null") {
-            const hour = new Date().getHours();
-            let timeGreeting = hour < 12 ? "buenos días" : hour < 18 ? "buenas tardes" : "buenas noches";
-            welcomeText = `¡${timeGreeting}, ${username}! Me alegra verte de nuevo. ¿En qué puedo ayudarte hoy?`;
+            const greetings = [
+                "¡Me alegra verte de nuevo",
+                "¡Qué gusto tenerte de vuelta",
+                "¡Bienvenido nuevamente",
+                "¡Es un placer verte otra vez"
+            ];
+            const randomGreeting = greetings[Math.floor(Math.random() * greetings.length)];
+            welcomeText = `${randomGreeting}, ${username}! ¿En qué puedo ayudarte hoy?`;
         } else {
-            welcomeText = `Hola, soy Nevin, tu asistente bíblico personal. Para brindarte una experiencia más personalizada, ¿podrías decirme tu nombre?`;
+            welcomeText = `¡Hola! Soy Nevin, tu asistente bíblico personal. Para brindarte una experiencia más personalizada, ¿podrías decirme tu nombre?`;
         }
 
         await this.showTransformationMessage(welcomeText);
