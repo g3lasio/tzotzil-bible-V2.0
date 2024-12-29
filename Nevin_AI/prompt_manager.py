@@ -4,6 +4,7 @@ from typing import Dict, Any
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 class PromptManager:
     """Gestor simplificado de prompts."""
 
@@ -46,10 +47,13 @@ Tu propósito es ser un compañero espiritual que no solo informa, sino que cone
         """Genera una respuesta estructurada."""
         try:
             from azure_openai_config import openai_config
-            messages = [
-                {"role": "system", "content": self.base_prompt},
-                {"role": "user", "content": content}
-            ]
+            messages = [{
+                "role": "system",
+                "content": self.base_prompt
+            }, {
+                "role": "user",
+                "content": content
+            }]
 
             # Detectar estado emocional y ajustar temperatura
             emotional_content = self._detect_emotional_content(content)
@@ -62,8 +66,7 @@ Tu propósito es ser un compañero espiritual que no solo informa, sino que cone
                 presence_penalty=0.8,
                 frequency_penalty=0.7,
                 max_tokens=1500,
-                top_p=0.98
-            )
+                top_p=0.98)
             return response.choices[0].message.content
         except Exception as e:
             logger.error(f"Error generando respuesta: {str(e)}")
@@ -77,7 +80,13 @@ Tu propósito es ser un compañero espiritual que no solo informa, sino que cone
         emotional_keywords = [
             'triste', 'feliz', 'preocupado', 'ansioso', 'alegre', 'deprimido',
             'angustiado', 'emocionado', 'asustado', 'confundido', 'solo',
-            'frustrado', 'enojado', 'desesperado', 'esperanzado', 'agradecido'
+            'frustrado', 'enojado', 'desesperado', 'esperanzado', 'agradecido',
+            'nostálgico', 'culpable', 'entusiasmado', 'abrumado', 'perdido',
+            'satisfecho', 'amado', 'inseguro', 'motivado', 'calmado',
+            'aliviado', 'exaltado', 'reconfortado', 'melancólico', 'inspirado',
+            'desanimado', 'desilusionado', 'orgulloso', 'avergonzado',
+            'envidioso', 'entendido', 'retraído', 'optimista', 'empático',
+            'indiferente'
         ]
 
         text_lower = text.lower()
