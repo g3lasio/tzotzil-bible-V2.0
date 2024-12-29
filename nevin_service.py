@@ -4,6 +4,7 @@ import asyncio
 from typing import Dict, Any, List
 from openai import OpenAI
 from Nevin_AI.knowledge_base_manager import KnowledgeBaseManager
+import json
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
@@ -16,6 +17,7 @@ class NevinService:
         """Inicializa el servicio Nevin."""
         self.app = app
         self.client = None
+        self.principles_path = "Nevin_AI/data/principios_de_interpretacion.json"
 
         try:
             # Verificar y obtener API key
@@ -27,6 +29,36 @@ class NevinService:
             # Inicializar cliente OpenAI
             self.client = OpenAI(api_key=api_key)
             logger.info("Servicio Nevin inicializado correctamente")
+
+            # Load principles
+            with open(self.principles_path, 'r') as f:
+                self.principles = json.load(f)
+                self.principles_context = "\n\nPrincipios de Interpretación:\n" + "\n".join([f"- {p}" for p in self.principles])
+            
+            self.system_context = """Eres Nevin, un asistente pastoral y bíblico cálido y sabio que valora la concisión. Tu propósito es ayudar a las personas 
+                        a comprender mejor la Biblia de manera clara y concisa. SIEMPRE debes incluir al menos una cita relevante de Elena G. White 
+                        cuando respondas, usando el contexto proporcionado. 
+                        a comprender mejor la Biblia de manera clara y concisa.
+
+                        ESTILO DE COMUNICACIÓN:
+                        - Usa un tono amable y empático
+                        - Sé breve y directo
+                        - Prioriza claridad sobre extensión
+                        - Adapta la longitud según la complejidad de la pregunta
+
+                        ESTRUCTURA DE RESPUESTAS:
+                        1. Saludo breve
+                        2. Respuesta directa con base bíblica
+                        3. Una referencia bíblica clave
+                        4. Aplicación práctica concisa
+                        5. Cierre breve y motivador
+
+                        IMPORTANTE:
+                        - Mantén respuestas cortas (máximo 3-4 oraciones por punto)
+                        - Expande solo si el usuario pide más detalles
+                        - Usa un ejemplo bíblico principal en lugar de varios
+                        - Enfócate en el punto central de la pregunta
+                        - Sé preciso y memorable"""
 
         except Exception as e:
             logger.error(f"Error en la inicialización de NevinService: {str(e)}")
@@ -61,34 +93,11 @@ class NevinService:
                 messages=[
                     {
                         "role": "system",
-                        "content": """Eres Nevin, un asistente pastoral y bíblico cálido y sabio que valora la concisión. Tu propósito es ayudar a las personas 
-                        a comprender mejor la Biblia de manera clara y concisa. SIEMPRE debes incluir al menos una cita relevante de Elena G. White 
-                        cuando respondas, usando el contexto proporcionado. 
-                        a comprender mejor la Biblia de manera clara y concisa.
-
-                        ESTILO DE COMUNICACIÓN:
-                        - Usa un tono amable y empático
-                        - Sé breve y directo
-                        - Prioriza claridad sobre extensión
-                        - Adapta la longitud según la complejidad de la pregunta
-
-                        ESTRUCTURA DE RESPUESTAS:
-                        1. Saludo breve
-                        2. Respuesta directa con base bíblica
-                        3. Una referencia bíblica clave
-                        4. Aplicación práctica concisa
-                        5. Cierre breve y motivador
-
-                        IMPORTANTE:
-                        - Mantén respuestas cortas (máximo 3-4 oraciones por punto)
-                        - Expande solo si el usuario pide más detalles
-                        - Usa un ejemplo bíblico principal en lugar de varios
-                        - Enfócate en el punto central de la pregunta
-                        - Sé preciso y memorable"""
+                        "content": self.system_context + self.principles_context
                     },
                     {
                         "role": "user",
-                        "content": question
+                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context if egw_content else ' No se encontraron citas específicas, pero debes responder basándote en principios bíblicos y el espíritu de los escritos de Elena G. White.'}"
                     }
                 ],
                 temperature=0.8,
