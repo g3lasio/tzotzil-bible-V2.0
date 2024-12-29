@@ -32,7 +32,7 @@ class NevinService:
             self.client = OpenAI(api_key=api_key)
 
             # Inicializar componentes de procesamiento
-            self.interpretation_engine = InterpretationEngine()
+            self.interpretation_engine = InterpretationEngine(self.principles_path)
             self.response_manager = EnhancedResponseManager(self.interpretation_engine)
 
             # Cargar principios
