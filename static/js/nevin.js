@@ -159,11 +159,12 @@ class NevinChat {
                 /__([^_]+?)__\s*-\s*([^_]+?)(?=\s*(?:__|$|\*|\())/g,
                 (match, reference, content) => {
                     console.log("Referencia bíblica:", { reference, content });
-                    return `<div class="verse-box" onclick="window.handleVerseClick('${reference.trim()}')">
-                    <div class="verse-content">${content.trim()}</div>
-                    <div class="verse-reference">${reference.trim()}</div>
-                </div>`;
-                },
+                    return `<div class="verse-box nevin-box-glow" onclick="window.handleVerseClick('${reference.trim()}')">
+                        <div class="verse-content">${content.trim()}</div>
+                        <div class="verse-reference">${reference.trim()}</div>
+                        <div class="verse-box-background"></div>
+                    </div>`;
+                }
             );
 
             // Referencias de EGW (entre *)
@@ -171,11 +172,12 @@ class NevinChat {
                 /\*([^*]+?)\*\s*-\s*([^*]+?)(?=\s*(?:\*|$|__|$|\())/g,
                 (match, source, content) => {
                     console.log("Referencia EGW:", { source, content });
-                    return `<div class="egw-box">
-                    <div class="egw-content">${content.trim()}</div>
-                    <div class="egw-reference">${source.trim()}</div>
-                </div>`;
-                },
+                    return `<div class="egw-box nevin-box-glow">
+                        <div class="egw-content">${content.trim()}</div>
+                        <div class="egw-reference">${source.trim()}</div>
+                        <div class="egw-box-background"></div>
+                    </div>`;
+                }
             );
 
             // Referencias teológicas (entre paréntesis)
