@@ -300,10 +300,19 @@ class NevinChat {
         const sendButton = document.getElementById("send-button");
         const message = inputField?.value.trim();
         const chatHistory = document.getElementById("chat-history");
+        const suggestionsContainer = document.getElementById("suggestions-container");
 
         if (!message || this.state.isProcessing) {
             console.log("Mensaje vacío o el sistema está ocupado.");
             return;
+        }
+
+        // Hide suggestions and clear chat
+        if (suggestionsContainer) {
+            suggestionsContainer.style.display = "none";
+        }
+        if (chatHistory) {
+            chatHistory.innerHTML = "";
         }
 
         if (!chatHistory) {
