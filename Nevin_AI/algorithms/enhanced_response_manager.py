@@ -59,6 +59,12 @@ class EnhancedResponseManager:
                 return state
         return "neutral"
 
+    def _format_box(self, title: str, content: str) -> str:
+        return f'<div class="nevin-box"><strong>{title}:</strong><br>{content}</div>'
+
+    def _format_bullets(self, items: list) -> str:
+        return "\n".join([f'<div class="nevin-bullet">{item}</div>' for item in items])
+
     def _format_response_by_context(self, interpretation: Dict[str, Any], emotional_state: str) -> str:
         """
         Formatea la respuesta según el contexto emocional.
@@ -82,11 +88,15 @@ class EnhancedResponseManager:
         # Construir respuesta estructurada
         if self.conversation_context["conversation_depth"] > 1:
             # Para conversaciones más profundas, usar un formato más personal
+            insight = self._generate_personal_insight(interpretation)
+            meditation_points = self._generate_meditation_points(interpretation).split('\n')
+            
             response = (
-                f"{intro}"
-                f"{self._generate_personal_insight(interpretation)}\n\n"
-                f"💭 **Reflexión:**\n{interpretation.get('principios', 'Sin principios disponibles')}\n\n"
-                f"💡 **Para meditar:**\n{self._generate_meditation_points(interpretation)}"
+                f"{intro}\n\n"
+                f"{self._format_box('Perspectiva', insight)}\n"
+                f"{self._format_box('Reflexión', interpretation.get('principios', 'Sin principios disponibles'))}\n"
+                f"<strong>Para meditar:</strong>\n"
+                f"{self._format_bullets(meditation_points)}"
             )
         else:
             # Para primeras interacciones, mantener un formato más estructurado

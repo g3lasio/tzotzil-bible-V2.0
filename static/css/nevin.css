@@ -766,3 +766,38 @@ header {
     height: 24px;
     fill: var(--text-highlight);
 }
+
+.nevin-response {
+    background-color: var(--response-bg);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nevin-bullet {
+    position: relative;
+    padding-left: 20px;
+    margin: 8px 0;
+}
+
+.nevin-bullet:before {
+    content: "•";
+    color: var(--primary);
+    position: absolute;
+    left: 0;
+}
+
+.nevin-box {
+    background-color: rgba(var(--primary-rgb), 0.1);
+    border-left: 4px solid var(--primary);
+    padding: 15px;
+    margin: 10px 0;
+    border-radius: 0 5px 5px 0;
+}
+
+.nevin-highlight {
+    background-color: rgba(var(--primary-rgb), 0.15);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
