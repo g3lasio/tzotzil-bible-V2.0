@@ -256,9 +256,13 @@ class KnowledgeBaseManager:
                             for i, (distance, idx) in enumerate(zip(D[0], I[0])):
                                 if idx < len(data) and distance < threshold:
                                     score = 1.0 - (distance / 2.0)
+                                    content = str(data[idx])
+                                    # Verificar si el contenido es un UUID
+                                    if len(content) == 36 and '-' in content:
+                                        continue
                                     results.append({
-                                        'content': str(data[idx]),
-                                        'source': source,
+                                        'content': content,
+                                        'source': f"{source}/{index_name}",
                                         'index': index_name,
                                         'score': float(score),
                                         'type': 'theological'

@@ -143,7 +143,9 @@ class NevinService:
 
         egw_context = "\n\nReferencias de Elena G. White relevantes:\n"
         for result in results[:3]:
-            egw_context += f"- {result['content']} ({result.get('metadata', {}).get('source', 'Unknown')})\n"
+            if isinstance(result['content'], str) and len(result['content'].strip()) > 0:
+                source_info = result.get('source', 'Desconocido')
+                egw_context += f"- {result['content']} ({source_info})\n"
         return egw_context
 
     def _combine_responses(self, base_response: str, enhanced_response: str) -> str:
