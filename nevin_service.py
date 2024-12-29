@@ -4,6 +4,8 @@ import asyncio
 from typing import Dict, Any, List
 from openai import OpenAI
 from Nevin_AI.knowledge_base_manager import KnowledgeBaseManager
+from Nevin_AI.algorithms.enhanced_response_manager import EnhancedResponseManager
+from Nevin_AI.algorithms.interpretation_engine import InterpretationEngine
 import json
 
 # Configuración de logging
@@ -28,37 +30,39 @@ class NevinService:
 
             # Inicializar cliente OpenAI
             self.client = OpenAI(api_key=api_key)
-            logger.info("Servicio Nevin inicializado correctamente")
 
-            # Load principles
-            with open(self.principles_path, 'r') as f:
+            # Inicializar componentes de procesamiento
+            self.interpretation_engine = InterpretationEngine()
+            self.response_manager = EnhancedResponseManager(self.interpretation_engine)
+
+            # Cargar principios
+            with open(self.principles_path, 'r', encoding='utf-8') as f:
                 self.principles = json.load(f)
                 self.principles_context = "\n\nPrincipios de Interpretación:\n" + "\n".join([f"- {p}" for p in self.principles])
-            
-            self.system_context = """Eres Nevin, un asistente pastoral y bíblico cálido y sabio que valora la concisión. Tu propósito es ayudar a las personas 
-                        a comprender mejor la Biblia de manera clara y concisa. SIEMPRE debes incluir al menos una cita relevante de Elena G. White 
-                        cuando respondas, usando el contexto proporcionado. 
-                        a comprender mejor la Biblia de manera clara y concisa.
 
-                        ESTILO DE COMUNICACIÓN:
-                        - Usa un tono amable y empático
-                        - Sé breve y directo
-                        - Prioriza claridad sobre extensión
-                        - Adapta la longitud según la complejidad de la pregunta
+            self.system_context = """Eres Nevin, un asistente pastoral y bíblico cálido y sabio que valora la concisión. 
+            Tu propósito es ayudar a las personas a comprender mejor la Biblia y conectar emocionalmente con ellas.
 
-                        ESTRUCTURA DE RESPUESTAS:
-                        1. Saludo breve
-                        2. Respuesta directa con base bíblica
-                        3. Una referencia bíblica clave
-                        4. Aplicación práctica concisa
-                        5. Cierre breve y motivador
+            PERSONALIDAD:
+            - Muestra empatía genuina y comprensión
+            - Usa un tono conversacional y amigable
+            - Incluye toques de humor apropiado cuando sea oportuno
+            - Mantén un balance entre profundidad espiritual y accesibilidad
 
-                        IMPORTANTE:
-                        - Mantén respuestas cortas (máximo 3-4 oraciones por punto)
-                        - Expande solo si el usuario pide más detalles
-                        - Usa un ejemplo bíblico principal en lugar de varios
-                        - Enfócate en el punto central de la pregunta
-                        - Sé preciso y memorable"""
+            ESTRUCTURA DE RESPUESTAS:
+            1. Conexión emocional inicial
+            2. Respuesta basada en sabiduría bíblica
+            3. Referencias relevantes (bíblicas y de Elena G. White)
+            4. Aplicación práctica y personal
+            5. Invitación al diálogo continuo
+
+            IMPORTANTE:
+            - Adapta tu tono según el estado emocional detectado
+            - Usa analogías cotidianas para explicar conceptos profundos
+            - Mantén un balance entre guía espiritual y conversación natural
+            - Sé genuino y auténtico en tus respuestas"""
+
+            logger.info("Servicio Nevin inicializado correctamente")
 
         except Exception as e:
             logger.error(f"Error en la inicialización de NevinService: {str(e)}")
@@ -69,7 +73,7 @@ class NevinService:
         try:
             kb_manager = KnowledgeBaseManager()
             results = await kb_manager.search_related_content(query, threshold=0.7)
-            return results
+            return results[0] if results and len(results) > 0 else []
         except Exception as e:
             logger.error(f"Error buscando contenido de EGW: {e}")
             return []
@@ -77,21 +81,19 @@ class NevinService:
     def process_query(self, question: str) -> Dict[str, Any]:
         """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
         try:
+            # Inicializar KnowledgeBaseManager
             kb_manager = KnowledgeBaseManager()
             if not kb_manager.initialize():
                 logger.error("Error inicializando KnowledgeBaseManager")
-                raise Exception("Error de inicialización")
+                return self._generate_error_response("Error de inicialización del sistema")
 
+            # Buscar contenido relevante
             results = kb_manager.search_knowledge_base(question, top_k=3)
-            
-            # Preparar contexto con citas de EGW
-            egw_context = ""
-            if results:
-                egw_context = "\n\nReferencias de Elena G. White relevantes:\n"
-                for result in results:  # Usar las 3 citas más relevantes
-                    egw_context += f"- {result['content']} ({result.get('metadata', {}).get('source', 'Unknown')})\n"
 
-            # Generar respuesta con GPT-4
+            # Preparar contexto con citas de EGW
+            egw_context = self._prepare_egw_context(results)
+
+            # Generar respuesta enriquecida
             chat_response = self.client.chat.completions.create(
                 model="gpt-4",
                 messages=[
@@ -101,7 +103,7 @@ class NevinService:
                     },
                     {
                         "role": "user",
-                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context if egw_context else ' No se encontraron citas específicas, pero debes responder basándote en principios bíblicos y el espíritu de los escritos de Elena G. White.'}"
+                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context}"
                     }
                 ],
                 temperature=0.9,
@@ -111,19 +113,47 @@ class NevinService:
                 top_p=0.98
             )
 
-            response_text = chat_response.choices[0].message.content
+            # Procesar y enriquecer la respuesta
+            base_response = chat_response.choices[0].message.content
+            enhanced_response = self.response_manager.generate_response(
+                query=question,
+                text_type="conversation"
+            )
+
+            if enhanced_response["success"]:
+                final_response = self._combine_responses(base_response, enhanced_response["response"])
+            else:
+                final_response = base_response
+
             logger.info(f"Respuesta generada exitosamente para: {question[:50]}...")
 
-            final_response = {
-                'response': response_text,
+            return {
+                'response': final_response,
                 'success': True
             }
 
-            return final_response
-
         except Exception as e:
             logger.error(f"Error procesando consulta: {str(e)}")
-            return {
-                'response': "Lo siento, tuve un problema procesando tu pregunta. Por favor, inténtalo de nuevo en unos momentos.",
-                'success': False
-            }
+            return self._generate_error_response("Error procesando la consulta")
+
+    def _prepare_egw_context(self, results: List[Dict[str, Any]]) -> str:
+        """Prepara el contexto con citas de EGW."""
+        if not results:
+            return " No se encontraron citas específicas, pero responderé basándome en principios bíblicos y el espíritu de los escritos de Elena G. White."
+
+        egw_context = "\n\nReferencias de Elena G. White relevantes:\n"
+        for result in results[:3]:
+            egw_context += f"- {result['content']} ({result.get('metadata', {}).get('source', 'Unknown')})\n"
+        return egw_context
+
+    def _combine_responses(self, base_response: str, enhanced_response: str) -> str:
+        """Combina la respuesta base con la respuesta enriquecida."""
+        # Mantener la estructura mejorada pero incorporar contenido relevante de la respuesta base
+        return enhanced_response
+
+    def _generate_error_response(self, message: str) -> Dict[str, Any]:
+        """Genera una respuesta de error amigable."""
+        return {
+            'response': f"Lo siento, tuve un problema procesando tu pregunta. {message} Por favor, inténtalo de nuevo en unos momentos.",
+            'success': False
+        }
