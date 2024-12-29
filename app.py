@@ -46,9 +46,11 @@ def create_app():
     # Registrar blueprints
     from routes import routes
     from nevin_routes import nevin_bp, init_nevin_service
+    from auth import auth
 
     app.register_blueprint(routes)
     app.register_blueprint(nevin_bp, url_prefix='/nevin')
+    app.register_blueprint(auth)
 
     # Inicializar servicio Nevin
     try:
