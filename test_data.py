@@ -1,3 +1,4 @@
+
 from flask import Flask
 from models import User, BibleVerse
 from extensions import db
@@ -21,9 +22,7 @@ def create_test_data():
             # Create test user
             test_user = User(
                 username="testuser",
-                email="test@example.com",
-                first_name="Test",
-                last_name="User"
+                email="test@example.com"
             )
             test_user.set_password("Test@123456")
             db.session.add(test_user)
