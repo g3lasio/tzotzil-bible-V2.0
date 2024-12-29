@@ -8,6 +8,7 @@ import faiss
 import numpy as np
 from openai import OpenAI
 from document_processor import DocumentProcessor
+import asyncio
 
 # Configuración de logging
 logging.basicConfig(
@@ -28,6 +29,7 @@ class KnowledgeBaseManager:
         self.knowledge_dir = Path(knowledge_dir)
         self.document_processor = DocumentProcessor()
         self.faiss_indexes = {}
+        self.egw_index = None # Added to store EG White index specifically
         self._load_faiss_indexes()
         logger.info(f"Gestor de base de conocimientos inicializado desde: {knowledge_dir}")
 
@@ -44,7 +46,10 @@ class KnowledgeBaseManager:
             for faiss_file in faiss_files:
                 try:
                     index = faiss.read_index(str(faiss_file))
-                    self.faiss_indexes[faiss_file.stem] = index
+                    if "egw" in faiss_file.stem.lower(): # Identify EG White index
+                        self.egw_index = index
+                    else:
+                        self.faiss_indexes[faiss_file.stem] = index
                     logger.info(f"Índice FAISS cargado: {faiss_file.name}")
                 except Exception as e:
                     logger.error(f"Error cargando índice {faiss_file}: {e}")
@@ -66,7 +71,7 @@ class KnowledgeBaseManager:
             Lista combinada de resultados más relevantes
         """
         try:
-            # Generar embedding para la consulta
+            # Generate embedding for the query.
             query_embedding = self._generate_embedding(query)
             if not query_embedding:
                 logger.error("No se pudo generar embedding para la consulta")
@@ -75,15 +80,13 @@ class KnowledgeBaseManager:
             all_results = []
             query_vector = np.array([query_embedding]).astype('float32')
 
+            # Search in all indexes except EG White index.
             for index_name, index in self.faiss_indexes.items():
                 try:
-                    # Realizar búsqueda en el índice actual
                     D, I = index.search(query_vector, top_k)
-                    
-                    # Procesar resultados
                     for distance, idx in zip(D[0], I[0]):
-                        if idx != -1:  # -1 indica resultado no válido
-                            score = 1.0 / (1.0 + distance)  # Convertir distancia a score
+                        if idx != -1:
+                            score = 1.0 / (1.0 + distance)
                             content = self._get_content_by_id(index_name, idx)
                             if content:
                                 result = {
@@ -96,12 +99,35 @@ class KnowledgeBaseManager:
                                     'score': float(score)
                                 }
                                 all_results.append(result)
-                            
+
                 except Exception as e:
                     logger.error(f"Error buscando en índice {index_name}: {e}")
                     continue
 
-            # Ordenar resultados por score y tomar los top_k mejores
+            # Search specifically in EG White index and prioritize results.
+            if self.egw_index:
+                try:
+                    D, I = self.egw_index.search(query_vector, top_k)
+                    for distance, idx in zip(D[0], I[0]):
+                        if idx != -1:
+                            score = 1.0 / (1.0 + distance) * 1.5 # Prioritize EG White results
+                            content = self._get_content_by_id("egw", idx) # Explicitly use "egw"
+                            if content:
+                                result = {
+                                    'content': content,
+                                    'metadata': {
+                                        'source': "egw",
+                                        'index_id': int(idx),
+                                        'type': "egw"
+                                    },
+                                    'score': float(score)
+                                }
+                                all_results.insert(0, result) # Insert at the beginning
+
+                except Exception as e:
+                    logger.error(f"Error buscando en índice EG White: {e}")
+                    
+
             sorted_results = sorted(all_results, key=lambda x: x['score'], reverse=True)
             return sorted_results[:top_k]
 
@@ -164,37 +190,33 @@ class KnowledgeBaseManager:
             logger.error(f"Error generando embedding: {e}")
             return None
 
-    def search_knowledge_base(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        """
-        Busca en la base de conocimientos.
-        
-        Args:
-            query: Consulta a buscar
-            top_k: Número de resultados a retornar
-            
-        Returns:
-            Lista de resultados más relevantes
-        """
+    async def _generate_embedding_async(self, text: str) -> Optional[List[float]]:
+        """Genera embedding usando OpenAI de forma asíncrona con caché."""
         try:
-            # Generar embedding para la consulta
-            query_embedding = self._generate_embedding(query)
+            # Normalizar texto para mejor búsqueda
+            text = text.lower().strip()
             
-            if not query_embedding:
-                logger.warning("No se pudo generar embedding para la consulta")
-                return []
-            
-            # Realizar búsqueda en Pinecone
-            results = self.index.query(
-                vector=query_embedding,
-                top_k=top_k,
-                include_metadata=True
+            # Verificar caché (assuming self.embeddings_cache is defined elsewhere)
+            if text in self.embeddings_cache:
+                return self.embeddings_cache[text]
+
+            response = await asyncio.to_thread(
+                self.client.embeddings.create,
+                model="text-embedding-ada-002",
+                input=text
             )
-            
-            return results['matches'] if 'matches' in results else []
-            
+
+            if not response.data:
+                return None
+
+            embedding = response.data[0].embedding
+            self.embeddings_cache[text] = embedding
+            return embedding
+
         except Exception as e:
-            logger.error(f"Error en búsqueda: {e}")
-            return []
+            logger.error(f"Error generando embedding: {e}")
+            return None
+
 
 def main():
     """Función principal para pruebas."""

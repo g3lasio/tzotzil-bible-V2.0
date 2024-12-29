@@ -30,9 +30,29 @@ class NevinService:
             logger.error(f"Error en la inicialización de NevinService: {str(e)}")
             raise
 
+    async def search_egw_content(self, query: str) -> List[Dict[str, Any]]:
+        """Busca contenido relevante en los escritos de EGW."""
+        try:
+            kb_manager = KnowledgeBaseManager()
+            results = await kb_manager.search_related_content(query, threshold=0.7)
+            return results
+        except Exception as e:
+            logger.error(f"Error buscando contenido de EGW: {e}")
+            return []
+
     def process_query(self, question: str) -> Dict[str, Any]:
         """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
         try:
+            # Buscar contenido relevante de EGW
+            egw_content = asyncio.run(self.search_egw_content(question))
+            
+            # Preparar contexto con citas de EGW
+            egw_context = ""
+            if egw_content:
+                egw_context = "\n\nReferencias de Elena G. White relevantes:\n"
+                for content in egw_content[:2]:  # Usar las 2 citas más relevantes
+                    egw_context += f"- {content['content']} ({content['source']})\n"
+
             # Generar respuesta con GPT-4
             chat_response = self.client.chat.completions.create(
                 model="gpt-4",
@@ -40,6 +60,8 @@ class NevinService:
                     {
                         "role": "system",
                         "content": """Eres Nevin, un asistente pastoral y bíblico cálido y sabio que valora la concisión. Tu propósito es ayudar a las personas 
+                        a comprender mejor la Biblia de manera clara y concisa. SIEMPRE debes incluir al menos una cita relevante de Elena G. White 
+                        cuando respondas, usando el contexto proporcionado. 
                         a comprender mejor la Biblia de manera clara y concisa.
 
                         ESTILO DE COMUNICACIÓN:
