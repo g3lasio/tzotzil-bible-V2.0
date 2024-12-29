@@ -137,7 +137,7 @@ class NevinChat {
             // Referencias bíblicas (entre __)
             formattedText = formattedText.replace(/__([^_]+?)__\s*-\s*([^_]+?)(?=\s*(?:__|$|\*|\())/g, (match, reference, content) => {
                 console.log('Referencia bíblica:', { reference, content });
-                return `<div class="verse-box">
+                return `<div class="verse-box" onclick="window.handleVerseClick('${reference.trim()}')">
                     <div class="verse-content">${content.trim()}</div>
                     <div class="verse-reference">${reference.trim()}</div>
                 </div>`;
@@ -400,3 +400,17 @@ window.sendMessage = () => nevinChat.sendMessage();
 window.startNewChat = () => nevinChat.startNewChat();
 window.goHome = () => nevinChat.goHome();
 window.showChatHistory = () => nevinChat.showChatHistory();
+
+window.handleVerseClick = (reference) => {
+    // Extrae el libro y versículo
+    const parts = reference.split(' ');
+    const chapter = parts[parts.length - 1].split(':')[0];
+    const verse = parts[parts.length - 1].split(':')[1];
+    let book = parts.slice(0, -1).join(' ');
+    
+    // Construye la URL
+    const url = `/chapter/${encodeURIComponent(book)}/${chapter}#verse-${verse}`;
+    
+    // Abre en una nueva pestaña
+    window.open(url, '_blank');
+};
