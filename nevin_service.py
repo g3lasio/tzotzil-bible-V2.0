@@ -77,8 +77,11 @@ class NevinService:
     def process_query(self, question: str) -> Dict[str, Any]:
         """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
         try:
-            # Buscar contenido relevante de EGW
             kb_manager = KnowledgeBaseManager()
+            if not kb_manager.initialize():
+                logger.error("Error inicializando KnowledgeBaseManager")
+                raise Exception("Error de inicialización")
+
             results = kb_manager.search_knowledge_base(question, top_k=3)
             
             # Preparar contexto con citas de EGW

@@ -170,6 +170,45 @@ class KnowledgeBaseManager:
             finally:
                 self.processing_queue.task_done()
 
+    def search_knowledge_base(self, query: str, top_k: int = 3) -> List[Dict[str, Any]]:
+        """Busca en la base de conocimientos de forma síncrona."""
+        try:
+            if not self.faiss_indexes:
+                logger.info("No hay índices FAISS disponibles")
+                return []
+
+            # Generar embedding de forma síncrona
+            response = self.client.embeddings.create(
+                model="text-embedding-ada-002",
+                input=query)
+            
+            query_embedding = response.data[0].embedding
+            query_vector = np.array(query_embedding).reshape(1, -1).astype('float32')
+
+            results = []
+            for index_name, index in self.faiss_indexes.items():
+                try:
+                    D, I = index.search(query_vector, top_k)
+                    if index_name in self.faiss_data:
+                        data = self.faiss_data[index_name]
+                        for i, (distance, idx) in enumerate(zip(D[0], I[0])):
+                            if idx < len(data):
+                                score = 1.0 - (distance / 2.0)
+                                results.append({
+                                    'content': str(data[idx]),
+                                    'metadata': {'source': index_name},
+                                    'score': float(score)
+                                })
+                except Exception as e:
+                    logger.warning(f"Error en índice {index_name}: {str(e)}")
+                    continue
+
+            return sorted(results, key=lambda x: x['score'], reverse=True)[:top_k]
+
+        except Exception as e:
+            logger.error(f"Error en search_knowledge_base: {str(e)}")
+            return []
+
     async def search_related_content(
             self,
             query: str,
