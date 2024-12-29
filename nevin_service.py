@@ -67,10 +67,11 @@ class NevinService:
                         "content": question
                     }
                 ],
-                temperature=0.7,
-                max_tokens=800,
-                presence_penalty=0.6,
-                frequency_penalty=0.3
+                temperature=0.8,
+                max_tokens=1000,
+                presence_penalty=0.7,
+                frequency_penalty=0.4,
+                top_p=0.95
             )
 
             response_text = chat_response.choices[0].message.content
