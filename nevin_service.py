@@ -1,7 +1,9 @@
 import logging
 import os
-from typing import Dict, Any
+import asyncio
+from typing import Dict, Any, List
 from openai import OpenAI
+from Nevin_AI.knowledge_base_manager import KnowledgeBaseManager
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
