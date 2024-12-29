@@ -101,7 +101,7 @@ class NevinService:
                     },
                     {
                         "role": "user",
-                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context if egw_content else ' No se encontraron citas específicas, pero debes responder basándote en principios bíblicos y el espíritu de los escritos de Elena G. White.'}"
+                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context if egw_context else ' No se encontraron citas específicas, pero debes responder basándote en principios bíblicos y el espíritu de los escritos de Elena G. White.'}"
                     }
                 ],
                 temperature=0.8,

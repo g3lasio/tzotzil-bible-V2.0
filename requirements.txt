@@ -31,3 +31,5 @@ flask-sqlalchemy
 cachetools
 faiss-cpu
 openai
+langchain-community
+langchain-community
