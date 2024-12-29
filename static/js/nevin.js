@@ -16,7 +16,10 @@ class NevinChat {
 
     init() {
         this.setupEventListeners();
-        this.showWelcomeMessage();
+        // Only show welcome message if chat history is empty
+        if (!document.querySelector(".nevin-message")) {
+            this.showWelcomeMessage();
+        }
         this.displayRandomSuggestions();
         this.initTransformationEffects();
     }
