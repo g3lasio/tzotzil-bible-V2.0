@@ -57,23 +57,15 @@ body::before {
 
 /* Referencias Bíblicas */
 .nevin-message .verse-box {
-    background: rgba(9, 132, 227, 0.1);
-    border: 2px solid var(--transformer-primary) !important;
-    padding: 1.2rem;
-    margin: 1.2rem 0;
-    border-radius: 12px;
-    font-family: 'Georgia', serif;
-    line-height: 1.7;
+    font-style: italic;
+    background: linear-gradient(145deg, rgba(255, 215, 0, 0.1), rgba(255, 215, 0, 0.05));
+    border-left: 4px solid #ffd700;
+    padding: 1.25rem;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
     position: relative;
-    box-shadow: 0 0 15px rgba(0, 168, 255, 0.3);
-    width: 100%;
-    display: block;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    z-index: 1;
     cursor: pointer;
-    text-decoration: none;
-    backdrop-filter: blur(5px);
+    transition: all 0.3s ease;
 }
 
 .verse-box-background {
@@ -85,6 +77,25 @@ body::before {
     background: linear-gradient(45deg, var(--transformer-primary), transparent);
     opacity: 0.1;
     z-index: -1;
+}
+
+.quote-box {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    background: linear-gradient(145deg, rgba(173, 181, 189, 0.1), rgba(173, 181, 189, 0.05));
+    border-left: 4px solid var(--bs-secondary);
+    padding: 1.25rem;
+    margin: 1rem 0;
+    border-radius: 0.5rem;
+    position: relative;
+}
+
+.verse-ref, .quote-ref {
+    display: block;
+    margin-top: 0.5rem;
+    font-style: normal;
+    color: #6c757d;
+    font-size: 0.875rem;
 }
 
 .egw-box {
@@ -613,7 +624,8 @@ button:hover {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .verse-box,
-    .egw-box {
+    .egw-box,
+    .quote-box {
         margin: 0.8rem 0;
         padding: 1rem;
         font-size: 0.95rem;

@@ -151,6 +151,13 @@ class NevinChat {
     formatReferences(text) {
         if (!text) return "";
 
+        const ALLOWED_TAGS = ['div', 'p', 'ul', 'li', 'small', 'span'];
+        const ALLOWED_CLASSES = {
+            'div': ['info-box', 'quote-box', 'verse-box', 'response-section', 'suggestions-box'],
+            'ul': ['bullet-list'],
+            'small': ['verse-ref', 'quote-ref']
+        };
+
         try {
             let formattedText = text;
 
@@ -159,10 +166,9 @@ class NevinChat {
                 /__([^_]+?)__\s*-\s*([^_]+?)(?=\s*(?:__|$|\*|\())/g,
                 (match, reference, content) => {
                     console.log("Referencia bíblica:", { reference, content });
-                    return `<div class="verse-box nevin-box-glow" onclick="window.handleVerseClick('${reference.trim()}')">
-                        <div class="verse-content">${content.trim()}</div>
-                        <div class="verse-reference">${reference.trim()}</div>
-                        <div class="verse-box-background"></div>
+                    return `<div class="verse-box" onclick="window.handleVerseClick('${reference.trim()}')">
+                        ${content.trim()}
+                        <small class="verse-ref">${reference.trim()}</small>
                     </div>`;
                 }
             );
@@ -172,10 +178,9 @@ class NevinChat {
                 /\*([^*]+?)\*\s*-\s*([^*]+?)(?=\s*(?:\*|$|__|$|\())/g,
                 (match, source, content) => {
                     console.log("Referencia EGW:", { source, content });
-                    return `<div class="egw-box nevin-box-glow">
-                        <div class="egw-content">${content.trim()}</div>
-                        <div class="egw-reference">${source.trim()}</div>
-                        <div class="egw-box-background"></div>
+                    return `<div class="quote-box">
+                        ${content.trim()}
+                        <small class="quote-ref">${source.trim()}</small>
                     </div>`;
                 }
             );
