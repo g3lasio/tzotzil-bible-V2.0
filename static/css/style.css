@@ -1001,6 +1001,8 @@ body {
     margin-left: auto;
     word-wrap: break-word;
     border: 1px solid var(--transformer-primary);
-    font-family: 'Fira Sans', 'Segoe UI', sans-serif;
+    font-family: 'Fira Sans', sans-serif;
+    font-size: 1.1rem;
     letter-spacing: 0.02em;
+    line-height: 1.5;
 }
