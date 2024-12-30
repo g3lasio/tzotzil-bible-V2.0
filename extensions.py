@@ -23,16 +23,25 @@ db = SQLAlchemy()
 migrate = Migrate()
 
 def configure_database(app):
-    """Configura la base de datos con opciones optimizadas."""
+    """Configura la base de datos con opciones optimizadas y fallback a SQLite."""
     try:
         database_url = os.environ.get('DATABASE_URL')
         if not database_url:
-            raise ValueError("DATABASE_URL no está configurada")
+            logger.warning("DATABASE_URL no configurada, usando SQLite")
+            database_url = 'sqlite:///instance/bible_app.db'
 
         if database_url.startswith("postgres://"):
             database_url = database_url.replace("postgres://", "postgresql://", 1)
 
         app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'pool_size': 10,
+            'max_overflow': 2,
+            'pool_recycle': 300,
+            'pool_pre_ping': True,
+            'pool_timeout': 30,
+            'connect_args': {'connect_timeout': 10}
+        }
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             'pool_size': 5,

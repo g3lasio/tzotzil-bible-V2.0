@@ -9,24 +9,42 @@ from cache_manager import cache_manager
 from db_monitor import db_monitor
 
 def verify_critical_services(app) -> Tuple[bool, str]:
-    """Verifica el estado de los servicios críticos."""
-    try:
-        with app.app_context():
-            # 1. Verificar base de datos
-            try:
-                db.session.execute(text('SELECT 1'))
-                logger.info("Conexión a base de datos verificada")
-            except Exception as e:
-                return False, f"Error en base de datos: {str(e)}"
+    """Verifica el estado de los servicios críticos con reintentos."""
+    max_retries = 3
+    retry_delay = 2
+    
+    for attempt in range(max_retries):
+        try:
+            with app.app_context():
+                # 1. Verificar base de datos
+                try:
+                    db.session.execute(text('SELECT 1'))
+                    logger.info("Conexión a base de datos verificada")
+                except Exception as e:
+                    if attempt == max_retries - 1:
+                        return False, f"Error en base de datos: {str(e)}"
+                    logger.warning(f"Reintento {attempt + 1} de conexión a BD")
+                    time.sleep(retry_delay)
+                    continue
 
-            # 2. Verificar monitor de base de datos
-            if not db_monitor.is_running:
-                return False, "Monitor de base de datos no está ejecutándose"
-            logger.info("Monitor de base de datos verificado")
+                # 2. Verificar monitor de base de datos
+                if not db_monitor.is_running:
+                    try:
+                        db_monitor.start()
+                        logger.info("Monitor de base de datos iniciado")
+                    except Exception as e:
+                        if attempt == max_retries - 1:
+                            return False, f"Error iniciando monitor: {str(e)}"
+                        continue
 
-            return True, "Todos los servicios críticos funcionando correctamente"
-    except Exception as e:
-        return False, f"Error verificando servicios: {str(e)}"
+                return True, "Todos los servicios críticos funcionando correctamente"
+                
+        except Exception as e:
+            if attempt == max_retries - 1:
+                return False, f"Error verificando servicios: {str(e)}"
+            time.sleep(retry_delay)
+            
+    return False, "Máximo de reintentos alcanzado"
 
 """
 Módulo principal para inicialización y gestión de la aplicación
