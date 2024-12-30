@@ -1,5 +1,6 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify
+from datetime import datetime #Added import for datetime
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)

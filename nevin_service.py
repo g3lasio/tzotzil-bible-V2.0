@@ -87,11 +87,12 @@ class NevinService:
             # Inicializar KnowledgeBaseManager
             kb_manager = KnowledgeBaseManager()
             
-            # Añadir contexto de la conversación
+            # Añadir contexto de la conversación al prompt
             context = "\n\nContexto de la conversación:\n"
             if conversation_history:
                 for msg in conversation_history[-3:]:  # Últimos 3 mensajes
                     context += f"{'Usuario' if msg['role'] == 'user' else 'Nevin'}: {msg['content']}\n"
+                    
             if not kb_manager.initialize():
                 logger.error("Error inicializando KnowledgeBaseManager")
                 return self._generate_error_response("Error de inicialización del sistema")
@@ -108,7 +109,7 @@ class NevinService:
                 messages=[
                     {
                         "role": "system",
-                        "content": self.system_context + self.principles_context
+                        "content": self.system_context + self.principles_context + context
                     },
                     {
                         "role": "user",
