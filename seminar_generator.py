@@ -155,7 +155,12 @@ class SeminarGenerator:
             f"{seminar['conclusion']['summary']}\n\n{seminar['conclusion']['call_to_action']}")
         
         # Guardar PDF
-        pdf.output(filename)
+        try:
+            pdf.output(filepath)
+            return filepath
+        except Exception as e:
+            logger.error(f"Error guardando PDF: {str(e)}")
+            return None
 
     def _add_section(self, pdf, title, content):
         """Añade una sección al PDF con formato."""
