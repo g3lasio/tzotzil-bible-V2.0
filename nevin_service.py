@@ -78,11 +78,20 @@ class NevinService:
             logger.error(f"Error buscando contenido de EGW: {e}")
             return []
 
-    def process_query(self, question: str) -> Dict[str, Any]:
-        """Procesa consultas del usuario con un enfoque pastoral y bíblico."""
+    def process_query(self, question: str, conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+        """Procesa consultas del usuario manteniendo el contexto conversacional."""
         try:
+            if conversation_history is None:
+                conversation_history = []
+                
             # Inicializar KnowledgeBaseManager
             kb_manager = KnowledgeBaseManager()
+            
+            # Añadir contexto de la conversación
+            context = "\n\nContexto de la conversación:\n"
+            if conversation_history:
+                for msg in conversation_history[-3:]:  # Últimos 3 mensajes
+                    context += f"{'Usuario' if msg['role'] == 'user' else 'Nevin'}: {msg['content']}\n"
             if not kb_manager.initialize():
                 logger.error("Error inicializando KnowledgeBaseManager")
                 return self._generate_error_response("Error de inicialización del sistema")
