@@ -77,7 +77,7 @@ def get_emotional_response_template(emotions: Dict[str, float]) -> str:
 
     return templates.get(highest_emotion[0], templates['neutral'])
 
-def get_ai_response(question: str, context: str = "", language: str = "Spanish", user_preferences: Dict = None) -> Dict[str, Any]:
+def get_ai_response(question: str, context: str = "", language: str = "Spanish", user_preferences: Dict = None, user_id: str = None) -> Dict[str, Any]:
     """Get AI response with improved formatting and emotional intelligence."""
     try:
         user_preferences = user_preferences or {}

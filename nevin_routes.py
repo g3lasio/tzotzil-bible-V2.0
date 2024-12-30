@@ -36,6 +36,7 @@ def nevin_query():
     """Procesa consultas enviadas a Nevin."""
     try:
         data = request.get_json()
+        user_id = session.get('user_id')
         if not data:
             return jsonify({
                 'response': "No se recibieron datos en la consulta.",
@@ -59,7 +60,8 @@ def nevin_query():
             question=question,
             context=context,
             language=language,
-            user_preferences=user_preferences
+            user_preferences=user_preferences,
+            user_id=user_id
         )
 
         return jsonify(response), 200

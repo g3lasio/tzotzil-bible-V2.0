@@ -114,12 +114,34 @@ class NevinService:
                 'source': 'error'
             }
 
-    def process_query(self, question: str, conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
+    def process_query(self, question: str, conversation_history: List[Dict[str, str]] = None, user_id: str = None) -> Dict[str, Any]:
         """Procesa consultas del usuario manteniendo el contexto conversacional."""
         try:
             if conversation_history is None:
                 conversation_history = []
+            
+            # Obtener historial de interacciones del usuario
+            if user_id:
+                from models import Conversation
+                from database import db
+                past_conversations = Conversation.query.filter_by(user_id=user_id)\
+                    .order_by(Conversation.timestamp.desc())\
+                    .limit(5)\
+                    .all()
+            
+                context_history = []
+                for conv in past_conversations:
+                    context_history.append({
+                        'role': 'user',
+                        'content': conv.question
+                    })
+                    context_history.append({
+                        'role': 'assistant', 
+                        'content': conv.response
+                    })
+                conversation_history = context_history + conversation_history
                 
+
             # Inicializar KnowledgeBaseManager
             kb_manager = KnowledgeBaseManager()
             
@@ -139,6 +161,10 @@ class NevinService:
                 if not results:
                     logger.warning("No se encontraron resultados en FAISS, usando fallback")
                     return self._generate_fallback_response(question)
+            except Exception as e:
+                logger.warning(f"Error al buscar en FAISS: {e}, usando fallback")
+                return self._generate_fallback_response(question)
+
             if not kb_manager.initialize():
                 logger.error("Error inicializando KnowledgeBaseManager")
                 return self._generate_error_response("Error de inicialización del sistema")
@@ -155,7 +181,7 @@ class NevinService:
                 messages=[
                     {
                         "role": "system",
-                        "content": self.system_context + self.principles_context
+                        "content": self.system_context + self.principles_context + context
                     },
                     {
                         "role": "user",
