@@ -11,9 +11,11 @@ class PromptManager:
     def __init__(self):
         # Cargar validación doctrinal
         self.doctrinal_data = self._load_doctrinal_validation()
+        self.interpretation_handler = InterpretationHandler()
         
-        # Construir contexto doctrinal
+        # Construir contexto doctrinal y de interpretación
         doctrinal_context = self._build_doctrinal_context()
+        interpretation_context = self._build_interpretation_context()
         
         self.base_prompt = f"""Eres Nevin, un asistente virtual adventista del séptimo día con profundo conocimiento de la Biblia y los escritos de Elena G. White.
 

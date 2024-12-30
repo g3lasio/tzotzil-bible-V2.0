@@ -861,3 +861,27 @@ header {
     padding: 2px 5px;
     border-radius: 3px;
 }
+.interpretation-box {
+    background: linear-gradient(145deg, rgba(30, 39, 46, 0.8), rgba(30, 39, 46, 0.6));
+    border-left: 4px solid var(--transformer-secondary);
+    padding: 1.5rem;
+    margin: 1.2rem 0;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0, 255, 245, 0.1);
+}
+
+.interpretation-box h4 {
+    color: var(--transformer-primary);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.interpretation-box ul {
+    list-style: none;
+    padding-left: 1rem;
+}
+
+.interpretation-box li {
+    margin-bottom: 0.8rem;
+    line-height: 1.6;
+}
