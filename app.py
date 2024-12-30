@@ -3,8 +3,9 @@ Aplicación principal Flask con manejo de base de datos
 """
 import os
 import logging
+from datetime import timedelta
 from flask import Flask, render_template
-from extensions import db, init_extensions
+from __init__ import create_app, db
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -13,91 +14,45 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def create_app():
-    """Crear y configurar la aplicación Flask"""
-    logger.info("Iniciando creación de la aplicación Flask...")
-    
-    # Verificar procesos y recursos
-    cleanup_resources()
-    
-    app = Flask(__name__)
-    app.logger.setLevel(logging.INFO)
-
-    # Configuración básica
-    app.config.update(
-        SECRET_KEY=os.environ.get('FLASK_SECRET_KEY', 'default-nevin-key'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///instance/bible_app.db'),
-        SQLALCHEMY_TRACK_MODIFICATIONS=False,
-        SQLALCHEMY_ENGINE_OPTIONS={
-            'pool_pre_ping': True,
-            'pool_recycle': 300,
-            'pool_size': 5,
-            'max_overflow': 2,
-            'pool_timeout': 30,
-            'connect_args': {'check_same_thread': False}
-        }
-    )
-
-    logger.info("Configuración cargada exitosamente")
-
-    # Inicializar extensiones
+def init_app():
+    """Inicializar y configurar la aplicación para producción"""
     try:
-        if not init_extensions(app):
-            logger.error("Error al inicializar las extensiones")
-            raise RuntimeError("Failed to initialize extensions")
+        app = create_app()
+
+        # Configuración adicional de la aplicación
+        app.config.update(
+            PERMANENT_SESSION_LIFETIME=timedelta(days=31),
+            SESSION_COOKIE_SECURE=True,
+            SESSION_COOKIE_HTTPONLY=True,
+            SESSION_COOKIE_SAMESITE='Lax'
+        )
+
+        # Manejadores de error
+        @app.errorhandler(404)
+        def not_found_error(error):
+            return render_template('error.html', error="Página no encontrada"), 404
+
+        @app.errorhandler(500)
+        def internal_error(error):
+            db.session.rollback()
+            return render_template('error.html', error="Error interno del servidor"), 500
+
+        @app.errorhandler(Exception)
+        def handle_exception(error):
+            logger.error(f"Error no manejado: {str(error)}")
+            db.session.rollback()
+            return render_template('error.html', error="Ha ocurrido un error inesperado"), 500
+
+        port = int(os.environ.get('PORT', 5000))
+        return app, port
+
     except Exception as e:
-        logger.error(f"Error crítico en inicialización: {str(e)}")
+        logger.error(f"Error en la inicialización de la aplicación: {str(e)}")
         raise
-
-    # Registrar blueprints
-    from routes import routes
-    from nevin_routes import nevin_bp, init_nevin_service
-    from auth import auth
-
-    app.register_blueprint(routes)
-    app.register_blueprint(nevin_bp, url_prefix='/nevin')
-    app.register_blueprint(auth)
-
-    # Inicializar servicio Nevin
-    try:
-        init_nevin_service(app)
-    except Exception as e:
-        logger.error(f"Error inicializando Nevin: {str(e)}")
-        # Continue even if Nevin fails to initialize
-
-    # Manejadores de error
-    @app.errorhandler(404)
-    def not_found_error(error):
-        return render_template('error.html', error="Página no encontrada"), 404
-
-    @app.errorhandler(500)
-    def internal_error(error):
-        db.session.rollback()
-        return render_template('error.html', error="Error interno del servidor"), 500
-
-    @app.errorhandler(Exception)
-    def handle_exception(error):
-        logger.error(f"Error no manejado: {str(error)}")
-        db.session.rollback()
-        return render_template('error.html', error="Ha ocurrido un error inesperado"), 500
-
-    logger.info("Aplicación Flask creada exitosamente")
-    return app
 
 if __name__ == '__main__':
     try:
-        import psutil
-        # Matar cualquier proceso usando el puerto 3001
-        for proc in psutil.process_iter(['pid', 'name', 'connections']):
-            try:
-                for conn in proc.connections():
-                    if conn.laddr.port == 3001:
-                        proc.kill()
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
-                
-        app = create_app()
-        port = int(os.environ.get('PORT', 3001))
+        app, port = init_app()
         app.run(
             host='0.0.0.0',
             port=port,
@@ -106,5 +61,5 @@ if __name__ == '__main__':
             use_reloader=False
         )
     except Exception as e:
-        print(f"Error iniciando la aplicación: {str(e)}")
+        logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
         raise

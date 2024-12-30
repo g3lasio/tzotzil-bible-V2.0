@@ -6,7 +6,7 @@ import time
 import logging
 from datetime import datetime
 from urllib.parse import urlparse
-from flask import request
+from flask import request, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text
@@ -38,7 +38,7 @@ def configure_database(app):
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             'pool_size': 5,
             'max_overflow': 2,
-            'pool_recycle': 1800,
+            'pool_recycle': 300,
             'pool_pre_ping': True,
             'pool_timeout': 30
         }
@@ -46,21 +46,19 @@ def configure_database(app):
         # Initialize the db with the app
         db.init_app(app)
 
+        # Initialize migrations
+        migrate.init_app(app, db)
+
         # Create tables if they don't exist
         with app.app_context():
             db.create_all()
-            # Verify connection after initialization
-            is_connected, _ = verify_database_connection(db.session)
-            if not is_connected:
-                raise Exception(
-                    "No se pudo verificar la conexión después de la inicialización"
-                )
+            verify_database_connection(db.session)
 
         logger.info("Configuración de base de datos completada")
         return True
     except Exception as e:
         logger.error(f"Error configurando base de datos: {str(e)}")
-        if db.session:
+        if hasattr(db, 'session'):
             db.session.remove()
         if hasattr(db, 'engine'):
             db.engine.dispose()
@@ -92,11 +90,11 @@ def init_extensions(app):
     """Initialize Flask extensions"""
     try:
         logger.info("Iniciando inicialización de extensiones...")
-        
+
         # Verificar configuración previa
         if not app.config.get('SQLALCHEMY_DATABASE_URI'):
             raise ValueError("URI de base de datos no configurada")
-            
+
         # Limpiar conexiones existentes
         if hasattr(db, 'session'):
             db.session.remove()
@@ -109,19 +107,11 @@ def init_extensions(app):
                 if configure_database(app):
                     break
                 logger.warning(f"Intento {attempt + 1} de configuración de BD fallido")
+                time.sleep(2)  # Esperar antes de reintentar
             except Exception as e:
                 logger.error(f"Error en intento {attempt + 1}: {str(e)}")
                 if attempt == 2:
                     raise
-
-        # Initialize migrations con verificación
-        try:
-            migrate.init_app(app, db)
-            db.session.execute(text('SELECT 1'))
-            logger.info("Migraciones inicializadas correctamente")
-        except Exception as e:
-            logger.error(f"Error en migraciones: {str(e)}")
-            raise
 
         logger.info("Extensions initialized successfully")
         return True
@@ -255,3 +245,5 @@ def ensure_bible_integrity(app):
     except Exception as e:
         logger.error(f"Error crítico en verificación bíblica: {str(e)}")
         return False
+import shutil
+import sqlite3

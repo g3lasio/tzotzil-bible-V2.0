@@ -40,3 +40,8 @@ flask-sqlalchemy
 openai
 python-dotenv
 psutil
+flask-migrate
+flask-sqlalchemy
+psycopg2-binary
+python-dotenv
+sqlalchemy

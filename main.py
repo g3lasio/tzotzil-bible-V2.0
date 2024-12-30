@@ -1,3 +1,6 @@
+"""
+Módulo principal para inicialización y gestión de la aplicación
+"""
 import logging
 import os
 import time
@@ -13,7 +16,6 @@ from extensions import db
 from db_monitor import db_monitor
 from sqlalchemy.sql import text
 from app import create_app
-from tenacity import retry, stop_after_attempt, wait_exponential
 
 # Configuración de logging mejorada
 logging.basicConfig(
@@ -64,24 +66,24 @@ def cleanup_resources(app=None):
                 logger.info("Conexiones de base de datos limpiadas")
 
         # Buscar y cerrar procesos que usen los puertos necesarios
-        for port in [8080]:
-            try:
-                for proc in psutil.process_iter(['pid', 'name', 'connections']):
-                    try:
-                        for conn in proc.connections():
-                            if hasattr(conn, 'laddr') and conn.laddr.port == port:
-                                logger.warning(f"Forzando cierre de proceso {proc.pid} en puerto {port}")
-                                force_kill_process(proc.pid)
-                    except (psutil.NoSuchProcess, psutil.AccessDenied):
-                        continue
+        port = int(os.environ.get('PORT', 5000))
+        try:
+            for proc in psutil.process_iter(['pid', 'name', 'connections']):
+                try:
+                    for conn in proc.connections():
+                        if hasattr(conn, 'laddr') and conn.laddr.port == port:
+                            logger.warning(f"Forzando cierre de proceso {proc.pid} en puerto {port}")
+                            force_kill_process(proc.pid)
+                except (psutil.NoSuchProcess, psutil.AccessDenied):
+                    continue
 
-                if not verify_port_availability(port):
-                    logger.error(f"No se pudo liberar el puerto {port}")
-                    return False
-
-            except Exception as e:
-                logger.error(f"Error limpiando puerto {port}: {e}")
+            if not verify_port_availability(port):
+                logger.error(f"No se pudo liberar el puerto {port}")
                 return False
+
+        except Exception as e:
+            logger.error(f"Error limpiando puerto {port}: {e}")
+            return False
 
         logger.info("Limpieza de recursos completada exitosamente")
         return True
@@ -107,7 +109,7 @@ def verify_critical_services(app) -> Tuple[bool, str]:
             logger.info("Sistema de caché verificado")
 
             # 3. Verificar monitor de base de datos
-            if not hasattr(db_monitor, 'is_running') or not db_monitor.is_running():
+            if not db_monitor.is_running:
                 return False, "Monitor de base de datos no está ejecutándose"
             logger.info("Monitor de base de datos verificado")
 
@@ -129,7 +131,7 @@ def start_server(app) -> None:
         if not cleanup_resources(app):
             raise Exception("No se pudieron limpiar los recursos necesarios")
 
-        port = int(os.environ.get('PORT', 8080))
+        port = int(os.environ.get('PORT', 5000))
         logger.info(f"Verificando disponibilidad del puerto {port}...")
 
         if not verify_port_availability(port):
@@ -153,7 +155,7 @@ def start_server(app) -> None:
             'debug': False  # Desactivar debug mode para producción
         }
 
-        logger.info(f"Iniciando servidor en puerto {port} con opciones: {server_options}")
+        logger.info(f"Iniciando servidor en puerto {port}")
         app.run(**server_options)
 
     except Exception as e:
@@ -179,7 +181,12 @@ if __name__ == "__main__":
             raise Exception(f"Error en servicios críticos: {service_msg}")
         logger.info("Servicios críticos verificados correctamente")
 
-        # 3. Iniciar servidor
+        # 3. Iniciar monitor de base de datos
+        if not db_monitor.is_running:
+            db_monitor.start()
+            logger.info("Monitor de base de datos iniciado")
+
+        # 4. Iniciar servidor
         logger.info("=== Iniciando servidor ===")
         start_server(app)
 
