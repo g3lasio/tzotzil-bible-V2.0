@@ -39,3 +39,4 @@ flask-login
 flask-sqlalchemy
 openai
 python-dotenv
+psutil
