@@ -3,7 +3,7 @@ Inicialización principal de la aplicación
 """
 import os
 import logging
-from flask import Flask
+from flask import Flask, session # Added session import
 from flask_babel import Babel
 from flask_cors import CORS
 from extensions import db, migrate, configure_database, init_extensions
@@ -19,6 +19,7 @@ cors = CORS()
 def create_app(test_config=None):
     """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
+    app.secret_key = 'tu_clave_secreta_aqui'  # Necesario para manejar sesiones
 
     # Configuración base
     app.config.from_mapping(

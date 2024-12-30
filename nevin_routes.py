@@ -1,5 +1,5 @@
 import logging
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, request, jsonify, session
 from attached_assets.chat_request import get_ai_response
 
 # Configuración de logging
