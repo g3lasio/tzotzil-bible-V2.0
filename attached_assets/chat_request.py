@@ -117,9 +117,16 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
                     output_dir = os.path.join('static', 'seminars')
                     os.makedirs(output_dir, exist_ok=True)
                     filepath = os.path.join(output_dir, filename)
-                    generator.export_to_pdf({"content": response_text}, filepath)
-                    pdf_url = f"/static/seminars/{filename}"
-                    logger.info(f"PDF generado exitosamente: {filepath}")
+                    
+                    if generator.export_to_pdf({"content": response_text}, filepath):
+                        pdf_url = f"/static/seminars/{filename}"
+                        logger.info(f"PDF generado exitosamente: {filepath}")
+                        response_text += f"\n\n[PDF_LINK]"  # Marcador para el frontend
+                        return {
+                            "success": True,
+                            "response": response_text,
+                            "pdf_url": pdf_url
+                        }
                     
                     response_text += f"\n\nPuedes descargar este seminario en formato PDF aquí: {pdf_url}"
                     
