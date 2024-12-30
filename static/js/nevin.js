@@ -292,7 +292,13 @@ class NevinChat {
         }
     }
 
-    displayRandomSuggestions() {
+    displayRandomSuggestions(clearPrevious = false) {
+        if (clearPrevious) {
+            const chatHistory = document.getElementById("chat-history");
+            if (chatHistory) {
+                chatHistory.innerHTML = "";
+            }
+        }
         const suggestions = [
             "¿Qué relación tiene el Arca de Noé con el santuario celestial?",
             "¿Por qué el número siete tiene tanta relevancia en la Biblia?",
@@ -445,8 +451,10 @@ class NevinChat {
         if (suggestionsContainer) {
             suggestionsContainer.style.display = "none";
         }
-        if (chatHistory) {
-            chatHistory.innerHTML = "";
+        // No limpiar el historial para mantener la conversación fluida
+        if (!chatHistory) {
+            console.error("Elemento chat-history no encontrado");
+            return;
         }
 
         if (!chatHistory) {
@@ -532,7 +540,7 @@ class NevinChat {
         if (chatHistory) {
             chatHistory.innerHTML = "";
             this.showWelcomeMessage();
-            this.displayRandomSuggestions();
+            this.displayRandomSuggestions(true);
         }
     }
 
