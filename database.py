@@ -230,73 +230,61 @@ class DatabaseManager:
                 }
 
             if chapter is None:
-                chapters_query = """
-                    SELECT DISTINCT chapter 
-                    FROM bibleverse 
-                    WHERE book = :book 
-                    ORDER BY chapter::integer
-                """
-                chapters_result = session.execute(text(chapters_query),
-                                                {'book': book})
-                chapters = [str(row[0]) for row in chapters_result]
-
-                return {
-                    'success': True,
-                    'data': {
-                        'book': book,
-                        'chapters': chapters
-                    },
-                    'error': None
-                }
-
-            base_query = """
+                query = """
+                SELECT DISTINCT chapter 
+                FROM bibleverse 
+                WHERE book = :book 
+                ORDER BY CAST(chapter AS INTEGER)"""
+                params = {'book': book}
+            else:
+                query = """
                 SELECT id, book, chapter, verse, spanish_text, tzotzil_text 
                 FROM bibleverse 
-                WHERE book = :book
-            """
-            params = {'book': book}
+                WHERE book = :book AND chapter = :chapter 
+                ORDER BY CAST(chapter AS INTEGER), CAST(verse AS INTEGER)"""
+                params = {'book': book, 'chapter': chapter}
 
+            logger.info(f"Ejecutando consulta: {query} con parámetros: {params}")
+            result = session.execute(text(query), params)
+            
             if chapter is not None:
-                base_query += " AND chapter = :chapter"
-                params['chapter'] = str(chapter)
+                verses = []
+                for row in result:
+                    verses.append({
+                        'id': row.id,
+                        'book': row.book,
+                        'chapter': row.chapter,
+                        'verse': row.verse,
+                        'spanish_text': row.spanish_text,
+                        'tzotzil_text': row.tzotzil_text
+                    })
+                
+                if not verses:
+                    return {'success': False, 'error': 'No se encontraron versículos'}
 
-            if verse is not None:
-                base_query += " AND verse = :verse"
-                params['verse'] = str(verse)
-
-            base_query += " ORDER BY chapter::integer, verse::integer"
-
-            result = session.execute(text(base_query), params)
-            verses = []
-
-            for row in result:
-                verse_dict = {
-                    'id': row[0],
-                    'book': row[1],
-                    'chapter': str(row[2]),
-                    'verse': str(row[3]),
-                    'spanish_text': row[4],
-                    'tzotzil_text': row[5]
+                logger.info(f"Versículos encontrados: {len(verses)}")
+                return {
+                    'success': True,
+                    'data': verses,
+                    'query_time': 0
                 }
-                verses.append(verse_dict)
-
-            logger.info(f"Versículos encontrados: {len(verses)}")
-
-            return {
-                'success': True,
-                'data': {
-                    'verses': verses,
-                    'book': book,
-                    'chapter': chapter if chapter else None
-                },
-                'error': None
-            }
+            else:
+                chapters = [row.chapter for row in result]
+                if not chapters:
+                    return {'success': False, 'error': 'No se encontraron capítulos'}
+                
+                logger.info(f"Capítulos encontrados: {len(chapters)}")
+                return {
+                    'success': True,
+                    'data': {'chapters': chapters},
+                    'query_time': 0
+                }
 
         except Exception as e:
             error_msg = f"Error obteniendo versículos: {str(e)}"
             logger.error(error_msg)
-            logger.error(traceback.format_exc())
-            return {'success': False, 'data': None, 'error': error_msg}
+            logger.error(f"Traceback: {traceback.format_exc()}")
+            return {'success': False, 'error': error_msg}
 
     def backup_database(self) -> bool:
         """Realiza una copia de seguridad de la base de datos"""
