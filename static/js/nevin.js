@@ -294,6 +294,16 @@ class NevinChat {
 
             // Asegurar que el formato final sea correcto
             messageElement.innerHTML = formattedText;
+            
+            // Agregar enlace de descarga si el mensaje contiene un pdf_url
+            if (!isUser && formattedText.includes('Seminario generado') && data?.pdf_url) {
+                const downloadLink = document.createElement('a');
+                downloadLink.href = data.pdf_url;
+                downloadLink.className = 'seminar-download-link';
+                downloadLink.innerHTML = '📄 Descargar Seminario PDF';
+                downloadLink.target = '_blank';
+                messageElement.appendChild(downloadLink);
+            }
         }
     }
 

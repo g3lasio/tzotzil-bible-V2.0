@@ -835,6 +835,18 @@ header {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
+.seminar-download-link {
+    display: block;
+    color: #4CAF50;
+    text-decoration: none;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.seminar-download-link:hover {
+    text-decoration: underline;
+}
+
 .nevin-bullet {
     position: relative;
     padding-left: 20px;
