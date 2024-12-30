@@ -21,7 +21,7 @@ def create_app():
     # Configuración básica
     app.config.update(
         SECRET_KEY=os.environ.get('FLASK_SECRET_KEY', 'default-nevin-key'),
-        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL'),
+        SQLALCHEMY_DATABASE_URI=os.environ.get('DATABASE_URL', 'sqlite:///instance/bible_app.db'),
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         SQLALCHEMY_ENGINE_OPTIONS={
             'pool_pre_ping': True,
