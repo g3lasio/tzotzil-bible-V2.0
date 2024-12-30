@@ -4,6 +4,7 @@ Módulo mejorado para el manejo de respuestas de Nevin integrado con Tzotzil Bib
 from typing import Dict, Any, Optional, List
 import logging
 from datetime import datetime
+from Nevin_AI.prompts import PromptManager
 
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)
@@ -18,6 +19,7 @@ class EnhancedResponseManager:
         :param interpretation_engine: Instancia de InterpretationEngine.
         """
         self.interpretation_engine = interpretation_engine
+        self.prompt_manager = PromptManager()
         self.conversation_context = {
             "emotional_state": "neutral",
             "conversation_depth": 0,
@@ -39,18 +41,37 @@ class EnhancedResponseManager:
             self.conversation_context["emotional_state"] = emotional_state
             self.conversation_context["conversation_depth"] += 1
 
-            # Generar interpretación base
-            interpretation = self.interpretation_engine.interpret(query, text_type)
+            # Obtener prompt enriquecido
+            enriched_prompt = self.prompt_manager.get_chat_prompt(
+                query,
+                emotional_state=emotional_state,
+                conversation_depth=self.conversation_context["conversation_depth"]
+            )
+
+            # Generar interpretación base con contexto enriquecido
+            interpretation = self.interpretation_engine.interpret(
+                query,
+                text_type,
+                context=enriched_prompt
+            )
 
             if "error" not in interpretation:
                 # Adaptar el formato según el contexto emocional y el idioma
                 response = self._format_response_by_context(
-                    interpretation, 
+                    interpretation,
                     emotional_state,
                     lang
                 )
+
+                # Actualizar contexto con la nueva interacción
+                self.prompt_manager.update_context({
+                    "query": query,
+                    "response": response,
+                    "timestamp": datetime.now().isoformat()
+                })
+
                 return {
-                    "response": response, 
+                    "response": response,
                     "success": True,
                     "context": self._prepare_context_data()
                 }
@@ -71,19 +92,17 @@ class EnhancedResponseManager:
 
     def _format_bible_reference(self, reference: str, content: str, tzotzil_content: Optional[str] = None) -> str:
         """Formatea una referencia bíblica con estilo mejorado."""
-        formatted = f'<div class="verse-box">'
-        formatted += f'<div class="verse-content">{content}</div>'
-
-        if tzotzil_content:
-            formatted += f'<div class="verse-content tzotzil">{tzotzil_content}</div>'
-
-        formatted += f'<span class="verse-reference">{reference}</span>'
-        formatted += '</div>'
-        return formatted
+        return self.prompt_manager.format_response(
+            f'[BIBLE]{content}\n{tzotzil_content if tzotzil_content else ""}\n{reference}[/BIBLE]',
+            include_references=True
+        )
 
     def _format_egw_quote(self, quote: str, source: str) -> str:
         """Formatea una cita de Elena G. White con estilo mejorado."""
-        return f'<div class="egw-box">{quote}<span class="egw-reference">{source}</span></div>'
+        return self.prompt_manager.format_response(
+            f'[EGW]{quote}\n- {source}[/EGW]',
+            include_references=True
+        )
 
     def _format_response_by_context(self, interpretation: Dict[str, Any], emotional_state: str, lang: str) -> str:
         """

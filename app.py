@@ -53,13 +53,11 @@ def init_app():
 if __name__ == '__main__':
     try:
         app, port = init_app()
+        # Simplificar la configuración del servidor
         app.run(
             host='0.0.0.0',
             port=port,
-            debug=False,
-            threaded=True,
-            use_reloader=False,
-            max_content_length=16 * 1024 * 1024
+            debug=True
         )
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
