@@ -60,8 +60,7 @@ def nevin_query():
             question=question,
             context=context,
             language=language,
-            user_preferences=user_preferences,
-            user_id=user_id
+            user_preferences=user_preferences
         )
 
         return jsonify(response), 200
