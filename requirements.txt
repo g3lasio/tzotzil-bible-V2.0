@@ -45,3 +45,13 @@ flask-sqlalchemy
 psycopg2-binary
 python-dotenv
 sqlalchemy
+fpdf2
+reportlab
+fpdf2
+reportlab
+fpdf2
+reportlab
+fpdf2
+reportlab
+fpdf2
+reportlab

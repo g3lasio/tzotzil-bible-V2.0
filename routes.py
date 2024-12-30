@@ -591,3 +591,27 @@ def validate():
 def get_db():
     """Get database session using the database manager"""
     return db_manager.get_session()
+from seminar_generator import SeminarGenerator
+
+@app.route('/generate_seminar', methods=['POST'])
+def generate_seminar():
+    try:
+        data = request.get_json()
+        topic = data.get('topic', '')
+        audience = data.get('audience', 'general')
+        duration = data.get('duration', '60min')
+        
+        generator = SeminarGenerator()
+        seminar = generator.generate_seminar(topic, audience, duration)
+        
+        # Generar PDF
+        filename = f"seminar_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
+        pdf_path = os.path.join('static', 'seminars', filename)
+        generator.export_to_pdf(seminar, pdf_path)
+        
+        return jsonify({
+            'seminar': seminar,
+            'pdf_url': f'/static/seminars/{filename}'
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
