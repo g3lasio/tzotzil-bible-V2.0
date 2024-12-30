@@ -114,8 +114,12 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
                     generator = SeminarGenerator()
                     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                     filename = f"seminar_{timestamp}.pdf"
-                    generator.export_to_pdf({"content": response_text}, filename)
-                    pdf_url = f"/nevin/download_seminar/{filename}"
+                    output_dir = os.path.join('static', 'seminars')
+                    os.makedirs(output_dir, exist_ok=True)
+                    filepath = os.path.join(output_dir, filename)
+                    generator.export_to_pdf({"content": response_text}, filepath)
+                    pdf_url = f"/static/seminars/{filename}"
+                    logger.info(f"PDF generado exitosamente: {filepath}")
                 except Exception as e:
                     logger.error(f"Error generando PDF: {str(e)}")
 

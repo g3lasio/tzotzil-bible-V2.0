@@ -836,11 +836,20 @@ header {
 }
 
 .seminar-download-link {
-    display: block;
-    color: #4CAF50;
+    display: inline-block;
+    color: #ffffff;
+    background-color: #4CAF50;
     text-decoration: none;
     margin-top: 15px;
+    padding: 10px 20px;
+    border-radius: 5px;
     font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.seminar-download-link:hover {
+    background-color: #45a049;
+    text-decoration: none;
 }
 
 .seminar-download-link:hover {

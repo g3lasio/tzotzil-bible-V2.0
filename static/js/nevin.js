@@ -302,6 +302,9 @@ class NevinChat {
                 downloadLink.className = 'seminar-download-link';
                 downloadLink.innerHTML = '📄 Descargar Seminario PDF';
                 downloadLink.target = '_blank';
+                messageElement.appendChild(document.createElement('br'));
+                messageElement.appendChild(document.createElement('br'));
+                messageElement.appendChild(downloadLink);
                 messageElement.appendChild(downloadLink);
             }
         }
