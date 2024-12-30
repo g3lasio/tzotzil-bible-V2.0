@@ -218,18 +218,11 @@ class DatabaseManager:
             result = session.execute(text("""
                 SELECT DISTINCT book
                 FROM bibleverse
-                ORDER BY CASE 
-                    WHEN book = ANY(ARRAY['Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio'])
-                    THEN 1
-                    WHEN book = ANY(ARRAY['Mateo', 'Marcos', 'Lucas', 'Juan'])
-                    THEN 2
-                    ELSE 3
-                END,
-                book
+                ORDER BY book ASC
             """))
 
             books = [row[0] for row in result]
-            logger.info(f"Libros obtenidos exitosamente: {len(books)} libros")
+            logger.info(f"Libros obtenidos exitosamente: {len(books)} libros encontrados")
 
             return {'success': True, 'data': books, 'error': None}
         except Exception as e:
