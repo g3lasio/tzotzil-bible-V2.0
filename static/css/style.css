@@ -991,3 +991,16 @@ body {
 .text-glow {
     text-shadow: 0 0 10px var(--glow-primary);
 }
+
+.user-message {
+    background: var(--metal-light);
+    padding: 1.2rem;
+    border-radius: 0 15px 15px 15px;
+    margin: 1rem 0;
+    max-width: 80%;
+    margin-left: auto;
+    word-wrap: break-word;
+    border: 1px solid var(--transformer-primary);
+    font-family: 'Fira Sans', 'Segoe UI', sans-serif;
+    letter-spacing: 0.02em;
+}
