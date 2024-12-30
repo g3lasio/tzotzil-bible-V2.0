@@ -87,8 +87,8 @@ class NevinService:
                 logger.error("Error inicializando KnowledgeBaseManager")
                 return self._generate_error_response("Error de inicialización del sistema")
 
-            # Buscar contenido relevante
-            results = kb_manager.search_knowledge_base(question, top_k=3)
+            # Buscar contenido relevante con parámetros ajustados
+            results = kb_manager.search_knowledge_base(question, top_k=5)
 
             # Preparar contexto con citas de EGW
             egw_context = self._prepare_egw_context(results)

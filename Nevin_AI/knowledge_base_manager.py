@@ -213,7 +213,7 @@ class KnowledgeBaseManager:
     async def search_related_content(
             self,
             query: str,
-            threshold: float = 0.7) -> Tuple[List[Dict[str, Any]], bool]:
+            threshold: float = 0.5) -> Tuple[List[Dict[str, Any]], bool]:
         """
         Busca contenido teológico relacionado usando FAISS con caché y procesamiento asíncrono.
         
