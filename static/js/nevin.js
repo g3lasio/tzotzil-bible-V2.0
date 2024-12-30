@@ -106,6 +106,9 @@ class NevinChat {
     }
 
     showNameInput() {
+        const existingInput = document.querySelector(".name-input-container");
+        if (existingInput) return;
+        
         const chatHistory = document.getElementById("chat-history");
         if (!chatHistory) return;
 
@@ -122,7 +125,7 @@ class NevinChat {
 
         const submitButton = document.createElement("button");
         submitButton.textContent = "Continuar";
-        submitButton.classList.add("name-submit", "transform-button");
+        submitButton.classList.add("name-submit", "transform-button");sform-button");
 
         const handleNameSubmit = async () => {
             const name = nameInput.value.trim();

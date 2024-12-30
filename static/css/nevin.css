@@ -335,11 +335,8 @@ body::before {
     max-width: 80%;
     margin-left: auto;
     word-wrap: break-word;
-    position: relative;
-    border: 1px solid var(--transformer-blue);
-    box-shadow: 0 0 15px rgba(0, 168, 255, 0.1);
-    transform-origin: right bottom;
-    animation: messageAppear 0.3s ease-out;
+    border: 1px solid var(--transformer-primary);
+    font-family: 'Kanit', 'Fira Sans', sans-serif;
 }
 
 .user-message::before {
