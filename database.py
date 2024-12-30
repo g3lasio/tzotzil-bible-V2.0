@@ -231,33 +231,35 @@ class DatabaseManager:
 
             if chapter is None:
                 query = """
-                SELECT DISTINCT chapter 
+                SELECT DISTINCT chapter::integer as chapter_num
                 FROM bibleverse 
                 WHERE book = :book 
-                ORDER BY CAST(chapter AS INTEGER)"""
+                ORDER BY chapter::integer"""
                 params = {'book': book}
+                
+                result = session.execute(text(query), params)
+                chapters = [str(row.chapter_num) for row in result]
+                
+                if not chapters:
+                    return {'success': False, 'error': 'No se encontraron capítulos'}
+                
+                return {
+                    'success': True,
+                    'data': chapters,
+                    'query_time': 0
+                }
             else:
                 query = """
                 SELECT id, book, chapter, verse, spanish_text, tzotzil_text 
                 FROM bibleverse 
                 WHERE book = :book AND chapter = :chapter 
-                ORDER BY CAST(chapter AS INTEGER), CAST(verse AS INTEGER)"""
-                params = {'book': book, 'chapter': chapter}
-
-            logger.info(f"Ejecutando consulta: {query} con parámetros: {params}")
-            result = session.execute(text(query), params)
-            
-            if chapter is not None:
+                ORDER BY verse::integer"""
+                params = {'book': book, 'chapter': str(chapter)}
+                
+                result = session.execute(text(query), params)
                 verses = []
-                for row in result:
-                    verses.append({
-                        'id': row.id,
-                        'book': row.book,
-                        'chapter': row.chapter,
-                        'verse': row.verse,
-                        'spanish_text': row.spanish_text,
-                        'tzotzil_text': row.tzotzil_text
-                    })
+                for row in result.mappings():
+                    verses.append(dict(row))
                 
                 if not verses:
                     return {'success': False, 'error': 'No se encontraron versículos'}
