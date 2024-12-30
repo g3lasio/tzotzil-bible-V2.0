@@ -80,11 +80,26 @@ def create_app():
     return app
 
 if __name__ == '__main__':
-    app = create_app()
-    port = int(os.environ.get('PORT', 3001))
-    app.run(
-        host='0.0.0.0',
-        port=port,
-        debug=True,
-        threaded=True
-    )
+    try:
+        import psutil
+        # Matar cualquier proceso usando el puerto 3001
+        for proc in psutil.process_iter(['pid', 'name', 'connections']):
+            try:
+                for conn in proc.connections():
+                    if conn.laddr.port == 3001:
+                        proc.kill()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                pass
+                
+        app = create_app()
+        port = int(os.environ.get('PORT', 3001))
+        app.run(
+            host='0.0.0.0',
+            port=port,
+            debug=True,
+            threaded=True,
+            use_reloader=False
+        )
+    except Exception as e:
+        print(f"Error iniciando la aplicación: {str(e)}")
+        raise
