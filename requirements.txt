@@ -56,3 +56,7 @@ reportlab
 fpdf2
 reportlab
 fpdf
+fpdf2
+PyMuPDF
+fpdf2
+PyMuPDF

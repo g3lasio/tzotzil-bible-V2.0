@@ -1,7 +1,12 @@
 
 import json
 import logging
-import fitz  # PyMuPDF para PDFs
+try:
+    import fitz  # PyMuPDF para PDFs
+except ImportError:
+    import logging
+    logging.warning("PyMuPDF no disponible, algunas funciones de PDF estarán limitadas")
+    fitz = None
 from pathlib import Path
 from typing import Generator, Dict, Any, List, Union
 from database import get_db

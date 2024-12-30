@@ -99,7 +99,12 @@ class SeminarGenerator:
 
     def export_to_pdf(self, seminar, filename="seminar.pdf"):
         """Exporta el seminario a PDF con marca de agua."""
-        pdf = FPDF()
+        try:
+            from fpdf import FPDF
+            pdf = FPDF()
+        except ImportError:
+            logging.error("FPDF no está instalado, no se puede generar PDF")
+            return None
         pdf.add_page()
         
         # Configuración de fuentes
