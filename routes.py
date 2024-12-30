@@ -594,7 +594,7 @@ def get_db():
     return db_manager.get_session()
 from seminar_generator import SeminarGenerator
 
-@app.route('/generate_seminar', methods=['POST'])
+@routes.route('/generate_seminar', methods=['POST'])
 def generate_seminar():
     try:
         data = request.get_json()
