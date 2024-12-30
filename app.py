@@ -16,7 +16,12 @@ logger = logging.getLogger(__name__)
 def create_app():
     """Crear y configurar la aplicación Flask"""
     logger.info("Iniciando creación de la aplicación Flask...")
+    
+    # Verificar procesos y recursos
+    cleanup_resources()
+    
     app = Flask(__name__)
+    app.logger.setLevel(logging.INFO)
 
     # Configuración básica
     app.config.update(

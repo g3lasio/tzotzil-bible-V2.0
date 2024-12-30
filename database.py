@@ -83,10 +83,18 @@ class DatabaseManager:
         """Inicializa la conexión a la base de datos de manera segura."""
         with self._initialization_lock:
             try:
+                # Verificar estado actual
                 if self._health_status['initialization_complete']:
-                    logger.info("Base de datos ya inicializada")
-                    return self._health_status
-                
+                    # Validar conexión existente
+                    try:
+                        session = self.get_session()
+                        session.execute(text('SELECT 1')).scalar()
+                        logger.info("Conexión existente verificada")
+                        return self._health_status
+                    except Exception:
+                        logger.warning("Reconectando base de datos...")
+                        self._health_status['initialization_complete'] = False
+
                 logger.info("Verificando integridad de la base de datos...")
                 session = self.get_session()
                 

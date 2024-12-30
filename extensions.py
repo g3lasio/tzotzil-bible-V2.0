@@ -91,18 +91,43 @@ def verify_database_connection(db_session):
 def init_extensions(app):
     """Initialize Flask extensions"""
     try:
-        # Initialize database
-        if not configure_database(app):
-            raise Exception("Error en la configuración de la base de datos")
+        logger.info("Iniciando inicialización de extensiones...")
+        
+        # Verificar configuración previa
+        if not app.config.get('SQLALCHEMY_DATABASE_URI'):
+            raise ValueError("URI de base de datos no configurada")
+            
+        # Limpiar conexiones existentes
+        if hasattr(db, 'session'):
+            db.session.remove()
+        if hasattr(db, 'engine'):
+            db.engine.dispose()
 
-        # Initialize migrations
-        migrate.init_app(app, db)
+        # Initialize database con retry
+        for attempt in range(3):
+            try:
+                if configure_database(app):
+                    break
+                logger.warning(f"Intento {attempt + 1} de configuración de BD fallido")
+            except Exception as e:
+                logger.error(f"Error en intento {attempt + 1}: {str(e)}")
+                if attempt == 2:
+                    raise
+
+        # Initialize migrations con verificación
+        try:
+            migrate.init_app(app, db)
+            db.session.execute(text('SELECT 1'))
+            logger.info("Migraciones inicializadas correctamente")
+        except Exception as e:
+            logger.error(f"Error en migraciones: {str(e)}")
+            raise
 
         logger.info("Extensions initialized successfully")
         return True
 
     except Exception as e:
-        logger.error(f"Error initializing extensions: {str(e)}")
+        logger.error(f"Error crítico inicializando extensiones: {str(e)}")
         if hasattr(db, 'session'):
             db.session.remove()
         return False
