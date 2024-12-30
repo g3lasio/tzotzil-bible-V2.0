@@ -9,6 +9,17 @@ logger = logging.getLogger(__name__)
 # Crear blueprint
 nevin_bp = Blueprint('nevin_bp', __name__)
 
+def init_nevin_service(app):
+    """Inicializa el servicio de Nevin"""
+    try:
+        from nevin_service import NevinService
+        app.nevin_service = NevinService(app)
+        logger.info("Servicio Nevin inicializado correctamente")
+        return True
+    except Exception as e:
+        logger.error(f"Error inicializando servicio Nevin: {str(e)}")
+        return False
+
 @nevin_bp.route('/')
 def nevin_page():
     """Renderiza la página principal de Nevin."""
