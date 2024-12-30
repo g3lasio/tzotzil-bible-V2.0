@@ -78,6 +78,42 @@ class NevinService:
             logger.error(f"Error buscando contenido de EGW: {e}")
             return []
 
+    def _generate_fallback_response(self, question: str) -> Dict[str, Any]:
+        """Genera una respuesta usando solo GPT-4 cuando FAISS/DB no están disponibles."""
+        try:
+            fallback_prompt = """Como asistente bíblico experto, proporciona una respuesta basada en tu conocimiento de la Biblia y los escritos de Elena G. White. 
+            Incluye referencias bíblicas específicas y citas textuales de Elena G. White con sus referencias de libros.
+            
+            FORMATO DE RESPUESTA:
+            1. Explicación bíblica con versículos específicos
+            2. Citas relevantes de Elena G. White con referencias exactas de libros
+            3. Aplicación práctica
+            
+            Pregunta: {question}"""
+            
+            response = self.client.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": self.system_context},
+                    {"role": "user", "content": fallback_prompt.format(question=question)}
+                ],
+                temperature=0.7,
+                max_tokens=1000
+            )
+            
+            return {
+                'response': response.choices[0].message.content,
+                'success': True,
+                'source': 'fallback'
+            }
+        except Exception as e:
+            logger.error(f"Error en fallback: {str(e)}")
+            return {
+                'response': "Lo siento, no puedo generar una respuesta en este momento.",
+                'success': False,
+                'source': 'error'
+            }
+
     def process_query(self, question: str, conversation_history: List[Dict[str, str]] = None) -> Dict[str, Any]:
         """Procesa consultas del usuario manteniendo el contexto conversacional."""
         try:
@@ -92,6 +128,17 @@ class NevinService:
             if conversation_history:
                 for msg in conversation_history[-3:]:  # Últimos 3 mensajes
                     context += f"{'Usuario' if msg['role'] == 'user' else 'Nevin'}: {msg['content']}\n"
+                    
+            # Intentar obtener resultados de FAISS/DB
+            try:
+                if not kb_manager.initialize():
+                    logger.warning("FAISS no disponible, usando fallback")
+                    return self._generate_fallback_response(question)
+                    
+                results = kb_manager.search_knowledge_base(question, top_k=5)
+                if not results:
+                    logger.warning("No se encontraron resultados en FAISS, usando fallback")
+                    return self._generate_fallback_response(question)
             if not kb_manager.initialize():
                 logger.error("Error inicializando KnowledgeBaseManager")
                 return self._generate_error_response("Error de inicialización del sistema")
