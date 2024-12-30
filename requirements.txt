@@ -60,3 +60,4 @@ fpdf2
 PyMuPDF
 fpdf2
 PyMuPDF
+fpdf
