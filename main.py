@@ -1,3 +1,33 @@
+
+import logging
+import time
+from typing import Tuple
+from sqlalchemy import text
+from extensions import db
+from database import db_manager
+from cache_manager import cache_manager
+from db_monitor import db_monitor
+
+def verify_critical_services(app) -> Tuple[bool, str]:
+    """Verifica el estado de los servicios críticos."""
+    try:
+        with app.app_context():
+            # 1. Verificar base de datos
+            try:
+                db.session.execute(text('SELECT 1'))
+                logger.info("Conexión a base de datos verificada")
+            except Exception as e:
+                return False, f"Error en base de datos: {str(e)}"
+
+            # 2. Verificar monitor de base de datos
+            if not db_monitor.is_running:
+                return False, "Monitor de base de datos no está ejecutándose"
+            logger.info("Monitor de base de datos verificado")
+
+            return True, "Todos los servicios críticos funcionando correctamente"
+    except Exception as e:
+        return False, f"Error verificando servicios: {str(e)}"
+
 """
 Módulo principal para inicialización y gestión de la aplicación
 """

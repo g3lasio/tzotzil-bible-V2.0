@@ -63,10 +63,19 @@ class DatabaseManager:
             try:
                 if not hasattr(g, 'db_session'):
                     logger.info("Creando nueva sesión de base de datos...")
-                    g.db_session = db.session
-                    # Verificar la conexión inmediatamente
-                    g.db_session.execute(text('SELECT 1')).scalar()
-                    logger.info("Nueva sesión de base de datos creada y verificada")
+                    for attempt in range(3):
+                        try:
+                            g.db_session = db.session
+                            g.db_session.execute(text('SELECT 1')).scalar()
+                            logger.info("Nueva sesión de base de datos creada y verificada")
+                            break
+                        except Exception as e:
+                            logger.error(f"Intento {attempt + 1} fallido: {str(e)}")
+                            if hasattr(g, 'db_session'):
+                                g.db_session.remove()
+                            if attempt == 2:
+                                raise
+                            time.sleep(2)
                 return g.db_session
             except Exception as e:
                 logger.error(f"Error al obtener sesión de base de datos: {str(e)}")

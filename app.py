@@ -56,8 +56,10 @@ if __name__ == '__main__':
         app.run(
             host='0.0.0.0',
             port=port,
-            debug=True,
-            threaded=True
+            debug=False,
+            threaded=True,
+            use_reloader=False,
+            max_content_length=16 * 1024 * 1024
         )
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
