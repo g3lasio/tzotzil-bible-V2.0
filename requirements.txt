@@ -33,3 +33,9 @@ faiss-cpu
 openai
 langchain-community
 langchain-community
+flask
+flask-babel
+flask-login
+flask-sqlalchemy
+openai
+python-dotenv

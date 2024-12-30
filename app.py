@@ -5,6 +5,7 @@ import os
 import logging
 from flask import Flask, render_template
 from extensions import db, init_extensions
+from attached_assets.chat_request import get_ai_response
 
 # Configuración básica de logging
 logging.basicConfig(
@@ -46,19 +47,13 @@ def create_app():
 
     # Registrar blueprints
     from routes import routes
-    from nevin_routes import nevin_bp, init_nevin_service
+    from nevin_routes import nevin_bp
     from auth import auth
 
     app.register_blueprint(routes)
     app.register_blueprint(nevin_bp, url_prefix='/nevin')
     app.register_blueprint(auth)
 
-    # Inicializar servicio Nevin
-    try:
-        init_nevin_service(app)
-    except Exception as e:
-        logger.error(f"Error inicializando Nevin: {str(e)}")
-        # Continue even if Nevin fails to initialize
 
     # Manejadores de error
     @app.errorhandler(404)
@@ -81,7 +76,7 @@ def create_app():
 
 if __name__ == '__main__':
     app = create_app()
-    port = int(os.environ.get('PORT', 3000))
+    port = int(os.environ.get('PORT', 5000))  # Cambiado a puerto 5000 por defecto
     app.run(
         host='0.0.0.0',
         port=port,

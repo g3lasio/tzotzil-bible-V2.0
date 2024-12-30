@@ -1,5 +1,6 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify
+from attached_assets.chat_request import get_ai_response
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
@@ -7,21 +8,6 @@ logger = logging.getLogger(__name__)
 
 # Crear blueprint
 nevin_bp = Blueprint('nevin_bp', __name__)
-
-# Servicio Nevin
-nevin_service = None
-
-def init_nevin_service(app):
-    """Inicializa el servicio Nevin."""
-    global nevin_service
-    try:
-        # Importar aquí para evitar importaciones circulares
-        from nevin_service import NevinService
-        nevin_service = NevinService(app)
-        logger.info("Servicio Nevin inicializado correctamente")
-    except Exception as e:
-        logger.error(f"Error inicializando servicio Nevin: {str(e)}")
-        raise
 
 @nevin_bp.route('/')
 def nevin_page():
@@ -38,13 +24,6 @@ def nevin_page():
 def nevin_query():
     """Procesa consultas enviadas a Nevin."""
     try:
-        if not nevin_service:
-            logger.error("Servicio Nevin no inicializado")
-            return jsonify({
-                'response': "El servicio Nevin no está disponible en este momento.",
-                'success': False
-            }), 503
-
         data = request.get_json()
         if not data:
             return jsonify({
@@ -59,8 +38,18 @@ def nevin_query():
                 'success': False
             }), 400
 
+        # Obtener el contexto de la conversación si existe
+        context = data.get('context', '')
+        language = data.get('language', 'Spanish')
+        user_preferences = data.get('preferences', {})
+
         logger.info(f"Procesando consulta: {question[:50]}...")
-        response = nevin_service.process_query(question)
+        response = get_ai_response(
+            question=question,
+            context=context,
+            language=language,
+            user_preferences=user_preferences
+        )
 
         return jsonify(response), 200
 
