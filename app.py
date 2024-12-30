@@ -1,3 +1,18 @@
+
+import os
+import sys
+import logging
+import traceback
+from flask import Flask, render_template
+from extensions import db, init_extensions
+
+# Configuración de logging
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
 """
 Aplicación principal Flask con manejo de base de datos
 """
@@ -13,12 +28,28 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def cleanup_resources():
+    """Limpia recursos y procesos existentes"""
+    try:
+        import psutil
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                for conn in proc.connections('inet'):
+                    if conn.laddr.port == 3001:
+                        proc.terminate()
+            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                continue
+    except Exception as e:
+        logger.error(f"Error limpiando recursos: {str(e)}")
+
 def create_app():
     """Crear y configurar la aplicación Flask"""
     logger.info("Iniciando creación de la aplicación Flask...")
     
-    # Verificar procesos y recursos
-    cleanup_resources()
+    try:
+        cleanup_resources()
+    except Exception as e:
+        logger.warning(f"No se pudieron limpiar recursos: {str(e)}")
     
     app = Flask(__name__)
     app.logger.setLevel(logging.INFO)
@@ -84,27 +115,37 @@ def create_app():
     logger.info("Aplicación Flask creada exitosamente")
     return app
 
-if __name__ == '__main__':
+def start_server():
+    """Inicia el servidor con manejo de errores mejorado"""
     try:
-        import psutil
-        # Matar cualquier proceso usando el puerto 3001
-        for proc in psutil.process_iter(['pid', 'name', 'connections']):
-            try:
-                for conn in proc.connections():
-                    if conn.laddr.port == 3001:
-                        proc.kill()
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
-                pass
-                
         app = create_app()
+        if not app:
+            raise RuntimeError("Fallo en la creación de la aplicación")
+
         port = int(os.environ.get('PORT', 3001))
+        
+        # Verificar puerto disponible
+        import socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        result = sock.connect_ex(('0.0.0.0', port))
+        sock.close()
+        
+        if result == 0:
+            logger.warning(f"Puerto {port} en uso, intentando limpiar...")
+            cleanup_resources()
+        
+        logger.info(f"Iniciando servidor en puerto {port}")
         app.run(
             host='0.0.0.0',
             port=port,
-            debug=True,
+            debug=False,
             threaded=True,
             use_reloader=False
         )
     except Exception as e:
-        print(f"Error iniciando la aplicación: {str(e)}")
-        raise
+        logger.error(f"Error crítico iniciando servidor: {str(e)}")
+        logger.error(traceback.format_exc())
+        sys.exit(1)
+
+if __name__ == '__main__':
+    start_server()
