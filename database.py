@@ -201,7 +201,14 @@ class DatabaseManager:
             result = session.execute(text("""
                 SELECT DISTINCT book
                 FROM bibleverse
-                ORDER BY book
+                ORDER BY CASE 
+                    WHEN book = ANY(ARRAY['Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio'])
+                    THEN 1
+                    WHEN book = ANY(ARRAY['Mateo', 'Marcos', 'Lucas', 'Juan'])
+                    THEN 2
+                    ELSE 3
+                END,
+                book
             """))
 
             books = [row[0] for row in result]
@@ -270,14 +277,10 @@ class DatabaseManager:
             verses = []
 
             for row in result:
-                verse_dict = {
-                    'id': row[0],
-                    'book': row[1],
-                    'chapter': str(row[2]),
-                    'verse': str(row[3]),
-                    'spanish_text': row[4],
-                    'tzotzil_text': row[5]
-                }
+                verse_dict = {}
+                columns = ['id', 'book', 'chapter', 'verse', 'spanish_text', 'tzotzil_text']
+                for i, column in enumerate(columns):
+                    verse_dict[column] = str(row[i]) if row[i] is not None else ''
                 verses.append(verse_dict)
 
             logger.info(f"Versículos encontrados: {len(verses)}")
