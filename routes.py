@@ -519,7 +519,7 @@ def get_chapters(book):
                 'message': chapters_result['error']
             }), 500
             
-        chapters = chapters_result['data']
+        chapters = chapters_result['data']['chapters']
         if not chapters:
             logger.warning(f"No se encontraron capítulos para el libro {book}")
             return jsonify({
