@@ -296,9 +296,10 @@ class NevinChat {
             messageElement.innerHTML = formattedText;
             
             // Agregar enlace de descarga si el mensaje contiene un pdf_url
-            if (!isUser && formattedText.includes('Seminario generado') && data?.pdf_url) {
+            if (!isUser && formattedText.includes('Seminario generado')) {
                 const downloadLink = document.createElement('a');
-                downloadLink.href = data.pdf_url;
+                const timestamp = new Date().getTime();
+                downloadLink.href = `/nevin/download_seminar/seminar_${timestamp}.pdf`;
                 downloadLink.className = 'seminar-download-link';
                 downloadLink.innerHTML = '📄 Descargar Seminario PDF';
                 downloadLink.target = '_blank';
