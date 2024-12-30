@@ -31,6 +31,16 @@ def nevin_page():
         return render_template('error.html', 
                            error="Hubo un problema al cargar la página."), 500
 
+@nevin_bp.route('/download_seminar/<filename>')
+def download_seminar(filename):
+    """Sirve el archivo PDF del seminario."""
+    try:
+        seminars_dir = os.path.join('static', 'seminars')
+        return send_from_directory(seminars_dir, filename, as_attachment=True)
+    except Exception as e:
+        logger.error(f"Error sirviendo PDF: {str(e)}")
+        return jsonify({'error': str(e)}), 404
+
 @nevin_bp.route('/query', methods=['POST'])
 def nevin_query():
     """Procesa consultas enviadas a Nevin."""

@@ -97,7 +97,15 @@ class SeminarGenerator:
             "call_to_action": "Te invito a tomar una decisión hoy..."
         }
 
-    def export_to_pdf(self, seminar, filename="seminar.pdf"):
+    def export_to_pdf(self, seminar, filename=None):
+    if filename is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"seminar_{timestamp}.pdf"
+    
+    # Asegurar que el directorio existe
+    output_dir = os.path.join('static', 'seminars')
+    os.makedirs(output_dir, exist_ok=True)
+    filepath = os.path.join(output_dir, filename)
         """Exporta el seminario a PDF con marca de agua."""
         try:
             from fpdf import FPDF

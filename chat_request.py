@@ -177,9 +177,23 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
             # Log successful response generation
             logger.info("Successfully generated AI response")
 
+            # Generar PDF si es un seminario
+            pdf_url = None
+            if "seminario" in response_text.lower():
+                try:
+                    from seminar_generator import SeminarGenerator
+                    generator = SeminarGenerator()
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    filename = f"seminar_{timestamp}.pdf"
+                    generator.export_to_pdf({"content": response_text}, filename)
+                    pdf_url = f"/nevin/download_seminar/{filename}"
+                except Exception as e:
+                    logger.error(f"Error generando PDF: {str(e)}")
+
             return {
                 "success": True,
-                "response": response_text
+                "response": response_text,
+                "pdf_url": pdf_url
             }
 
         except OpenAIError as e:
