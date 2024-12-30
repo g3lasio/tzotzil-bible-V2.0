@@ -5,7 +5,6 @@ import os
 import time
 import logging
 from datetime import datetime
-from urllib.parse import urlparse
 from flask import request, current_app
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -49,15 +48,16 @@ def configure_database(app):
         # Initialize migrations
         migrate.init_app(app, db)
 
-        # Create tables if they don't exist
+        # Verify database connection
         with app.app_context():
             db.create_all()
             verify_database_connection(db.session)
 
-        logger.info("Configuración de base de datos completada")
+        logger.info("Database configuration completed successfully")
         return True
+
     except Exception as e:
-        logger.error(f"Error configurando base de datos: {str(e)}")
+        logger.error(f"Error configuring database: {str(e)}")
         if hasattr(db, 'session'):
             db.session.remove()
         if hasattr(db, 'engine'):
@@ -72,17 +72,17 @@ def verify_database_connection(db_session):
         response_time = time.time() - start_time
 
         if response_time > 5.0:
-            logger.warning(f"Conexión a base de datos lenta: {response_time:.2f}s")
+            logger.warning(f"Slow database connection: {response_time:.2f}s")
 
         row = result.fetchone()
         if row and row[0] == 1:
-            logger.info("Verificación de conexión exitosa")
-            return True, "Conexión exitosa"
+            logger.info("Database connection verification successful")
+            return True, "Connection successful"
         else:
-            logger.error("La consulta de verificación no retornó el resultado esperado")
-            return False, "Error en la verificación de conexión"
+            logger.error("Database verification query did not return expected result")
+            return False, "Error in connection verification"
     except Exception as e:
-        error_msg = f"Error verificando conexión a la base de datos: {str(e)}"
+        error_msg = f"Error verifying database connection: {str(e)}"
         logger.error(error_msg)
         return False, error_msg
 

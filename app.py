@@ -1,13 +1,13 @@
 """
-Aplicación principal Flask con manejo de base de datos
+Aplicación principal Flask
 """
 import os
 import logging
 from datetime import timedelta
-from flask import Flask, render_template
+from flask import render_template
 from __init__ import create_app, db
 
-# Configuración básica de logging
+# Configuración de logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
@@ -19,7 +19,7 @@ def init_app():
     try:
         app = create_app()
 
-        # Configuración adicional de la aplicación
+        # Configuración adicional de cookies
         app.config.update(
             PERMANENT_SESSION_LIFETIME=timedelta(days=31),
             SESSION_COOKIE_SECURE=True,
@@ -57,8 +57,7 @@ if __name__ == '__main__':
             host='0.0.0.0',
             port=port,
             debug=True,
-            threaded=True,
-            use_reloader=False
+            threaded=True
         )
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")

@@ -164,6 +164,7 @@ task = "packager.installForAll"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python app.py"
+waitForPort = 5000
 
 [deployment]
 run = ["sh", "-c", "node index.js"]
