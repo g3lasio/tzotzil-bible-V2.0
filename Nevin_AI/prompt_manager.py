@@ -9,7 +9,40 @@ class PromptManager:
     """Gestor simplificado de prompts."""
 
     def __init__(self):
-        self.base_prompt = """Eres Nevin, un asistente virtual adventista del séptimo día con profundo conocimiento de la Biblia y los escritos de Elena G. White. Responde preguntas bíblicas y espirituales con autoridad, convicción y alineación a la teología adventista. Usa la Biblia y los escritos de Elena G. White como tus principales fuentes, citándolos directamente. Siempre mantén un tono cálido, pastoral y claro. Tu propósito: Ser un compañero espiritual adventista que no solo informa, sino que conecta profundamente con el usuario, ofreciendo guía bíblica y doctrinal de manera cálida, clara y adaptada a las necesidades de cada interacción.
+        # Cargar validación doctrinal
+        self.doctrinal_data = self._load_doctrinal_validation()
+        
+        # Construir contexto doctrinal
+        doctrinal_context = self._build_doctrinal_context()
+        
+        self.base_prompt = f"""Eres Nevin, un asistente virtual adventista del séptimo día con profundo conocimiento de la Biblia y los escritos de Elena G. White.
+
+{doctrinal_context}"""
+
+    def _load_doctrinal_validation(self):
+        """Carga el archivo de validación doctrinal."""
+        try:
+            with open('Nevin_AI/data/validacion_doctrinal.json', 'r', encoding='utf-8') as f:
+                return json.load(f)
+        except Exception as e:
+            logger.error(f"Error cargando validación doctrinal: {str(e)}")
+            return {}
+
+    def _build_doctrinal_context(self):
+        """Construye el contexto doctrinal para el prompt."""
+        if not self.doctrinal_data:
+            return ""
+        
+        context = "\nBase Doctrinal:\n"
+        for category in self.doctrinal_data.get('categories', []):
+            context += f"\nCategoría: {category['category']}\n"
+            for doctrine in category['doctrines']:
+                context += f"- {doctrine['doctrine_name']}: {doctrine['description']}\n"
+                # Agregar principios clave
+                for principle in doctrine.get('key_principles', []):
+                    context += f"  * {principle['principle']}\n"
+        
+        return context Responde preguntas bíblicas y espirituales con autoridad, convicción y alineación a la teología adventista. Usa la Biblia y los escritos de Elena G. White como tus principales fuentes, citándolos directamente. Siempre mantén un tono cálido, pastoral y claro. Tu propósito: Ser un compañero espiritual adventista que no solo informa, sino que conecta profundamente con el usuario, ofreciendo guía bíblica y doctrinal de manera cálida, clara y adaptada a las necesidades de cada interacción.
 
 En cada interacción:
 
@@ -56,7 +89,11 @@ Ejemplo:
 "¿Sabías que confiar en Dios es como usar una conexión Wi-Fi? Aunque no lo ves, sabes que está ahí, dándote acceso a recursos ilimitados cuando te conectas a Él.""""
 
     async def generate_structured_response(self, content: str) -> str:
-        """Genera una respuesta estructurada."""
+        """Genera una respuesta estructurada usando la base doctrinal."""
+        try:
+            # Buscar doctrinas relevantes para la consulta
+            relevant_doctrines = self._find_relevant_doctrines(content)
+            doctrinal_context = self._create_response_context(relevant_doctrines)
         try:
             from azure_openai_config import openai_config
             messages = [{
@@ -103,3 +140,37 @@ Ejemplo:
 
         text_lower = text.lower()
         return any(keyword in text_lower for keyword in emotional_keywords)
+
+
+    def _find_relevant_doctrines(self, query: str) -> list:
+        """Encuentra doctrinas relevantes para la consulta."""
+        relevant = []
+        for category in self.doctrinal_data.get('categories', []):
+            for doctrine in category['doctrines']:
+                # Búsqueda simple por palabras clave
+                if any(keyword in query.lower() for keyword in doctrine['doctrine_name'].lower().split()):
+                    relevant.append(doctrine)
+        return relevant
+
+    def _create_response_context(self, doctrines: list) -> str:
+        """Crea contexto específico para la respuesta basado en doctrinas relevantes."""
+        context = "\nContexto Doctrinal Relevante:\n"
+        for doctrine in doctrines:
+            context += f"\nDoctrina: {doctrine['doctrine_name']}\n"
+            context += f"Descripción: {doctrine['description']}\n"
+            
+            # Agregar referencias bíblicas clave
+            if doctrine.get('biblical_references'):
+                context += "Referencias Bíblicas:\n"
+                for ref in doctrine['biblical_references']:
+                    context += f"- {ref['verse']}: {ref['context']}\n"
+                    
+            # Agregar aplicaciones prácticas
+            if doctrine.get('practical_applications'):
+                context += "Aplicaciones:\n"
+                for app in doctrine['practical_applications']:
+                    if isinstance(app, dict):
+                        context += f"- Básico: {app.get('beginner', '')}\n"
+                        context += f"- Avanzado: {app.get('advanced', '')}\n"
+        
+        return context
