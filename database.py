@@ -348,6 +348,10 @@ def backup_database() -> bool:
     """Realiza una copia de seguridad de la base de datos"""
     return db_manager.backup_database()
 
+def get_db():
+    """Obtiene una sesión de base de datos"""
+    return db_manager.get_session()
+
 # Orden bíblico de los libros
 BIBLE_BOOKS_ORDER = [
     'Génesis', 'Éxodo', 'Levítico', 'Números', 'Deuteronomio', 'Josué',

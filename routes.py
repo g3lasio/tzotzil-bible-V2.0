@@ -1,11 +1,12 @@
 from flask import Blueprint, request, Flask, jsonify, render_template, redirect, url_for, g, session, flash
 from flask_login import login_required, current_user
-from database import db_manager
+from database import db_manager, get_db
 from extensions import db
 from datetime import datetime, timedelta
 from sqlalchemy import text
 from auth import auth
 from models import Promise, BibleVerse
+from flask import current_app
 from database import get_sorted_books
 import logging
 import csv

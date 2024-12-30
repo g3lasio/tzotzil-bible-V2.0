@@ -1,15 +1,15 @@
-
 from datetime import datetime
 from fpdf import FPDF
 import textwrap
 import os
-from database import get_db
+from extensions import db
+from models import BibleVerse
 from knowledge_base_manager import KnowledgeBaseManager
 
 class SeminarGenerator:
     def __init__(self):
         self.kb_manager = KnowledgeBaseManager()
-        self.db = get_db()
+        self.db = db.session
 
     def generate_seminar(self, topic, audience="general", duration="60min"):
         """Genera un seminario temático estructurado."""
@@ -41,13 +41,9 @@ class SeminarGenerator:
 
     def _find_relevant_verse(self, topic):
         """Busca un versículo clave relacionado con el tema."""
-        cursor = self.db.cursor()
-        cursor.execute(
-            "SELECT text, reference FROM verses WHERE text LIKE ? LIMIT 1",
-            (f"%{topic}%",)
-        )
-        result = cursor.fetchone()
-        return result if result else ("Daniel 12:3", "Los entendidos resplandecerán como el resplandor del firmamento")
+        verse = BibleVerse.query.filter(BibleVerse.text.like(f"%{topic}%")).first()
+        return (verse.text, verse.reference) if verse else ("Daniel 12:3", "Los entendidos resplandecerán como el resplandor del firmamento")
+
 
     def _generate_introduction(self, topic, content):
         """Genera una introducción con una historia contemporánea."""
