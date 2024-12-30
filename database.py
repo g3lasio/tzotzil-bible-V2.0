@@ -294,10 +294,7 @@ class DatabaseManager:
             verses = []
 
             for row in result:
-                verse_dict = {}
-                columns = ['id', 'book', 'chapter', 'verse', 'spanish_text', 'tzotzil_text']
-                for i, column in enumerate(columns):
-                    verse_dict[column] = str(row[i]) if row[i] is not None else ''
+                verse_dict = dict(row._mapping)
                 verses.append(verse_dict)
 
             logger.info(f"Versículos encontrados: {len(verses)}")
