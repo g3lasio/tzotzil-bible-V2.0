@@ -404,10 +404,31 @@ class NevinChat {
         }
     }
 
+    constructor() {
+        this.state = {
+            currentEmotion: "neutral",
+            chatHistory: [],
+            conversationContext: [],
+            userContext: {},
+            isProcessing: false,
+            userId: document.querySelector('meta[name="user-id"]')?.content || null,
+            transformationActive: false,
+        };
+        document.addEventListener("DOMContentLoaded", () => this.init());
+    }
+
     async sendMessage() {
         const inputField = document.getElementById("user-input");
         const sendButton = document.getElementById("send-button");
         const message = inputField?.value.trim();
+        
+        // Mantener historial de conversación
+        if (message) {
+            this.state.conversationContext.push({
+                "role": "user",
+                "content": message
+            });
+        }
         const chatHistory = document.getElementById("chat-history");
         const suggestionsContainer = document.getElementById(
             "suggestions-container",
@@ -477,8 +498,18 @@ class NevinChat {
                 body: JSON.stringify({
                     question: message,
                     user_id: window.userId || this.state.userId,
+                    context: JSON.stringify(this.state.conversationContext.slice(-10)) // Enviar últimos 10 mensajes
                 }),
             });
+            
+            // Agregar respuesta al contexto
+            if (response.ok) {
+                const data = await response.json();
+                this.state.conversationContext.push({
+                    "role": "assistant",
+                    "content": data.response
+                });
+            }
 
             console.log("Respuesta del servidor:", response);
 
