@@ -1080,15 +1080,27 @@ body {
 .header-content {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
 }
 
 .header-top {
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr;
     align-items: center;
-    padding-bottom: 1rem;
+    padding: 1rem;
     border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+}
+
+.book-nav {
+    justify-self: start;
+}
+
+.controls-section {
+    justify-self: center;
+}
+
+.title-section {
+    justify-self: end;
 }
 
 .title-section h1.chapter-title {
@@ -1098,13 +1110,10 @@ body {
     font-size: clamp(1.2rem, 4vw, 1.5rem);
     letter-spacing: 0.05em;
     text-transform: uppercase;
-    text-align: center;
+    text-align: right;
 }
 
 .header-book-btn {
-    position: fixed;
-    left: 1rem;
-    top: 1rem;
     color: var(--glow-primary);
     font-size: 2.2rem;
     text-decoration: none;
@@ -1112,12 +1121,6 @@ body {
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
-    z-index: 1000;
-    background: var(--bg-darker);
-    padding: 0.8rem;
-    border-radius: 12px;
-    border: 2px solid var(--glow-primary);
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
 }
 
 .header-book-btn:hover {

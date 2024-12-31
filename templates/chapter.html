@@ -16,8 +16,10 @@
             <header class="header">
                 <div class="header-content">
                     <div class="header-top">
-                        <div class="title-section">
-                            <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
+                        <div class="book-nav">
+                            <a href="{{ url_for('routes.books') }}" class="header-book-btn">
+                                <i class="bi bi-book-half"></i>
+                            </a>
                         </div>
                         <div class="controls-section">
                             <div class="language-toggle-wrapper">
@@ -29,12 +31,12 @@
                                 </label>
                             </div>
                         </div>
+                        <div class="title-section">
+                            <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
+                        </div>
                     </div>
 
                     <div class="navigation-section">
-                        <a href="{{ url_for('routes.books') }}" class="header-book-btn">
-                            <i class="bi bi-book-half"></i>
-                        </a>
                         
                         <div class="nav-arrows">
                             {% if chapter > 1 %}
