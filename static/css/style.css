@@ -1105,8 +1105,8 @@ body {
     position: fixed;
     left: 1rem;
     top: 1rem;
-    color: var(--glow-primary);
-    font-size: 1.8rem;
+    color: #ff3366;
+    font-size: 2rem;
     text-decoration: none;
     display: flex;
     align-items: center;
@@ -1114,15 +1114,23 @@ body {
     transition: all 0.3s ease;
     z-index: 1000;
     background: var(--bg-darker);
-    padding: 0.5rem;
-    border-radius: 50%;
-    border: 2px solid var(--glow-primary);
-    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+    padding: 0.8rem;
+    border-radius: 12px;
+    border: 2px solid #ff3366;
+    box-shadow: 0 0 15px rgba(255, 51, 102, 0.5),
+                inset 0 0 10px rgba(255, 51, 102, 0.3);
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.8);
 }
 
 .header-book-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 0 15px var(--glow-primary);
+    box-shadow: 0 0 25px rgba(255, 51, 102, 0.8),
+                inset 0 0 15px rgba(255, 51, 102, 0.5);
+    color: #ff6b88;
+}
+
+.header-book-btn i {
+    filter: drop-shadow(0 0 5px rgba(255, 51, 102, 0.8));
 }
 
 .header-book-btn:hover {
