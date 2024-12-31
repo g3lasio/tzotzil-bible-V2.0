@@ -138,21 +138,38 @@ function removeGlowEffect(element) {
     element.style.transform = '';
 }
 function downloadPDF(pdfUrl, filename) {
-    const link = document.createElement('a');
-    link.href = pdfUrl;
-    link.download = filename;
-    link.target = '_blank';
-    
-    // Detectar dispositivo móvil
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
     if (isMobile) {
-        // En móviles, abrir en nueva pestaña
-        window.open(pdfUrl, '_blank');
+        // En móviles, mostrar opciones de descarga
+        const downloadOptions = document.createElement('div');
+        downloadOptions.className = 'download-options';
+        downloadOptions.innerHTML = `
+            <div class="download-dialog">
+                <h3>Descargar PDF</h3>
+                <button onclick="window.open('${pdfUrl}', '_blank')">Ver en navegador</button>
+                <button onclick="window.location.href='${pdfUrl}'">Descargar directamente</button>
+                <button onclick="shareFile('${pdfUrl}', '${filename}')">Compartir</button>
+            </div>
+        `;
+        document.body.appendChild(downloadOptions);
     } else {
         // En desktop, descarga directa
+        const link = document.createElement('a');
+        link.href = pdfUrl;
+        link.download = filename;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+    }
+}
+
+function shareFile(url, filename) {
+    if (navigator.share) {
+        navigator.share({
+            title: filename,
+            text: 'Descarga este documento',
+            url: url
+        });
     }
 }
