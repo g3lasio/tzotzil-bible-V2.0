@@ -23,13 +23,27 @@ def create_app():
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             'pool_pre_ping': True,
             'pool_recycle': 300,
+            'pool_timeout': 30,
+            'pool_size': 30,
+            'max_overflow': 10
         }
         
         # Inicializar extensiones y base de datos
         with app.app_context():
-            db.create_all()
-            if not init_extensions(app):
-                logger.error("Error inicializando extensiones")
+            try:
+                db.create_all()
+                logger.info("Base de datos inicializada")
+                
+                if not init_extensions(app):
+                    logger.error("Error inicializando extensiones")
+                    return None
+                    
+                # Verificar conexión
+                db.session.execute(text('SELECT 1'))
+                logger.info("Conexión a base de datos verificada")
+                
+            except Exception as e:
+                logger.error(f"Error crítico en inicialización: {str(e)}")
                 return None
             
         # Registrar rutas
