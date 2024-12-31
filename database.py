@@ -1,4 +1,3 @@
-
 """
 DatabaseManager - Sistema robusto de gestión de base de datos con verificación y recuperación automática
 """
@@ -112,5 +111,15 @@ class DatabaseManager:
 db_manager = DatabaseManager()
 
 def get_db():
-    """Obtiene una sesión de base de datos"""
+    """Get database session using the database manager"""
     return db_manager.get_session()
+
+def get_sorted_books():
+    """Obtiene la lista de libros ordenados según el orden bíblico"""
+    try:
+        session = get_db()
+        books = session.execute(text('SELECT DISTINCT book FROM bibleverse ORDER BY id')).fetchall()
+        return [book[0] for book in books] if books else []
+    except Exception as e:
+        logger.error(f"Error obteniendo libros: {str(e)}")
+        return []
