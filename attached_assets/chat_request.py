@@ -105,7 +105,31 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
             )
             
             if response.choices[0].message.content:
-                response_text = response.choices[0].message.content.replace("\n", "<br>")
+                try:
+                    # Validación y limpieza del contenido
+                    raw_content = response.choices[0].message.content
+                    # Verificar longitud máxima
+                    if len(raw_content) > 8000:
+                        raw_content = raw_content[:8000] + "..."
+                    
+                    # Procesar y validar formato HTML
+                    processed_content = raw_content.replace("\n", "<br>")
+                    processed_content = processed_content.replace("<script>", "&lt;script&gt;")
+                    
+                    # Validar estructura de las cajas de respuesta
+                    for tag in ["verse-box", "quote-box", "info-box"]:
+                        if f"<div class=\"{tag}\">" in processed_content and not f"</div>" in processed_content:
+                            processed_content = processed_content.replace(f"<div class=\"{tag}\">", "")
+                    
+                    response_text = processed_content
+                    
+                    # Verificar integridad de la respuesta
+                    if not response_text or response_text.isspace():
+                        raise ValueError("Respuesta vacía o inválida")
+                        
+                except Exception as e:
+                    logger.error(f"Error procesando respuesta: {str(e)}")
+                    response_text = "Lo siento, hubo un error procesando la respuesta. Por favor, intenta de nuevo."
             
             # Generar PDF si es un seminario
             pdf_url = None

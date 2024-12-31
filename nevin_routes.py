@@ -44,9 +44,31 @@ def download_seminar(filename):
 @nevin_bp.route('/query', methods=['POST'])
 def nevin_query():
     """Procesa consultas enviadas a Nevin."""
-    try:
-        data = request.get_json()
-        user_id = session.get('user_id')
+    MAX_RETRIES = 3
+    retry_count = 0
+    
+    while retry_count < MAX_RETRIES:
+        try:
+            data = request.get_json()
+            user_id = session.get('user_id')
+            
+            # Validar entrada
+            if not data or not isinstance(data, dict):
+                raise ValueError("Datos de entrada inválidos")
+                
+            question = data.get('question', '').strip()
+            if not question:
+                return jsonify({
+                    'response': "Por favor, escribe tu pregunta.",
+                    'success': False
+                }), 400
+                
+            # Validar longitud de la pregunta
+            if len(question) > 1000:
+                return jsonify({
+                    'response': "La pregunta es demasiado larga. Por favor, sé más conciso.",
+                    'success': False
+                }), 400
         if not data:
             return jsonify({
                 'response': "No se recibieron datos en la consulta.",
