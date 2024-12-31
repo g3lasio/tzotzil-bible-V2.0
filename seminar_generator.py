@@ -17,10 +17,15 @@ class SeminarGenerator:
         pdf.multi_cell(0, 10, content)
 
     def export_to_pdf(self, seminar, filepath):
-        """Exporta el seminario a PDF con marca de agua."""
+        """Exporta el seminario a PDF optimizado para dispositivos móviles."""
         try:
             # Asegurar que el directorio existe
             os.makedirs(os.path.dirname(filepath), exist_ok=True)
+            
+            # Configurar PDF para mejor visualización en móviles
+            pdf = FPDF()
+            pdf.set_auto_page_break(auto=True, margin=15)
+            pdf.set_margin(10)
             
             pdf = FPDF()
             pdf.add_page()

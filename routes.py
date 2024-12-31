@@ -631,3 +631,24 @@ def generate_seminar():
             'success': False,
             'error': str(e)
         }), 500
+
+@routes.route('/download_seminar/<filename>')
+def download_seminar(filename):
+    try:
+        seminars_dir = os.path.join(current_app.static_folder, 'seminars')
+        response = current_app.send_from_directory(
+            seminars_dir, 
+            filename,
+            as_attachment=True
+        )
+        # Agregar headers para mejor compatibilidad móvil
+        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
+        response.headers['Content-Type'] = 'application/pdf'
+        response.headers['Cache-Control'] = 'no-cache'
+        return response
+    except Exception as e:
+        current_app.logger.error(f"Error downloading seminar: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': 'Error downloading seminar'
+        }), 500

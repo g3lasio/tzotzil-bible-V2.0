@@ -137,3 +137,22 @@ function removeGlowEffect(element) {
     element.style.boxShadow = '';
     element.style.transform = '';
 }
+function downloadPDF(pdfUrl, filename) {
+    const link = document.createElement('a');
+    link.href = pdfUrl;
+    link.download = filename;
+    link.target = '_blank';
+    
+    // Detectar dispositivo móvil
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // En móviles, abrir en nueva pestaña
+        window.open(pdfUrl, '_blank');
+    } else {
+        // En desktop, descarga directa
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+}
