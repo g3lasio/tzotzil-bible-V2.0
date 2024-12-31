@@ -22,14 +22,6 @@ from flask import current_app
 def init_extensions(app):
     """Inicializar extensiones de Flask"""
     try:
-        # Configurar logging
-        logging.basicConfig(
-            level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.StreamHandler(),
-                logging.FileHandler('app.log')
-            ])
         logger.info("Iniciando configuración de extensiones...")
         
         # Verificar ambiente

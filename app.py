@@ -28,10 +28,6 @@ def create_app():
             'max_overflow': 10
         }
         
-        # Inicializar extensiones
-        from extensions import db, migrate, mail, babel, cors
-        db.init_app(app)
-        
         # Inicializar extensiones y base de datos
         with app.app_context():
             try:
