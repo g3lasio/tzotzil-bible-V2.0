@@ -25,8 +25,16 @@ def init_extensions(app):
         # Configurar logging
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[
+                logging.StreamHandler(),
+                logging.FileHandler('app.log')
+            ])
         logger.info("Iniciando configuración de extensiones...")
+        
+        # Verificar ambiente
+        if not app.config['SQLALCHEMY_DATABASE_URI']:
+            raise ValueError("URI de base de datos no configurada")
 
         # Inicializar extensiones
         cors.init_app(app)

@@ -10,9 +10,9 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def create_app():
-    app = Flask(__name__)
-    
     try:
+        app = Flask(__name__)
+        
         # Configuración básica
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
         app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
@@ -21,17 +21,21 @@ def create_app():
             'pool_pre_ping': True,
             'pool_recycle': 300,
         }
-    
-    # Inicializar extensiones
-    if not init_extensions(app):
-        logger.error("Error inicializando extensiones")
-        return None
         
-    # Registrar rutas
-    init_routes(app)
-    init_nevin_routes(app)
-    
-    return app
+        # Inicializar extensiones
+        if not init_extensions(app):
+            logger.error("Error inicializando extensiones")
+            return None
+            
+        # Registrar rutas
+        init_routes(app)
+        init_nevin_routes(app)
+        
+        return app
+        
+    except Exception as e:
+        logger.error(f"Error crítico creando la aplicación: {str(e)}")
+        return None
 
 if __name__ == '__main__':
     app = create_app()
