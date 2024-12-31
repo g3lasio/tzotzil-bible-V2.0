@@ -90,3 +90,15 @@ def logout():
     logout_user()
     flash('Has cerrado sesión exitosamente', 'info')
     return redirect(url_for('routes.index'))
+
+@auth.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    """Maneja la recuperación de contraseña"""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Se han enviado instrucciones a tu correo', 'info')
+            return redirect(url_for('auth.login'))
+        flash('Email no encontrado', 'error')
+    return render_template('auth/forgot_password.html')outes.index'))

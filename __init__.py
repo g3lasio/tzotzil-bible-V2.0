@@ -22,10 +22,13 @@ login_manager = LoginManager() # Initialize LoginManager
 def create_app(test_config=None):
     """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
-    
-    from auth import login_manager
-    login_manager.init_app(app)
     app.secret_key = 'tu_clave_secreta_aqui'  # Necesario para manejar sesiones
+    
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
+    login_manager.login_message_category = 'info'
 
     # Configuración base
     app.config.from_mapping(
