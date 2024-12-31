@@ -53,8 +53,11 @@ class DatabaseManager:
 
     def get_session(self):
         """Obtiene una sesión de base de datos con manejo de errores y reconexión automática"""
+        max_retries = 3
+        retry_delay = 1
         with self._session_lock:
-            try:
+            for attempt in range(max_retries):
+                try:
                 if not hasattr(g, 'db_session'):
                     logger.info("Inicializando nueva sesión de base de datos")
                     self._verify_database()

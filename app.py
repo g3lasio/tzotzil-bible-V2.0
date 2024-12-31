@@ -25,10 +25,12 @@ def create_app():
             'pool_recycle': 300,
         }
         
-        # Inicializar extensiones
-        if not init_extensions(app):
-            logger.error("Error inicializando extensiones")
-            return None
+        # Inicializar extensiones y base de datos
+        with app.app_context():
+            db.create_all()
+            if not init_extensions(app):
+                logger.error("Error inicializando extensiones")
+                return None
             
         # Registrar rutas
         init_routes(app)

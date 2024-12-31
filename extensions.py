@@ -59,8 +59,10 @@ def init_extensions(app):
 
             # Verificar tablas requeridas
             required_tables = ['bibleverse', 'users', 'promise']
+            inspector = inspect(db.engine)
+            existing_tables = inspector.get_table_names()
             for table in required_tables:
-                if not db.engine.dialect.has_table(db.engine, table):
+                if table not in existing_tables:
                     logger.error(f"Tabla requerida no encontrada: {table}")
                     return False
                     
