@@ -426,17 +426,23 @@ def search():
 @routes.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
+    """Maneja las configuraciones del usuario"""
     if request.method == 'POST':
         try:
             data = request.get_json()
+            if not data:
+                return jsonify({'status': 'error', 'message': 'No data provided'}), 400
+                
             setting_type = data.get('type')
+            if not setting_type:
+                return jsonify({'status': 'error', 'message': 'Setting type required'}), 400
 
             if setting_type == 'profile':
-                db = get_db()
-                cur = db.cursor()
-                cur.execute(
-                    """
-                    UPDATE users 
+                try:
+                    db = get_db()
+                    cur = db.cursor()
+                    cur.execute("""
+                        UPDATE users 
                     SET first_name = ?, phone = ? 
                     WHERE id = ?
                 """, (data.get('name', current_user.first_name),
@@ -456,12 +462,21 @@ def settings():
                 })
 
             elif setting_type == 'reading':
-                session['verse_numbers'] = data.get('verse_numbers', True)
-                session['parallel_view'] = data.get('parallel_view', True)
-                session['primary_language'] = data.get('primary_language', 'tzotzil')
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Reading preferences updated'
+                try:
+                    session['verse_numbers'] = data.get('verse_numbers', True)
+                    session['parallel_view'] = data.get('parallel_view', True)
+                    session['primary_language'] = data.get('primary_language', 'tzotzil')
+                    logger.info(f"Updated reading preferences for user {current_user.id}")
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Reading preferences updated'
+                    })
+                except Exception as e:
+                    logger.error(f"Error updating reading preferences: {str(e)}")
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Error updating reading preferences'
+                    }), 500
                 })
 
             elif setting_type == 'language':
@@ -529,11 +544,13 @@ def get_chapters(book):
 
 
 @routes.route('/validate', methods=['POST'])
+@login_required
 def validate():
     """Validate data based on the request body"""
     try:
         data = request.get_json()
         if not data:
+            logger.warning("Validation attempt with empty request body")
             return jsonify({'error': 'Missing request body'}), 400
 
         validation_type = data.get('type')
