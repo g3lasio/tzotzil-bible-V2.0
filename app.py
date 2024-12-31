@@ -1,69 +1,37 @@
+
 import os
 import logging
-from datetime import timedelta
-from flask import render_template
-from __init__ import create_app, db
+from flask import Flask
+from extensions import init_extensions
+from routes import init_routes
+from nevin_routes import init_nevin_routes
 
-# Configuración de logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def init_app():
-    """Inicializar y configurar la aplicación para producción"""
-    try:
-        app = create_app()
+def create_app():
+    app = Flask(__name__)
+    
+    # Configuración básica
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
+    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    
+    # Inicializar extensiones
+    if not init_extensions(app):
+        logger.error("Error inicializando extensiones")
+        return None
         
-        # Configuración adicional de cookies
-        app.config.update(
-            PERMANENT_SESSION_LIFETIME=timedelta(days=31),
-            SESSION_COOKIE_SECURE=True,
-            SESSION_COOKIE_HTTPONLY=True,
-            SESSION_COOKIE_SAMESITE='Lax'
-        )
-
-        # Configuración de email
-        app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-        app.config['MAIL_PORT'] = 587
-        app.config['MAIL_USE_TLS'] = True
-        app.config['MAIL_USERNAME'] = 'tu-email@gmail.com'  # Configura en secrets
-        app.config['MAIL_PASSWORD'] = 'tu-password'  # Configura en secrets
-
-
-        # Manejadores de error
-        @app.errorhandler(404)
-        def not_found_error(error):
-            return render_template('error.html', error="Página no encontrada"), 404
-
-        @app.errorhandler(500)
-        def internal_error(error):
-            db.session.rollback()
-            return render_template('error.html', error="Error interno del servidor"), 500
-
-        @app.errorhandler(Exception)
-        def handle_exception(error):
-            logger.error(f"Error no manejado: {str(error)}")
-            db.session.rollback()
-            return render_template('error.html', error="Ha ocurrido un error inesperado"), 500
-
-        port = int(os.environ.get('PORT', 5000))
-        return app, port
-
-    except Exception as e:
-        logger.error(f"Error en la inicialización de la aplicación: {str(e)}")
-        raise
+    # Registrar rutas
+    init_routes(app)
+    init_nevin_routes(app)
+    
+    return app
 
 if __name__ == '__main__':
-    try:
-        app, port = init_app()
-        # Configuración del servidor
-        app.run(
-            host='0.0.0.0',  # Permitir acceso externo
-            port=3000,       # Usar puerto 3000 en lugar de 5000
-            debug=True
-        )
-    except Exception as e:
-        logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
-        raise
+    app = create_app()
+    if app:
+        port = int(os.environ.get('PORT', 8080))
+        app.run(host='0.0.0.0', port=port)
+    else:
+        logger.error("No se pudo iniciar la aplicación")
