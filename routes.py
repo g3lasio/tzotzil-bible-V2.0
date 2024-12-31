@@ -443,23 +443,37 @@ def settings():
                     cur = db.cursor()
                     cur.execute("""
                         UPDATE users 
-                    SET first_name = ?, phone = ? 
-                    WHERE id = ?
-                """, (data.get('name', current_user.first_name),
-                      data.get('phone', current_user.phone), current_user.id))
-                db.commit()
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Profile updated successfully'
-                })
+                        SET first_name = ?, phone = ? 
+                        WHERE id = ?
+                    """, (data.get('name', current_user.first_name),
+                          data.get('phone', current_user.phone), 
+                          current_user.id))
+                    db.commit()
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Profile updated successfully'
+                    })
+                except Exception as e:
+                    logger.error(f"Error updating profile: {str(e)}")
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Error updating profile'
+                    }), 500
 
             elif setting_type == 'appearance':
-                session['dark_mode'] = data.get('dark_mode', False)
-                session['font_size'] = data.get('font_size', 16)
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Appearance settings updated'
-                })
+                try:
+                    session['dark_mode'] = data.get('dark_mode', False)
+                    session['font_size'] = data.get('font_size', 16)
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Appearance settings updated'
+                    })
+                except Exception as e:
+                    logger.error(f"Error updating appearance: {str(e)}")
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Error updating appearance settings'
+                    }), 500
 
             elif setting_type == 'reading':
                 try:
@@ -477,20 +491,26 @@ def settings():
                         'status': 'error',
                         'message': 'Error updating reading preferences'
                     }), 500
-                })
 
             elif setting_type == 'language':
-                session['language'] = data.get('language', 'es')
-                session['bilingual_mode'] = data.get('bilingual_mode', True)
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Language preferences updated'
-                })
+                try:
+                    session['language'] = data.get('language', 'es')
+                    session['bilingual_mode'] = data.get('bilingual_mode', True)
+                    return jsonify({
+                        'status': 'success',
+                        'message': 'Language preferences updated'
+                    })
+                except Exception as e:
+                    logger.error(f"Error updating language settings: {str(e)}")
+                    return jsonify({
+                        'status': 'error',
+                        'message': 'Error updating language settings'
+                    }), 500
 
             return jsonify({
                 'status': 'error',
                 'message': 'Invalid setting type'
-            })
+            }), 400
 
         except Exception as e:
             logger.error(f"Error updating settings: {str(e)}")

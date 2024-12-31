@@ -10,23 +10,30 @@ async function updateSettings(type, settings) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
             },
             body: JSON.stringify({
                 type: type,
                 ...settings
-            })
+            }),
+            credentials: 'same-origin'
         });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         
         const data = await response.json();
         if (data.status === 'success') {
             window.createToast(data.message, 'success');
+            return true;
         } else {
-            throw new Error(data.message);
+            throw new Error(data.message || 'Unknown error occurred');
         }
     } catch (error) {
         console.error(`Error updating ${type} settings:`, error);
-        window.createToast(`Error updating ${type} settings`, 'danger');
-        throw error;
+        window.createToast(`Error updating ${type} settings: ${error.message}`, 'danger');
+        return false;
     }
 }
 
