@@ -16,11 +16,16 @@ mail = Mail()
 babel = Babel()
 cors = CORS()
 
+from sqlalchemy import text, inspect
+from flask import current_app
+
 def init_extensions(app):
     """Inicializar extensiones de Flask"""
     try:
         # Configurar logging
-        logging.basicConfig(level=logging.INFO)
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         logger.info("Iniciando configuración de extensiones...")
 
         # Inicializar extensiones

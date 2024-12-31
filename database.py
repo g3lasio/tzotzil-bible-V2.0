@@ -62,6 +62,8 @@ class DatabaseManager:
         with self._session_lock:
             try:
                 if not hasattr(g, 'db_session'):
+                    logger.info("Inicializando nueva sesión de base de datos")
+                    self._verify_database()
                     logger.info("Creando nueva sesión de base de datos...")
                     for attempt in range(3):
                         try:
