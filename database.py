@@ -235,8 +235,8 @@ class DatabaseManager:
                 raise Exception("La tabla 'bibleverse' no existe en la base de datos.")
 
             result = session.execute(text("""
-                SELECT DISTINCT book
-                FROM bibleverse
+                SELECT DISTINCT book 
+                FROM bibleverse 
                 ORDER BY book ASC
             """))
 
