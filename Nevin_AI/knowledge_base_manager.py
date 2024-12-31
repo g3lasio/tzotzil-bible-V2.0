@@ -7,6 +7,7 @@ import faiss
 from faiss import IndexFlatL2
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
+import os
 from openai import OpenAI
 from cachetools import TTLCache, LRUCache
 from datetime import datetime, timedelta
@@ -75,6 +76,14 @@ class KnowledgeBaseManager:
     def _load_faiss_indexes(self):
         """Carga los índices FAISS desde el directorio de conocimiento."""
         try:
+            if not os.path.exists(self.egw_dir) or not os.path.exists(self.other_dir):
+                logger.error("Directorios de índices FAISS no encontrados")
+                return False
+                
+            if not any(Path(self.egw_dir).glob('*.faiss')) and not any(Path(self.other_dir).glob('*.faiss')):
+                logger.error("No se encontraron archivos FAISS")
+                return False
+                
             for source, directory in self.faiss_index_path.items():
                 logger.info(f"Inicializando índices FAISS desde: {directory}")
                 

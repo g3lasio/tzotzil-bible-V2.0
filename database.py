@@ -167,6 +167,25 @@ class DatabaseManager:
         try:
             session = self.get_session()
             start_time = time.time()
+            
+            # Verificar estructura de tablas críticas
+            required_tables = ['bibleverse', 'users', 'promise', 'favorite']
+            existing_tables = session.execute(text("""
+                SELECT table_name 
+                FROM information_schema.tables 
+                WHERE table_schema = 'public'
+            """)).fetchall()
+            
+            existing_tables = [t[0] for t in existing_tables]
+            missing_tables = set(required_tables) - set(existing_tables)
+            
+            if missing_tables:
+                logger.error(f"Tablas faltantes: {missing_tables}")
+                return {
+                    'is_healthy': False,
+                    'error': f'Faltan tablas requeridas: {missing_tables}',
+                    'last_check': datetime.utcnow()
+                }
 
             # Verificación básica
             session.execute(text('SELECT 1')).scalar()

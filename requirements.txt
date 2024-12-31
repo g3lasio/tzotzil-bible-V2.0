@@ -67,3 +67,9 @@ replit
 replit-object-storage
 replit
 replit-object-storage
+faiss-cpu
+flask-sqlalchemy
+numpy
+openai
+pandas
+psycopg2-binary
