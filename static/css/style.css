@@ -534,12 +534,36 @@ body {
     font-family: 'Orbitron', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.05em;
-    color: var(--glow-primary);
+    color: rgba(0, 243, 255, 0.6);
     font-size: 1.1rem;
     text-align: center;
     padding: 0.75rem;
     background: rgba(0, 243, 255, 0.05);
     border-radius: 0.5rem;
+    transition: color 0.3s ease;
+}
+
+.language-header:hover {
+    color: var(--glow-primary);
+}
+
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    background: rgba(0, 243, 255, 0.1);
+    color: var(--glow-primary);
+    border: 1px solid var(--glow-primary);
+    border-radius: 8px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: var(--glow-primary);
+    color: var(--bg-darker);
+    transform: translateY(-2px);
 }
 
 .verse-columns {

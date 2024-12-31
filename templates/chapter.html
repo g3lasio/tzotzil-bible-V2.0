@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="es">
     <head>
@@ -20,40 +21,17 @@
                         <div class="controls-section">
                             <div class="language-toggle-wrapper">
                                 <label class="switch">
-                                    <input
-                                        type="checkbox"
-                                        id="languageToggle"
-                                    />
+                                    <input type="checkbox" id="languageToggle"/>
                                     <span class="slider">
-                                        <span class="toggle-text"
-                                            >Bilingual</span
-                                        >
-                                        <span class="toggle-text">.</span>
+                                        <span class="toggle-text">Bilingual</span>
                                     </span>
                                 </label>
                             </div>
-                            <a
-                                href="{{ url_for('routes.books') }}"
-                                class="back-btn"
-                            >
-                                <i class="bi bi-house"></i>
+                            <a href="{{ url_for('routes.books') }}" class="back-btn">
+                                <i class="bi bi-house"></i> Libros
                             </a>
                         </div>
                     </div>
-                    <nav class="nav-bar">
-                        <a
-                            href="{{ url_for('routes.books') }}"
-                            class="back-btn"
-                        >
-                            <i class="bi bi-arrow-left"></i> Libros
-                        </a>
-                    </nav>
-                </div>
-            </header>
-
-            <main class="main-content">
-                <div class="chapter-header">
-                    <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
 
                     <div class="navigation-section">
                         {% if chapter > 1 %}
@@ -77,7 +55,9 @@
                         {% endif %}
                     </div>
                 </div>
+            </header>
 
+            <main class="main-content">
                 <div class="verse-container card shadow-neon">
                     <div class="card-body">
                         <div class="language-headers">
