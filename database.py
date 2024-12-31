@@ -38,11 +38,7 @@ class DatabaseManager:
         """Obtiene la lista de libros de la base de datos"""
         try:
             session = self.get_session()
-            query = text('''
-                SELECT DISTINCT book 
-                FROM bibleverse 
-                ORDER BY book ASC
-            ''')
+            query = text('SELECT book FROM bibleverse GROUP BY book ORDER BY MIN(id)')
             result = session.execute(query).fetchall()
             
             return {
