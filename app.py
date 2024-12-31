@@ -12,10 +12,15 @@ logger = logging.getLogger(__name__)
 def create_app():
     app = Flask(__name__)
     
-    # Configuración básica
-    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    try:
+        # Configuración básica
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
+        app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+        app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+            'pool_pre_ping': True,
+            'pool_recycle': 300,
+        }
     
     # Inicializar extensiones
     if not init_extensions(app):

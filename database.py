@@ -23,17 +23,11 @@ logger = logging.getLogger(__name__)
 def table_exists(engine, table_name):
     """Verifica si una tabla existe en la base de datos."""
     try:
-        with engine.connect() as conn:
-            result = conn.execute(text(
-                """
-                SELECT EXISTS (
-                    SELECT FROM pg_tables
-                    WHERE schemaname = 'public'
-                    AND tablename = :table_name
-                )
-                """
-            ), {'table_name': table_name})
-            return result.scalar()
+        inspector = inspect(engine)
+        return table_name in inspector.get_table_names()
+    except Exception as e:
+        logger.error(f"Error verificando tabla {table_name}: {str(e)}")
+        return False
     except Exception as e:
         logger.error(f"Error verificando existencia de tabla {table_name}: {str(e)}")
         return False
