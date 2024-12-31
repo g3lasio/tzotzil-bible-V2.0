@@ -1,6 +1,9 @@
+
 import logging
 from flask import Blueprint, render_template, request, jsonify, session
 from attached_assets.chat_request import get_ai_response
+import os
+from flask import send_from_directory
 
 # Configuración de logging
 logging.basicConfig(level=logging.INFO)
@@ -70,22 +73,6 @@ def nevin_query():
         language = data.get('language', 'Spanish')
         user_preferences = data.get('preferences', {})
             
-        logger.info(f"Procesando consulta: {question[:50]}...")
-                'success': False
-            }), 400
-
-        question = data.get('question', '').strip()
-        if not question:
-            return jsonify({
-                'response': "Por favor, escribe tu pregunta.",
-                'success': False
-            }), 400
-
-        # Obtener el contexto de la conversación si existe
-        context = data.get('context', '')
-        language = data.get('language', 'Spanish')
-        user_preferences = data.get('preferences', {})
-
         logger.info(f"Procesando consulta: {question[:50]}...")
         response = get_ai_response(
             question=question,
