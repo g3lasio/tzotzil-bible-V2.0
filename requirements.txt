@@ -75,3 +75,7 @@ pandas
 psycopg2-binary
 flask-mail
 flask-mail
+flask-login
+flask-wtf
+flask-login
+oauthlib
