@@ -169,7 +169,7 @@ class DatabaseManager:
             start_time = time.time()
             
             # Verificar estructura de tablas críticas
-            required_tables = ['bibleverse', 'users', 'promise', 'favorite']
+            required_tables = ['bibleverse', 'users', 'promise']
             existing_tables = session.execute(text("""
                 SELECT table_name 
                 FROM information_schema.tables 

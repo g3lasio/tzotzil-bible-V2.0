@@ -23,13 +23,4 @@ CREATE TABLE IF NOT EXISTS users (
     is_premium BOOLEAN DEFAULT 0
 );
 
-CREATE TABLE IF NOT EXISTS favorite (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    verse_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (verse_id) REFERENCES bibleverse(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
-);
-
 CREATE INDEX IF NOT EXISTS idx_book_chapter_verse ON bibleverse(book, chapter, verse);
