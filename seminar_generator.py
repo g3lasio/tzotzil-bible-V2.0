@@ -8,16 +8,24 @@ from replit.object_storage import Client
 class SeminarGenerator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
-        self.storage_client = Client()
+        try:
+            self.storage_client = Client()
+            self.logger.info("Cliente de Object Storage inicializado correctamente")
+        except Exception as e:
+            self.logger.error(f"Error inicializando Object Storage: {str(e)}")
+            raise
         
     def generate_seminar(self, topic, audience, duration):
-        # Lógica existente de generación...
-        return {
-            'title': f'Seminario: {topic}',
-            'audience': audience,
-            'duration': duration,
-            'content': 'Contenido del seminario...'
-        }
+        try:
+            return {
+                'title': f'Seminario: {topic}',
+                'audience': audience,
+                'duration': duration,
+                'content': 'Contenido del seminario...'
+            }
+        except Exception as e:
+            self.logger.error(f"Error generando seminario: {str(e)}")
+            return None
         
     def export_to_pdf(self, seminar_data, filename):
         try:
@@ -36,6 +44,7 @@ class SeminarGenerator:
             
             # Subir al Object Storage
             self.storage_client.upload_bytes(filename, pdf_content)
+            self.logger.info(f"PDF subido exitosamente: {filename}")
             
             # Generar URL temporal válida por 1 hora
             download_url = self.storage_client.get_download_url(filename, expire_in=3600)

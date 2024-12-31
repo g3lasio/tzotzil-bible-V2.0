@@ -1,6 +1,4 @@
-"""
-Aplicación principal Flask
-"""
+
 import os
 import logging
 from datetime import timedelta
@@ -18,7 +16,7 @@ def init_app():
     """Inicializar y configurar la aplicación para producción"""
     try:
         app = create_app()
-
+        
         # Configuración adicional de cookies
         app.config.update(
             PERMANENT_SESSION_LIFETIME=timedelta(days=31),
@@ -53,9 +51,9 @@ def init_app():
 if __name__ == '__main__':
     try:
         app, port = init_app()
-        # Simplificar la configuración del servidor
+        # Configuración del servidor
         app.run(
-            host='0.0.0.0',
+            host='0.0.0.0',  # Permitir acceso externo
             port=port,
             debug=True
         )

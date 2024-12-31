@@ -61,3 +61,9 @@ PyMuPDF
 fpdf2
 PyMuPDF
 fpdf
+replit
+replit-object-storage
+replit
+replit-object-storage
+replit
+replit-object-storage
