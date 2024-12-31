@@ -26,6 +26,12 @@ class User(UserMixin, db.Model):
     interaction_count = db.Column(db.Integer, default=0)
     common_themes = db.Column(db.JSON, default=list)
     language_preference = db.Column(db.String(10), default='es')
+    social_id = db.Column(db.String(64), unique=True)
+    social_provider = db.Column(db.String(20))
+    reset_code = db.Column(db.String(6))
+    reset_code_expires = db.Column(db.DateTime)
+    apple_id = db.Column(db.String(64), unique=True)
+    google_id = db.Column(db.String(64), unique=True)
     
     conversations = db.relationship('Conversation', backref='user', lazy=True)
 

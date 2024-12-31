@@ -8,6 +8,7 @@
             <div class="card">
                 <div class="card-body">
                     <h1 class="card-title text-center mb-4">Iniciar Sesión</h1>
+                    
                     {% with messages = get_flashed_messages(with_categories=true) %}
                         {% if messages %}
                             {% for category, message in messages %}
@@ -15,6 +16,25 @@
                             {% endfor %}
                         {% endif %}
                     {% endwith %}
+
+                    <!-- Social Login Buttons -->
+                    <div class="social-login mb-4">
+                        <button onclick="window.location.href='{{ url_for('auth.google_login') }}'" 
+                                class="btn btn-outline-danger w-100 mb-2">
+                            <i class="fab fa-google"></i> Continuar con Google
+                        </button>
+                        
+                        <button onclick="window.location.href='{{ url_for('auth.apple_login') }}'" 
+                                class="btn btn-outline-dark w-100 mb-2">
+                            <i class="fab fa-apple"></i> Continuar con Apple
+                        </button>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <span class="divider">O</span>
+                    </div>
+
+                    <!-- Traditional Login Form -->
                     <form method="POST">
                         <div class="mb-3">
                             <label for="username" class="form-label">Usuario o Email</label>
@@ -30,12 +50,82 @@
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Iniciar Sesión</button>
                     </form>
+
                     <div class="mt-3 text-center">
-                        <a href="{{ url_for('auth.forgot_password') }}">¿Olvidaste tu contraseña?</a>
+                        <a href="#" onclick="showResetModal()" class="text-decoration-none">¿Olvidaste tu contraseña?</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Reset Password Modal -->
+<div class="modal fade" id="resetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Recuperar Contraseña</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="emailStep">
+                    <div class="mb-3">
+                        <label for="resetEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="resetEmail" required>
+                    </div>
+                    <button onclick="requestCode()" class="btn btn-primary w-100">Enviar Código</button>
+                </div>
+                
+                <div id="codeStep" style="display: none;">
+                    <div class="mb-3">
+                        <label for="resetCode" class="form-label">Código de 4 dígitos</label>
+                        <input type="text" class="form-control" id="resetCode" maxlength="4" required>
+                    </div>
+                    <button onclick="verifyCode()" class="btn btn-primary w-100">Verificar Código</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function showResetModal() {
+    new bootstrap.Modal(document.getElementById('resetModal')).show();
+}
+
+async function requestCode() {
+    const email = document.getElementById('resetEmail').value;
+    const response = await fetch('{{ url_for("auth.request_reset") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email})
+    });
+    
+    if (response.ok) {
+        document.getElementById('emailStep').style.display = 'none';
+        document.getElementById('codeStep').style.display = 'block';
+    }
+}
+
+async function verifyCode() {
+    const code = document.getElementById('resetCode').value;
+    const email = document.getElementById('resetEmail').value;
+    
+    const response = await fetch('{{ url_for("auth.verify_reset_code") }}', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({email, code})
+    });
+    
+    if (response.ok) {
+        window.location.href = '{{ url_for("auth.login") }}';
+    } else {
+        alert('Código inválido o expirado');
+    }
+}
+</script>
 {% endblock %}

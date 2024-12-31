@@ -79,3 +79,7 @@ flask-login
 flask-wtf
 flask-login
 oauthlib
+flask-dance
+oauthlib
+pyotp
+requests
