@@ -65,10 +65,37 @@ def forgot_password():
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         if user:
-            flash('Las instrucciones para restablecer la contraseña han sido enviadas a tu email.', 'info')
+            # Generar token temporal
+            token = user.get_reset_token()
+            flash('Si el email existe en nuestra base de datos, recibirás instrucciones para restablecer tu contraseña.', 'info')
+            # Aquí normalmente enviaríamos el email, pero por ahora mostraremos el enlace
+            reset_url = url_for('auth.reset_password', token=token, _external=True)
+            flash(f'Link temporal para restablecer contraseña: {reset_url}', 'info')
             return redirect(url_for('auth.login'))
-        flash('Email no encontrado', 'error')
+        flash('Si el email existe en nuestra base de datos, recibirás instrucciones para restablecer tu contraseña.', 'info')
     return render_template('auth/forgot_password.html')
+
+@auth.route('/reset_password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    try:
+        user = User.verify_reset_token(token)
+        if not user:
+            flash('El enlace es inválido o ha expirado', 'error')
+            return redirect(url_for('auth.forgot_password'))
+            
+        if request.method == 'POST':
+            password = request.form.get('password')
+            if password:
+                user.set_password(password)
+                db.session.commit()
+                flash('Tu contraseña ha sido actualizada', 'success')
+                return redirect(url_for('auth.login'))
+                
+        return render_template('auth/reset_password.html')
+    except Exception as e:
+        logger.error(f"Error en reset_password: {str(e)}")
+        flash('Ocurrió un error al restablecer la contraseña', 'error')
+        return redirect(url_for('auth.login'))
 
 @auth.route('/logout')
 @login_required

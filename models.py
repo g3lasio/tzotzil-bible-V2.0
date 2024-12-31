@@ -36,6 +36,27 @@ class User(UserMixin, db.Model):
     def check_password(self, password):
         """Verifica la contraseña del usuario"""
         return check_password_hash(self.password_hash, password)
+        
+    def get_reset_token(self, expires_in=3600):
+        """Genera un token temporal para reset de contraseña"""
+        from time import time
+        import jwt
+        from flask import current_app
+        return jwt.encode(
+            {'reset_password': self.id, 'exp': time() + expires_in},
+            current_app.config['SECRET_KEY'], algorithm='HS256')
+
+    @staticmethod
+    def verify_reset_token(token):
+        """Verifica el token de reset de contraseña"""
+        import jwt
+        from flask import current_app
+        try:
+            id = jwt.decode(token, current_app.config['SECRET_KEY'],
+                          algorithms=['HS256'])['reset_password']
+        except:
+            return None
+        return User.query.get(id)
 
 class BibleVerse(db.Model):
     """Modelo para versículos bíblicos"""
