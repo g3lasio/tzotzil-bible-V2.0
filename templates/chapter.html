@@ -15,8 +15,11 @@
             <header class="header">
                 <div class="header-content">
                     <div class="header-top">
+                        <a href="{{ url_for('routes.books') }}" class="book-icon-btn">
+                            <i class="bi bi-book"></i>
+                        </a>
                         <div class="title-section">
-                            <h1>{{ book }} {{ chapter }}</h1>
+                            <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
                         </div>
                         <div class="controls-section">
                             <div class="language-toggle-wrapper">
@@ -27,9 +30,6 @@
                                     </span>
                                 </label>
                             </div>
-                            <a href="{{ url_for('routes.books') }}" class="back-btn">
-                                <i class="bi bi-house"></i> Libros
-                            </a>
                         </div>
                     </div>
 

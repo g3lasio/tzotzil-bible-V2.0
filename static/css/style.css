@@ -943,13 +943,44 @@ body {
     border-bottom: 1px solid rgba(0, 243, 255, 0.2);
 }
 
-.title-section h1 {
+.title-section h1.chapter-title {
     font-family: 'Orbitron', sans-serif;
     color: var(--glow-primary);
     margin: 0;
-    font-size: 2.5rem;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    text-align: center;
+}
+
+.book-icon-btn {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--glow-primary);
+    font-size: 1.5rem;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+}
+
+.book-icon-btn:hover {
+    color: var(--text-primary);
+    transform: translateY(-50%) scale(1.1);
+}
+
+@media (max-width: 768px) {
+    .book-icon-btn {
+        font-size: 1.2rem;
+        left: 0.5rem;
+    }
+    
+    .title-section h1.chapter-title {
+        font-size: clamp(1rem, 3.5vw, 1.2rem);
+    }
 }
 
 .controls-section {
