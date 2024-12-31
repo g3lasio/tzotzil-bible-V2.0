@@ -14,14 +14,37 @@ logger = logging.getLogger(__name__)
 # Initialize OpenAI client
 openai_client = OpenAI()
 
-def format_bible_verse(verse_text: str, reference: str) -> str:
-    """Format a Bible verse with proper HTML structure."""
+def format_bible_verse(verse_text: str, reference: str, emotional_context: str = None) -> str:
+    """Format a Bible verse with emotional context awareness."""
+    emphasis_class = ""
+    if emotional_context:
+        emphasis_map = {
+            'tristeza': 'comfort-verse',
+            'ansiedad': 'peace-verse',
+            'duda': 'faith-verse',
+            'gratitud': 'praise-verse',
+            'arrepentimiento': 'forgiveness-verse'
+        }
+        emphasis_class = emphasis_map.get(emotional_context, '')
+        
     return f'''
-    <div class="verse-box">
-        {verse_text}
+    <div class="verse-box {emphasis_class}">
+        <div class="verse-content">{verse_text}</div>
         <small class="verse-ref">{reference}</small>
+        {f'<div class="verse-context">{get_contextual_insight(emotional_context)}</div>' if emotional_context else ''}
     </div>
     '''
+
+def get_contextual_insight(emotion: str) -> str:
+    """Proporciona un insight contextual basado en la emoción."""
+    insights = {
+        'tristeza': "Este versículo nos recuerda el consuelo divino en momentos difíciles",
+        'ansiedad': "Encontramos paz al confiar en las promesas de Dios",
+        'duda': "La fe se fortalece al meditar en la palabra de Dios",
+        'gratitud': "Expresemos nuestra gratitud por las bendiciones recibidas",
+        'arrepentimiento': "El amor de Dios nos ofrece perdón y renovación"
+    }
+    return insights.get(emotion, '')
 
 def format_egw_quote(quote_text: str, source: str) -> str:
     """Format an Ellen G. White quote with proper HTML structure."""

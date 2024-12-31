@@ -958,3 +958,46 @@ header {
     border-radius: 5px;
     background: #f5f5f5;
 }
+/* Estilos para versículos contextuales */
+.verse-box {
+    transition: all 0.3s ease;
+    margin: 1.5rem 0;
+}
+
+.comfort-verse {
+    border-left: 4px solid #4A90E2;
+    background: linear-gradient(135deg, rgba(74,144,226,0.1) 0%, rgba(74,144,226,0.05) 100%);
+}
+
+.peace-verse {
+    border-left: 4px solid #7ED321;
+    background: linear-gradient(135deg, rgba(126,211,33,0.1) 0%, rgba(126,211,33,0.05) 100%);
+}
+
+.faith-verse {
+    border-left: 4px solid #F5A623;
+    background: linear-gradient(135deg, rgba(245,166,35,0.1) 0%, rgba(245,166,35,0.05) 100%);
+}
+
+.praise-verse {
+    border-left: 4px solid #BD10E0;
+    background: linear-gradient(135deg, rgba(189,16,224,0.1) 0%, rgba(189,16,224,0.05) 100%);
+}
+
+.forgiveness-verse {
+    border-left: 4px solid #50E3C2;
+    background: linear-gradient(135deg, rgba(80,227,194,0.1) 0%, rgba(80,227,194,0.05) 100%);
+}
+
+.verse-context {
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+.verse-content {
+    font-size: 1.1em;
+    line-height: 1.6;
+    margin-bottom: 0.5rem;
+}
