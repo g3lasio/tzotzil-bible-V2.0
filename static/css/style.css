@@ -344,18 +344,21 @@ body {
 
 .verse-row {
     position: relative;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     padding: 1rem;
-    border: 1px solid rgba(0, 243, 255, 0.1);
+    background: var(--bg-darker);
+    border: 1px solid var(--glow-primary);
     border-radius: 10px;
     transition: all var(--transition-speed);
     overflow: hidden;
     cursor: pointer;
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
 }
 
 .verse-row:hover {
-    transform: translateX(10px);
-    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+    transform: translateX(5px);
+    background: rgba(0, 243, 255, 0.05);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
 }
 
 .verse-row::before {

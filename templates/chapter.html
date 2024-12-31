@@ -20,6 +20,15 @@
         <main class="main-content">
             <div class="chapter-header">
                 <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
+                <div class="language-toggle-wrapper">
+                    <label class="switch">
+                        <input type="checkbox" id="languageToggle">
+                        <span class="slider">
+                            <span class="toggle-text">Bil</span>
+                            <span class="toggle-text">Esp</span>
+                        </span>
+                    </label>
+                </div>
                 <div class="navigation-section">
                     {% if chapter > 1 %}
                     <button 
