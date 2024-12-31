@@ -416,24 +416,72 @@ body::before {
     backdrop-filter: blur(10px);
 }
 button {
-    background: linear-gradient(135deg, #4facfe, #00f2fe); /* Gradiente futurista */
-    color: #ffffff;
-    border: none;
-    border-radius: 50%;
+    background: rgba(30, 39, 46, 0.8);
+    color: var(--transformer-primary);
+    border: 2px solid var(--transformer-primary);
+    border-radius: 12px;
     width: 50px;
     height: 50px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.4s ease; /* Transición suave */
-    box-shadow: 0px 4px 8px rgba(0, 242, 254, 0.5); /* Efecto de profundidad */
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, var(--transformer-primary), var(--transformer-secondary));
+    z-index: -1;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
 }
 
 button:hover {
-    transform: scale(1.15); /* Ligero aumento al pasar el mouse */
-    background: linear-gradient(135deg, #00f2fe, #4facfe); /* Invertir gradiente */
-    box-shadow: 0px 8px 16px rgba(0, 242, 254, 0.7); /* Sombra más brillante */
+    color: #ffffff;
+    transform: translateY(-2px);
+    border-color: transparent;
+}
+
+button:hover::before {
+    opacity: 1;
+}
+
+#send-button {
+    border-radius: 15px;
+    background: linear-gradient(135deg, var(--transformer-primary), var(--transformer-secondary));
+    border: none;
+    color: white;
+}
+
+#send-button svg {
+    filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.5));
+    transition: transform 0.3s ease;
+}
+
+#send-button:hover svg {
+    transform: translateX(3px) scale(1.1);
+}
+
+#new-chat-button {
+    border-radius: 12px;
+    background: rgba(30, 39, 46, 0.9);
+}
+
+#new-chat-button svg {
+    transition: transform 0.3s ease;
+}
+
+#new-chat-button:hover svg {
+    transform: rotate(180deg) scale(1.1);
 }
 
 
