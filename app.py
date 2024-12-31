@@ -51,12 +51,30 @@ if __name__ == '__main__':
     try:
         app, port = init_app()
         # Configuración del servidor
-        app.run(
-            host='0.0.0.0',  # Permitir acceso externo
-            port=port,
-            debug=False,
-            ssl_context='adhoc'  # Para soporte HTTPS
-        )
+        try:
+            app.run(
+                host='0.0.0.0',
+                port=port,
+                debug=False,
+                ssl_context='adhoc'
+            )
+        except OSError as e:
+            if "Address already in use" in str(e):
+                logger.error(f"Puerto {port} en uso. Intentando puerto alternativo...")
+                # Intentar puertos alternativos
+                for alt_port in [8000, 8080, 3000]:
+                    try:
+                        app.run(
+                            host='0.0.0.0',
+                            port=alt_port,
+                            debug=False,
+                            ssl_context='adhoc'
+                        )
+                        break
+                    except OSError:
+                        continue
+            else:
+                raise
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
         raise
