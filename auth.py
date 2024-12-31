@@ -1,10 +1,12 @@
-
 """
 Sistema de autenticación simplificado
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, LoginManager
 from models import User
+from flask_mail import Message
+from extensions import mail # Assuming mail is configured in extensions.py
+
 
 def init_login_manager(app):
     """Initialize the login manager for the application"""
@@ -65,14 +67,22 @@ def forgot_password():
         email = request.form.get('email')
         user = User.query.filter_by(email=email).first()
         if user:
-            # Generar token temporal
             token = user.get_reset_token()
-            flash('Si el email existe en nuestra base de datos, recibirás instrucciones para restablecer tu contraseña.', 'info')
-            # Aquí normalmente enviaríamos el email, pero por ahora mostraremos el enlace
             reset_url = url_for('auth.reset_password', token=token, _external=True)
-            flash(f'Link temporal para restablecer contraseña: {reset_url}', 'info')
+            msg = Message('Restablecer Contraseña',
+                      sender='noreply@biblereader.com',
+                      recipients=[user.email])
+            msg.html = render_template('auth/email/reset_password.html',
+                                   user=user,
+                                   reset_url=reset_url)
+            try:
+                mail.send(msg)
+                flash('Se han enviado las instrucciones a tu email.', 'success')
+            except Exception as e:
+                logger.error(f"Error enviando email: {str(e)}")
+                flash('Error al enviar el email. Por favor intenta más tarde.', 'error')
             return redirect(url_for('auth.login'))
-        flash('Si el email existe en nuestra base de datos, recibirás instrucciones para restablecer tu contraseña.', 'info')
+        flash('Si el email existe en nuestra base de datos, recibirás instrucciones.', 'info')
     return render_template('auth/forgot_password.html')
 
 @auth.route('/reset_password/<token>', methods=['GET', 'POST'])

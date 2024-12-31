@@ -7,7 +7,8 @@ from flask import Flask, session # Added session import
 from flask_babel import Babel
 from flask_cors import CORS
 from flask_login import LoginManager # Added import for LoginManager
-from extensions import db, migrate, configure_database, init_extensions
+from extensions import db, migrate, configure_database, init_extensions, mail #Added mail import
+from flask_mail import Mail # Added Mail import
 
 # Configuración de logging
 logging.basicConfig(level=logging.DEBUG)
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 babel = Babel()
 cors = CORS()
 login_manager = LoginManager() # Initialize LoginManager
+mail = Mail() # Initialize Flask-Mail
 
 
 def create_app(test_config=None):
@@ -34,7 +36,12 @@ def create_app(test_config=None):
     app.config.from_mapping(
         SECRET_KEY=os.environ.get('FLASK_SECRET_KEY', 'dev-key-nevin'),
         BABEL_DEFAULT_LOCALE='es',
-        CORS_HEADERS='Content-Type'
+        CORS_HEADERS='Content-Type',
+        MAIL_SERVER='smtp.gmail.com', #Example configuration, needs to be adapted
+        MAIL_PORT=587,
+        MAIL_USE_TLS=True,
+        MAIL_USERNAME=os.environ.get('MAIL_USERNAME'),
+        MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD')
     )
 
     if test_config:
@@ -56,6 +63,7 @@ def create_app(test_config=None):
         cors.init_app(app)
         login_manager.init_app(app) # Initialize login_manager with the app
         login_manager.login_view = 'auth.login' # Set the login view
+        mail.init_app(app) # Initialize Flask-Mail
 
         # Registrar blueprints
         with app.app_context():

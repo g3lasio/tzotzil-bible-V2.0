@@ -1,4 +1,3 @@
-
 import os
 import logging
 from datetime import timedelta
@@ -24,6 +23,14 @@ def init_app():
             SESSION_COOKIE_HTTPONLY=True,
             SESSION_COOKIE_SAMESITE='Lax'
         )
+
+        # Configuración de email
+        app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+        app.config['MAIL_PORT'] = 587
+        app.config['MAIL_USE_TLS'] = True
+        app.config['MAIL_USERNAME'] = 'tu-email@gmail.com'  # Configura en secrets
+        app.config['MAIL_PASSWORD'] = 'tu-password'  # Configura en secrets
+
 
         # Manejadores de error
         @app.errorhandler(404)

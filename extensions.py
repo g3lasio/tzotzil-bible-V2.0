@@ -10,6 +10,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from sqlalchemy import text
 from dotenv import load_dotenv
+from flask_mail import Mail # Added Flask-Mail
 
 # Load environment variables
 load_dotenv()
@@ -21,6 +22,7 @@ logger = logging.getLogger(__name__)
 # Initialize extensions without binding to app yet
 db = SQLAlchemy()
 migrate = Migrate()
+mail = Mail() # Added mail initialization
 
 def configure_database(app):
     """Configure database connection and initialize extensions."""
@@ -45,6 +47,7 @@ def configure_database(app):
         # Initialize extensions
         db.init_app(app)
         migrate.init_app(app, db)
+        mail.init_app(app) # Initialize Flask-Mail
 
         # Verify database connection
         with app.app_context():
