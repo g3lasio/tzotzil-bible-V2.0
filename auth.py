@@ -7,10 +7,25 @@ from models import User
 
 login_manager = LoginManager()
 
+from models import User, db
+import logging
+
+# Configuración del logger
+logger = logging.getLogger(__name__)
+
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-from models import User, db
+    try:
+        return User.query.get(int(user_id))
+    except Exception as e:
+        logger.error(f"Error loading user: {str(e)}")
+        return None
+
+def init_login_manager(app):
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
+    return login_manager
 import logging
 
 # Configuración del logger

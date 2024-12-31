@@ -54,7 +54,7 @@ if __name__ == '__main__':
         # Configuración del servidor
         app.run(
             host='0.0.0.0',  # Permitir acceso externo
-            port=port,
+            port=3000,       # Usar puerto 3000 en lugar de 5000
             debug=True
         )
     except Exception as e:

@@ -61,7 +61,7 @@ def create_app(test_config=None):
         with app.app_context():
             from routes import routes
             from nevin_routes import nevin_bp
-            from auth import auth
+            from auth import auth, init_login_manager
 
             app.register_blueprint(routes)
             app.register_blueprint(nevin_bp, url_prefix='/nevin')
