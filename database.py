@@ -39,10 +39,9 @@ class DatabaseManager:
         try:
             session = self.get_session()
             query = text('''
-                SELECT book, MIN(id) as first_id 
+                SELECT DISTINCT book, MIN(id) OVER (PARTITION BY book) as order_id
                 FROM bibleverse 
-                GROUP BY book 
-                ORDER BY first_id
+                ORDER BY order_id
             ''')
             result = session.execute(query).fetchall()
             
@@ -154,7 +153,12 @@ def get_sorted_books():
     """Obtiene la lista de libros ordenados según el orden bíblico"""
     try:
         session = get_db()
-        books = session.execute(text('SELECT DISTINCT book FROM bibleverse ORDER BY id')).fetchall()
+        books = session.execute(text('''
+            SELECT DISTINCT book, MIN(id) as book_id
+            FROM bibleverse
+            GROUP BY book
+            ORDER BY book_id
+        ''')).fetchall()
         return [book[0] for book in books] if books else []
     except Exception as e:
         logger.error(f"Error obteniendo libros: {str(e)}")
