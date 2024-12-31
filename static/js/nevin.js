@@ -149,9 +149,8 @@ class NevinChat {
     }
 
     formatReferences(text) {
-        if (!text) return "";
         // El texto ya viene formateado desde el backend
-        return text;
+        return text || "";
     }
 
     async showTransformationMessage(text, isUser = false) {
