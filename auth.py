@@ -1,15 +1,18 @@
+
 """
 Sistema de autenticación simplificado
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, LoginManager
 from models import User
+import logging
 
+# Configuración del logger
+logger = logging.getLogger(__name__)
+
+# Inicialización de login_manager
 login_manager = LoginManager()
 
-from models import User, db
-import logging
-
 @login_manager.user_loader
 def load_user(user_id):
     try:
@@ -17,27 +20,6 @@ def load_user(user_id):
     except Exception as e:
         logger.error(f"Error loading user: {str(e)}")
         return None
-
-# Configuración del logger
-logger = logging.getLogger(__name__)
-
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        return User.query.get(int(user_id))
-    except Exception as e:
-        logger.error(f"Error loading user: {str(e)}")
-        return None
-
-def init_login_manager(app):
-    login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
-    return login_manager
-import logging
-
-# Configuración del logger
-logger = logging.getLogger(__name__)
 
 # Crear Blueprint
 auth = Blueprint('auth', __name__)
@@ -68,44 +50,6 @@ def login():
 
     return render_template('auth/login.html')
 
-@auth.route('/signup', methods=['GET', 'POST'])
-def signup():
-    """Maneja el registro de nuevos usuarios"""
-    if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
-
-            if not all([username, email, password]):
-                flash('Todos los campos son requeridos', 'error')
-                return render_template('auth/signup.html')
-
-            # Verificar si el usuario ya existe
-            if User.query.filter((User.username == username) | 
-                               (User.email == email)).first():
-                flash('El usuario o email ya está registrado', 'error')
-                return render_template('auth/signup.html')
-
-            # Crear nuevo usuario
-            user = User(username=username, email=email)
-            user.set_password(password)
-
-            db.session.add(user)
-            db.session.commit()
-
-            # Iniciar sesión automáticamente
-            login_user(user)
-            flash('¡Registro exitoso!', 'success')
-            return redirect(url_for('routes.index'))
-
-        except Exception as e:
-            db.session.rollback()
-            logger.error(f"Error en registro: {str(e)}")
-            flash('Error al crear el usuario', 'error')
-
-    return render_template('auth/signup.html')
-
 @auth.route('/logout')
 @login_required
 def logout():
@@ -113,15 +57,3 @@ def logout():
     logout_user()
     flash('Has cerrado sesión exitosamente', 'info')
     return redirect(url_for('routes.index'))
-
-@auth.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    """Maneja la recuperación de contraseña"""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Se han enviado instrucciones a tu correo', 'info')
-            return redirect(url_for('auth.login'))
-        flash('Email no encontrado', 'error')
-    return render_template('auth/forgot_password.html')
