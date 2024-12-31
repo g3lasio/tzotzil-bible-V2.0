@@ -6,6 +6,7 @@ import logging
 from flask import Flask, session # Added session import
 from flask_babel import Babel
 from flask_cors import CORS
+from flask_login import LoginManager # Added import for LoginManager
 from extensions import db, migrate, configure_database, init_extensions
 
 # Configuración de logging
@@ -15,6 +16,8 @@ logger = logging.getLogger(__name__)
 # Initialize Flask extensions
 babel = Babel()
 cors = CORS()
+login_manager = LoginManager() # Initialize LoginManager
+
 
 def create_app(test_config=None):
     """Create and configure the app"""
@@ -45,6 +48,8 @@ def create_app(test_config=None):
         # Inicializar otras extensiones
         babel.init_app(app)
         cors.init_app(app)
+        login_manager.init_app(app) # Initialize login_manager with the app
+        login_manager.login_view = 'auth.login' # Set the login view
 
         # Registrar blueprints
         with app.app_context():

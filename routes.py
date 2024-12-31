@@ -424,8 +424,9 @@ def search():
 
 
 @routes.route('/settings', methods=['GET', 'POST'])
-@login_required
 def settings():
+    if not current_user.is_authenticated:
+        return redirect(url_for('auth.login'))
     if request.method == 'POST':
         try:
             data = request.get_json()
