@@ -202,14 +202,26 @@ class NevinService:
                     },
                     {
                         "role": "user",
-                        "content": f"Pregunta: {question}\n\nContexto disponible de EGW:{egw_context}"
+                        "content": f"""Analiza profundamente esta consulta y proporciona una respuesta detallada:
+
+Pregunta: {question}
+
+Contexto EGW disponible:
+{egw_context}
+
+Estructura tu respuesta con:
+1. Análisis bíblico profundo con múltiples referencias
+2. Conexiones con los escritos de Elena G. White
+3. Aplicaciones prácticas específicas
+4. Ilustraciones o analogías relevantes
+5. Conclusión que inspire a la acción"""
                     }
                 ],
-                temperature=0.9,
-                max_tokens=1500,
-                presence_penalty=0.8,
-                frequency_penalty=0.7,
-                top_p=0.98
+                temperature=0.7,  # Reducido para mayor precisión
+                max_tokens=2500,  # Aumentado para respuestas más detalladas
+                presence_penalty=0.3,  # Ajustado para mejor coherencia
+                frequency_penalty=0.5,  # Balanceado para variedad natural
+                top_p=0.95  # Ajustado para mayor precisión
             )
 
             # Procesar y enriquecer la respuesta

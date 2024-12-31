@@ -159,11 +159,28 @@ En cada interacción:
         return relevant
 
     def _create_response_context(self, doctrines: list) -> str:
-        """Crea contexto específico para la respuesta basado en doctrinas relevantes."""
-        context = "\nContexto Doctrinal Relevante:\n"
+        """Crea contexto específico enriquecido para la respuesta basado en doctrinas relevantes."""
+        context = "\nCONTEXTO DOCTRINAL PROFUNDO:\n"
         for doctrine in doctrines:
-            context += f"\nDoctrina: {doctrine['doctrine_name']}\n"
-            context += f"Descripción: {doctrine['description']}\n"
+            context += f"\n📚 DOCTRINA: {doctrine['doctrine_name']}\n"
+            context += f"📖 Fundamento: {doctrine['description']}\n"
+            
+            if doctrine.get('biblical_references'):
+                context += "🔍 Referencias Bíblicas Clave:\n"
+                for ref in doctrine['biblical_references']:
+                    context += f"• {ref['verse']}: {ref['context']}\n"
+                    
+            if doctrine.get('egw_quotes'):
+                context += "💡 Insights de Elena G. White:\n"
+                for quote in doctrine.get('egw_quotes', []):
+                    context += f"• {quote['text']} ({quote['source']})\n"
+                    
+            if doctrine.get('practical_applications'):
+                context += "🔄 Aplicaciones Contemporáneas:\n"
+                for app in doctrine['practical_applications']:
+                    if isinstance(app, dict):
+                        context += f"• Pastoral: {app.get('pastoral', '')}\n"
+                        context += f"• Práctica: {app.get('practical', '')}\n"
             
             if doctrine.get('biblical_references'):
                 context += "Referencias Bíblicas:\n"
