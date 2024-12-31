@@ -10,11 +10,29 @@
 <body class="cyberpunk">
     <div class="container">
         <header class="header">
-            <nav class="nav-bar">
-                <a href="{{ url_for('routes.books') }}" class="back-btn">
-                    <i class="bi bi-arrow-left"></i> Libros
-                </a>
-            </nav>
+            <div class="header-content">
+                <div class="header-top">
+                    <div class="title-section">
+                        <h1>{{ book }} {{ chapter }}</h1>
+                    </div>
+                    <div class="controls-section">
+                        <div class="language-toggle-wrapper">
+                            <label class="switch">
+                                <input type="checkbox" id="languageToggle">
+                                <span class="slider">
+                                    <span class="toggle-text">Bil</span>
+                                    <span class="toggle-text">Esp</span>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <nav class="nav-bar">
+                    <a href="{{ url_for('routes.books') }}" class="back-btn">
+                        <i class="bi bi-arrow-left"></i> Libros
+                    </a>
+                </nav>
+            </div>
         </header>
 
         <main class="main-content">
