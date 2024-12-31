@@ -191,42 +191,14 @@ class NevinChat {
 
             // Efecto de escritura progresiva
             const formattedText = this.formatReferences(text);
-            try {
-                const MAX_CHUNK_SIZE = 1000;
-                const tempDiv = document.createElement("div");
-                tempDiv.innerHTML = formattedText;
-                const textContent = tempDiv.textContent;
+            const tempDiv = document.createElement("div");
+            tempDiv.innerHTML = formattedText;
+            const textContent = tempDiv.textContent;
 
-                // Validar contenido
-                if (!textContent || textContent.trim().length === 0) {
-                    throw new Error("Contenido de respuesta inválido");
-                }
-
-                let buffer = "";
-                const words = textContent.split(" ").filter(word => word && word.length > 0);
-                let lastScroll = chatHistory.scrollTop;
-                let userScrolled = false;
-                
-                // Sistema de recuperación ante errores
-                let retryCount = 0;
-                const MAX_RETRIES = 3;
-                
-                const processChunk = async (chunk) => {
-                    try {
-                        if (chunk.length > MAX_CHUNK_SIZE) {
-                            const breakPoint = chunk.lastIndexOf(" ", MAX_CHUNK_SIZE);
-                            return chunk.substring(0, breakPoint > 0 ? breakPoint : MAX_CHUNK_SIZE);
-                        }
-                        return chunk;
-                    } catch (error) {
-                        console.error("Error procesando chunk:", error);
-                        if (retryCount < MAX_RETRIES) {
-                            retryCount++;
-                            return await processChunk(chunk);
-                        }
-                        return "Error procesando respuesta";
-                    }
-                };
+            let buffer = "";
+            const words = textContent.split(" ");
+            let lastScroll = chatHistory.scrollTop;
+            let userScrolled = false;
 
             // Detectar si el usuario hace scroll
             const scrollHandler = () => {
