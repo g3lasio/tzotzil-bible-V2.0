@@ -28,6 +28,27 @@ class DatabaseManager:
             'last_reconnection': None,
             'initialization_complete': False
         }
+        
+    def get_books(self):
+        """Obtiene la lista de libros de la base de datos"""
+        try:
+            session = self.get_session()
+            query = text('SELECT DISTINCT book FROM bibleverse ORDER BY id')
+            result = session.execute(query).fetchall()
+            
+            return {
+                'success': True,
+                'data': [book[0] for book in result],
+                'error': None
+            }
+            
+        except Exception as e:
+            logger.error(f"Error obteniendo libros: {str(e)}")
+            return {
+                'success': False,
+                'error': "Error de base de datos",
+                'data': None
+            }
         self._max_reconnection_attempts = 5
         self._reconnection_delay = 2
         self._initialization_lock = Lock()
