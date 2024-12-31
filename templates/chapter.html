@@ -34,9 +34,6 @@
                     </div>
 
                     <div class="navigation-section">
-                        <a href="{{ url_for('routes.books') }}" class="book-nav-btn">
-                            <i class="bi bi-book-fill"></i>
-                        </a>
                         {% if chapter > 1 %}
                         <button
                             class="nav-arrow-btn prev-btn"
@@ -44,16 +41,22 @@
                             data-book="{{ book }}"
                             data-chapter="{{ chapter-1 }}"
                         >
-                            <i class="bi bi-arrow-left-circle-fill"></i>
+                            <i class="bi bi-chevron-left"></i>
                         </button>
-                        {% endif %} {% if chapter < max_chapter %}
+                        {% endif %}
+                        
+                        <a href="{{ url_for('routes.books') }}" class="book-nav-btn">
+                            <i class="bi bi-book"></i>
+                        </a>
+                        
+                        {% if chapter < max_chapter %}
                         <button
                             class="nav-arrow-btn next-btn"
                             data-direction="next"
                             data-book="{{ book }}"
                             data-chapter="{{ chapter+1 }}"
                         >
-                            <i class="bi bi-arrow-right-circle-fill"></i>
+                            <i class="bi bi-chevron-right"></i>
                         </button>
                         {% endif %}
                     </div>
