@@ -15,9 +15,6 @@
             <header class="header">
                 <div class="header-content">
                     <div class="header-top">
-                        <a href="{{ url_for('routes.books') }}" class="book-icon-btn">
-                            <i class="bi bi-book"></i>
-                        </a>
                         <div class="title-section">
                             <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
                         </div>
@@ -34,31 +31,33 @@
                     </div>
 
                     <div class="navigation-section">
-                        {% if chapter > 1 %}
-                        <button
-                            class="nav-arrow-btn prev-btn"
-                            data-direction="prev"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter-1 }}"
-                        >
-                            <i class="bi bi-chevron-left"></i>
-                        </button>
-                        {% endif %}
-                        
-                        <a href="{{ url_for('routes.books') }}" class="book-nav-btn">
+                        <a href="{{ url_for('routes.books') }}" class="header-book-btn">
                             <i class="bi bi-book"></i>
                         </a>
                         
-                        {% if chapter < max_chapter %}
-                        <button
-                            class="nav-arrow-btn next-btn"
-                            data-direction="next"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter+1 }}"
-                        >
-                            <i class="bi bi-chevron-right"></i>
-                        </button>
-                        {% endif %}
+                        <div class="nav-arrows">
+                            {% if chapter > 1 %}
+                            <button
+                                class="nav-arrow-btn prev-btn"
+                                data-direction="prev"
+                                data-book="{{ book }}"
+                                data-chapter="{{ chapter-1 }}"
+                            >
+                                <i class="bi bi-arrow-left"></i>
+                            </button>
+                            {% endif %}
+                            
+                            {% if chapter < max_chapter %}
+                            <button
+                                class="nav-arrow-btn next-btn"
+                                data-direction="next"
+                                data-book="{{ book }}"
+                                data-chapter="{{ chapter+1 }}"
+                            >
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </header>

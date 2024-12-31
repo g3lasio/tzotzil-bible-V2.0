@@ -1086,23 +1086,29 @@ body {
     text-align: center;
 }
 
-.book-icon-btn {
-    position: absolute;
+.header-book-btn {
+    position: fixed;
     left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
+    top: 1rem;
     color: var(--glow-primary);
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     text-decoration: none;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
+    z-index: 1000;
 }
 
-.book-icon-btn:hover {
+.header-book-btn:hover {
     color: var(--text-primary);
-    transform: translateY(-50%) scale(1.1);
+    transform: scale(1.1);
+}
+
+.nav-arrows {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
 }
 
 @media (max-width: 768px) {
