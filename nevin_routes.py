@@ -1,13 +1,21 @@
+
 import logging
 from flask import Blueprint, render_template, request, jsonify, session
 from attached_assets.chat_request import get_ai_response
 
-# Configuración de logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Crear blueprint
 nevin_bp = Blueprint('nevin_bp', __name__)
+
+def init_nevin_routes(app):
+    """Inicializa las rutas de Nevin"""
+    try:
+        app.register_blueprint(nevin_bp, url_prefix='/nevin')
+        return init_nevin_service(app)
+    except Exception as e:
+        logger.error(f"Error inicializando rutas Nevin: {str(e)}")
+        return False
 
 def init_nevin_service(app):
     """Inicializa el servicio de Nevin"""
@@ -28,18 +36,7 @@ def nevin_page():
                            welcome_message="¡Hola! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?")
     except Exception as e:
         logger.error(f"Error en nevin_page: {str(e)}")
-        return render_template('error.html', 
-                           error="Hubo un problema al cargar la página."), 500
-
-@nevin_bp.route('/download_seminar/<filename>')
-def download_seminar(filename):
-    """Sirve el archivo PDF del seminario."""
-    try:
-        seminars_dir = os.path.join('static', 'seminars')
-        return send_from_directory(seminars_dir, filename, as_attachment=True)
-    except Exception as e:
-        logger.error(f"Error sirviendo PDF: {str(e)}")
-        return jsonify({'error': str(e)}), 404
+        return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
 @nevin_bp.route('/query', methods=['POST'])
 def nevin_query():
@@ -60,7 +57,6 @@ def nevin_query():
                 'success': False
             }), 400
 
-        # Obtener el contexto de la conversación si existe
         context = data.get('context', '')
         language = data.get('language', 'Spanish')
         user_preferences = data.get('preferences', {})

@@ -4,7 +4,7 @@ import logging
 from flask import Flask
 from extensions import init_extensions
 from routes import init_routes
-from nevin_routes import init_nevin_routes
+from nevin_routes import init_nevin_routes, nevin_bp
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
