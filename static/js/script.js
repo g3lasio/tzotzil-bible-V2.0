@@ -139,12 +139,31 @@ function removeGlowEffect(element) {
 }
 function downloadPDF(pdfUrl, filename) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
     
     // Mostrar indicador de carga
     const loadingElement = document.createElement('div');
     loadingElement.className = 'download-progress';
     loadingElement.innerHTML = 'Preparando descarga...';
     document.body.appendChild(loadingElement);
+
+    if (isMobile) {
+        // Crear modal para opciones móviles
+        const modal = document.createElement('div');
+        modal.className = 'mobile-download-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Opciones de Descarga</h3>
+                <button class="download-btn" onclick="window.open('${pdfUrl}', '_blank')">Ver en Navegador</button>
+                <button class="download-btn" onclick="downloadDirectly('${pdfUrl}', '${filename}')">Descargar PDF</button>
+                ${navigator.share ? `<button class="share-btn" onclick="shareFile('${pdfUrl}', '${filename}')">Compartir</button>` : ''}
+                <button class="close-btn" onclick="this.parentElement.parentElement.remove()">Cerrar</button>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        loadingElement.remove();
+        return;
+    }
 
     // Obtener URL de descarga
     fetch(`/download_seminar/${filename}`)
