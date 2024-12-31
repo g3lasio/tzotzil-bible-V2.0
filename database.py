@@ -38,7 +38,12 @@ class DatabaseManager:
         """Obtiene la lista de libros de la base de datos"""
         try:
             session = self.get_session()
-            query = text('SELECT book FROM bibleverse GROUP BY book ORDER BY MIN(id)')
+            query = text('''
+                SELECT book, MIN(id) as first_id 
+                FROM bibleverse 
+                GROUP BY book 
+                ORDER BY first_id
+            ''')
             result = session.execute(query).fetchall()
             
             return {
@@ -58,7 +63,14 @@ class DatabaseManager:
         self._reconnection_delay = 2
         self._initialization_lock = Lock()
         self._session_lock = Lock()
-        logger.info("DatabaseManager inicializado")
+        self._initialized = False
+        logger.info("DatabaseManager inicializado con configuración de locks")
+        
+        # Inicializar la base de datos
+        with self._initialization_lock:
+            if not self._initialized:
+                self._verify_database()
+                self._initialized = True
 
     def get_session(self):
         """Obtiene una sesión de base de datos con manejo de errores y reconexión automática"""
