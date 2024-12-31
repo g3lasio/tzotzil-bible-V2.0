@@ -278,13 +278,9 @@ function setupVerseHighlighting() {
 }
 
 function initializeChapterNavigation() {
-    const prevButton = document.querySelector(
-        '.navigation-buttons [data-direction="prev"]',
-    );
-    const nextButton = document.querySelector(
-        '.navigation-buttons [data-direction="next"]',
-    );
-
+    const prevButton = document.querySelector('.nav-arrow-btn.prev-btn');
+    const nextButton = document.querySelector('.nav-arrow-btn.next-btn');
+    
     if (prevButton) {
         prevButton.addEventListener("click", () => {
             const prevChapter = prevButton.dataset.chapter;
@@ -300,6 +296,14 @@ function initializeChapterNavigation() {
             navigateToChapter(book, nextChapter);
         });
     }
+}
+
+function navigateToChapter(book, chapter) {
+    if (!book || !chapter) {
+        console.error("Invalid book or chapter data");
+        return;
+    }
+    window.location.href = `/chapter/${encodeURIComponent(book)}/${chapter}`;
 }
 
 function navigateToChapter(book, chapter) {
