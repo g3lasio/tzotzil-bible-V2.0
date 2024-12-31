@@ -1,3 +1,4 @@
+
 import os
 import logging
 from datetime import timedelta
@@ -40,7 +41,7 @@ def init_app():
             db.session.rollback()
             return render_template('error.html', error="Ha ocurrido un error inesperado"), 500
 
-        port = int(os.environ.get('PORT', 8080))
+        port = int(os.environ.get('PORT', 5000))
         return app, port
 
     except Exception as e:
@@ -50,23 +51,12 @@ def init_app():
 if __name__ == '__main__':
     try:
         app, port = init_app()
-        
-        for test_port in [5000, 8080, 3000]:
-            try:
-                app.run(
-                    host='0.0.0.0',
-                    port=test_port,
-                    debug=False,
-                    ssl_context='adhoc'
-                )
-                break
-            except OSError:
-                logger.warning(f"Puerto {test_port} en uso, probando siguiente...")
-                continue
-            except Exception as e:
-                logger.error(f"Error no esperado: {str(e)}")
-                raise
-                
+        # Configuración del servidor
+        app.run(
+            host='0.0.0.0',  # Permitir acceso externo
+            port=port,
+            debug=True
+        )
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")
         raise
