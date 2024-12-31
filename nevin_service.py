@@ -120,26 +120,43 @@ class NevinService:
             if conversation_history is None:
                 conversation_history = []
             
-            # Obtener historial de interacciones del usuario
+            # Obtener historial completo del usuario
             if user_id:
-                from models import Conversation
+                from models import Conversation, User
                 from database import db
+                
+                # Obtener información del usuario
+                user = User.query.get(user_id)
+                user_context = {
+                    "username": user.username if user else None,
+                    "preferences": user.preferences if hasattr(user, 'preferences') else {},
+                    "last_active": user.last_seen if hasattr(user, 'last_seen') else None
+                }
+                
+                # Obtener últimas 20 conversaciones para contexto más amplio
                 past_conversations = Conversation.query.filter_by(user_id=user_id)\
                     .order_by(Conversation.timestamp.desc())\
-                    .limit(5)\
+                    .limit(20)\
                     .all()
-            
-                context_history = []
+                
+                # Analizar patrones de interés
+                conversation_themes = {}
                 for conv in past_conversations:
-                    context_history.append({
-                        'role': 'user',
-                        'content': conv.question
-                    })
-                    context_history.append({
-                        'role': 'assistant', 
-                        'content': conv.response
-                    })
-                conversation_history = context_history + conversation_history
+                    for theme in self._extract_themes(conv.question):
+                        conversation_themes[theme] = conversation_themes.get(theme, 0) + 1
+                
+                context = {
+                    "user_info": user_context,
+                    "conversation_patterns": conversation_themes,
+                    "recent_interactions": [
+                        {"question": c.question, "response": c.response, 
+                         "timestamp": c.timestamp.isoformat(),
+                         "emotion": c.emotion if hasattr(c, 'emotion') else None}
+                        for c in past_conversations[:5]
+                    ]
+                }
+                
+                conversation_history = self._enrich_context(conversation_history, context)
                 
 
             # Inicializar KnowledgeBaseManager
@@ -241,3 +258,15 @@ class NevinService:
             'response': f"Lo siento, tuve un problema procesando tu pregunta. {message} Por favor, inténtalo de nuevo en unos momentos.",
             'success': False
         }
+
+    def _enrich_context(self, conversation_history: List[Dict[str, str]], context: Dict[str, Any]) -> List[Dict[str, Any]]:
+        """Enriches the conversation history with user context."""
+        enriched_history = conversation_history.copy()
+        enriched_history.insert(0, {"role": "context", "content": context})
+        return enriched_history
+
+    def _extract_themes(self, text: str) -> List[str]:
+        """Extracts themes from text (needs implementation based on your theme extraction logic)."""
+        # Placeholder - Replace with actual theme extraction logic.
+        # This example simply splits the text into words as themes
+        return text.lower().split()

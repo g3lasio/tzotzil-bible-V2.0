@@ -12,7 +12,14 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
+    preferences = db.Column(db.JSON, default=dict)
+    interaction_count = db.Column(db.Integer, default=0)
+    common_themes = db.Column(db.JSON, default=list)
+    language_preference = db.Column(db.String(10), default='es')
+    
+    conversations = db.relationship('Conversation', backref='user', lazy=True)
 
     def set_password(self, password):
         """Establece la contraseña del usuario"""
