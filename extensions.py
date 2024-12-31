@@ -37,6 +37,7 @@ def init_extensions(app):
             
             # Verificar conexión
             try:
+                from sqlalchemy import text
                 db.session.execute(text('SELECT 1'))
                 logger.info("Conexión a base de datos verificada")
             except Exception as db_error:
