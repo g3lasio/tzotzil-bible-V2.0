@@ -1,74 +1,46 @@
-{% extends "base.html" %} {% block title %}{{ book }} {{ chapter }} - Bible
-Reader{% endblock %} {% block content %}
-<div class="container-fluid px-4">
-    <div class="row mb-4">
-        <div class="col">
-            <nav aria-label="breadcrumb" class="d-none d-md-block">
-                <ol class="breadcrumb">
-                    <li class="breadcrumb-item">
-                        <a
-                            href="{{ url_for('routes.index') }}"
-                            class="text-decoration-none"
-                            >Home</a
-                        >
-                    </li>
-                    <li class="breadcrumb-item">
-                        <a
-                            href="{{ url_for('routes.books') }}"
-                            class="text-decoration-none"
-                            >Books</a
-                        >
-                    </li>
-                    <li class="breadcrumb-item active">
-                        {{ book }} {{ chapter }}
-                    </li>
-                </ol>
-            </nav>
-        </div>
-    </div>
 
-    <div class="row">
-        <div class="col-12">
-            <div class="chapter-header mb-4">
-                <div class="header-content">
-                    <div class="header-top">
-                        <div class="title-section">
-                            <h1 class="display-4 text-glow mb-0">{{ book }} {{ chapter }}</h1>
-                        </div>
-                        <div class="controls-section">
-                            <div class="language-toggle-wrapper" title="Cambiar entre modo bilingüe y español">
-                                <label class="switch">
-                                    <input type="checkbox" id="languageToggle" data-mode="bilingual">
-                                    <span class="slider">
-                                        <span class="toggle-icon bi bi-translate"></span>
-                                        <span class="toggle-text">ESP</span>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="navigation-section">
-                        {% if chapter > 1 %}
-                        <button
-                            class="btn btn-outline-primary cyberpunk-btn"
-                            data-direction="prev"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter-1 }}"
-                        >
-                            <i class="bi bi-chevron-left"></i> Previous
-                        </button>
-                        {% endif %}
-                        {% if chapter < max_chapter %}
-                        <button
-                            class="btn btn-outline-primary cyberpunk-btn"
-                            data-direction="next"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter+1 }}"
-                        >
-                            Next <i class="bi bi-chevron-right"></i>
-                        </button>
-                        {% endif %}
-                    </div>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book }} {{ chapter }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="cyberpunk">
+    <div class="container">
+        <header class="header">
+            <nav class="nav-bar">
+                <a href="{{ url_for('routes.books') }}" class="back-btn">
+                    <i class="bi bi-arrow-left"></i> Libros
+                </a>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="chapter-header">
+                <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
+                <div class="navigation-section">
+                    {% if chapter > 1 %}
+                    <button 
+                        class="btn btn-outline-primary cyberpunk-btn" 
+                        data-direction="prev"
+                        data-book="{{ book }}"
+                        data-chapter="{{ chapter-1 }}"
+                    >
+                        <i class="bi bi-chevron-left"></i> Anterior
+                    </button>
+                    {% endif %}
+                    {% if chapter < max_chapter %}
+                    <button 
+                        class="btn btn-outline-primary cyberpunk-btn"
+                        data-direction="next"
+                        data-book="{{ book }}"
+                        data-chapter="{{ chapter+1 }}"
+                    >
+                        Siguiente <i class="bi bi-chevron-right"></i>
+                    </button>
+                    {% endif %}
                 </div>
             </div>
 
@@ -82,281 +54,24 @@ Reader{% endblock %} {% block content %}
                             <i class="bi bi-translate"></i> Español
                         </div>
                     </div>
+
                     {% for verse in verses %}
-                    <div class="verse-row" id="verse-{{ verse.id }}">
-                        <div class="verse-actions-wrapper">
-                            <button
-                                class="action-btn more-options"
-                                data-menu-id="options-menu-{{ verse.id }}"
-                                onclick="toggleOptionsMenu('options-menu-{{ verse.id }}')"
-                            >
-                                <i class="bi bi-three-dots"></i>
-                            </button>
-                            <div
-                                class="options-menu"
-                                id="options-menu-{{ verse.id }}"
-                                style="display: none"
-                            >
-                                <button
-                                    class="action-btn highlight"
-                                    title="Highlight"
-                                    onclick="handleHighlight('{{ verse.id }}')"
-                                >
-                                    <i class="bi bi-highlighter"></i> Highlight
-                                </button>
-                                <button
-                                    class="action-btn share"
-                                    title="Share"
-                                    onclick="handleShare('{{ verse.id }}')"
-                                >
-                                    <i class="bi bi-share"></i> Share
-                                </button>
-                            </div>
-                        </div>
+                    <div class="verse-row" id="verse-{{ verse.verse }}">
                         <div class="verse-number">{{ verse.verse }}</div>
                         <div class="verse-content">
-                            <div
-                                class="verse-text tzotzil"
-                                id="tzotzil-verse-{{ verse.id }}"
-                            >
-                                {{ verse.tzotzil_text }}
+                            <div class="verse-text tzotzil">
+                                {{ verse.tzotzil }}
                             </div>
-                            <div
-                                class="verse-text spanish"
-                                id="spanish-verse-{{ verse.id }}"
-                            >
-                                {{ verse.spanish_text }}
+                            <div class="verse-text spanish">
+                                {{ verse.spanish }}
                             </div>
                         </div>
                     </div>
                     {% endfor %}
                 </div>
             </div>
-        </div>
+        </main>
     </div>
-</div>
-
-<style>
-    /* Options Menu Styling */
-    .verse-actions-wrapper {
-        position: relative;
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 1rem;
-    }
-
-    .action-btn.more-options {
-        background: transparent;
-        border: none;
-        color: var(--glow-primary);
-        font-size: 1.2rem;
-        cursor: pointer;
-        transition: color 0.3s;
-    }
-
-    .options-menu {
-        position: absolute;
-        top: 100%;
-        right: 0;
-        background: var(--bg-darker);
-        border: 1px solid var(--glow-primary);
-        border-radius: 8px;
-        box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
-        padding: 0.5rem;
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .options-menu .action-btn {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        background: none;
-        border: none;
-        color: var(--text-primary);
-        transition: background 0.3s;
-        cursor: pointer;
-    }
-
-    .options-menu .action-btn:hover {
-        background: rgba(0, 243, 255, 0.1);
-    }
-
-    /* Mobile View Fix */
-    body,
-    html {
-        overflow-x: hidden;
-    }
-
-    .container-fluid {
-        max-width: 100vw;
-        padding-right: 0;
-        padding-left: 0;
-    }
-    /* Add Cyberpunk Styling for Toggle Switch */
-    .language-toggle-wrapper {
-        position: relative; /* Added for better positioning */
-    }
-    .switch {
-        position: relative;
-        display: inline-block;
-        width: 60px;
-        height: 34px;
-    }
-
-    .switch input {
-        opacity: 0;
-        width: 0;
-        height: 0;
-    }
-
-    .slider {
-        position: absolute;
-        cursor: pointer;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background-color: #222; /* Dark background */
-        -webkit-transition: .4s;
-        transition: .4s;
-        border-radius: 34px;
-    }
-
-    .slider:before {
-        position: absolute;
-        content: "";
-        height: 26px;
-        width: 26px;
-        left: 4px;
-        bottom: 4px;
-        background-color: white; /* White circle */
-        -webkit-transition: .4s;
-        transition: .4s;
-        border-radius: 50%;
-    }
-
-    input:checked + .slider {
-        background-color: #00ffff; /* Cyan on checked */
-    }
-
-    input:focus + .slider {
-        box-shadow: 0 0 1px #00ffff;
-    }
-
-    input:checked + .slider:before {
-        -webkit-transform: translateX(26px);
-        -ms-transform: translateX(26px);
-        transform: translateX(26px);
-    }
-
-    /* Add Cyberpunk Glow */
-    .text-glow {
-        text-shadow: 0 0 10px #00ffff; /* Cyan glow */
-    }
-    .cyberpunk-btn{
-        box-shadow: 0 0 10px #00ffff; /* Cyan glow */
-    }
-    .shadow-neon {
-        box-shadow: 0 0 20px rgba(0, 255, 255, 0.5); /* Cyan neon glow */
-    }
-    .toggle-text{
-        color: white;
-    }
-</style>
-
-<script>
-    function toggleOptionsMenu(menuId) {
-        const menu = document.getElementById(menuId);
-        if (menu) {
-            if (menu.style.display === "none" || menu.style.display === "") {
-                // Cerrar otros menús abiertos
-                document
-                    .querySelectorAll(".options-menu")
-                    .forEach((openMenu) => {
-                        openMenu.style.display = "none";
-                    });
-                menu.style.display = "block";
-            } else {
-                menu.style.display = "none";
-            }
-        } else {
-            console.error("No se pudo encontrar el menú con ID:", menuId);
-        }
-    }
-
-    function handleHighlight(verseId) {
-        console.log("Handling highlight action for verse:", verseId);
-
-        const tzotzilText = document.getElementById(`tzotzil-verse-${verseId}`);
-        const spanishText = document.getElementById(`spanish-verse-${verseId}`);
-
-        if (!tzotzilText && !spanishText) {
-            showErrorToast("No verse text elements found to highlight.");
-            return;
-        }
-
-        const colors = [
-            { name: "yellow", hex: "#ffd700" },
-            { name: "blue", hex: "#90cdf4" },
-            { name: "green", hex: "#68d391" },
-            { name: "red", hex: "#fc8181" },
-            { name: "purple", hex: "#d6bcfa" },
-        ];
-
-        // Crear el menú de selección de color
-        let colorMenu = document.getElementById(`highlight-colors-${verseId}`);
-        if (!colorMenu) {
-            colorMenu = document.createElement("div");
-            colorMenu.className = "highlight-colors";
-            colorMenu.id = `highlight-colors-${verseId}`;
-            colorMenu.style.cssText = `
-                position: absolute;
-                display: flex;
-                gap: 0.5rem;
-                padding: 0.5rem;
-                background: var(--bg-darker);
-                border: 1px solid var(--glow-primary);
-                border-radius: 8px;
-                z-index: 1000;
-            `;
-
-            colors.forEach((color) => {
-                const button = document.createElement("button");
-                button.className = "color-option";
-                button.style.cssText = `
-                    width: 24px;
-                    height: 24px;
-                    border-radius: 50%;
-                    border: none;
-                    background-color: ${color.hex};
-                    cursor: pointer;
-                `;
-                button.addEventListener("click", () => {
-                    if (tzotzilText)
-                        tzotzilText.style.backgroundColor = color.hex;
-                    if (spanishText)
-                        spanishText.style.backgroundColor = color.hex;
-                    colorMenu.remove();
-                });
-                colorMenu.appendChild(button);
-            });
-
-            const verseRow = document.getElementById(`verse-${verseId}`);
-            const rect = verseRow.getBoundingClientRect();
-            colorMenu.style.top = `${rect.top + window.scrollY + 40}px`;
-            colorMenu.style.left = `${rect.left + 20}px`;
-            document.body.appendChild(colorMenu);
-        } else {
-            colorMenu.remove();
-        }
-    }
-
-    function handleShare(verseId) {
-        console.log("Share verse:", verseId);
-        // Add proper handling logic here
-    }
-</script>
-{% endblock %}
+    <script src="{{ url_for('static', filename='js/bible.js') }}"></script>
+</body>
+</html>
