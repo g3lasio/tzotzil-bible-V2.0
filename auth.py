@@ -1,4 +1,3 @@
-
 """
 Sistema de autenticación mejorado con login social y recuperación por código
 """
@@ -10,7 +9,6 @@ from extensions import mail
 import random
 from datetime import datetime, timedelta
 from flask_dance.contrib.google import make_google_blueprint, google
-# Apple Auth temporalmente removido
 import jwt
 import logging
 
@@ -23,15 +21,17 @@ def init_login_manager(app):
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
     login_manager.login_message_category = 'info'
-    return login_manager
 
-@login_manager.user_loader
-def load_user(user_id):
-    try:
-        return User.query.get(int(user_id))
-    except Exception as e:
-        logger.error(f"Error loading user: {str(e)}")
-        return None
+    # Registrar el loader aquí para asegurar que esté disponible
+    @login_manager.user_loader
+    def load_user(user_id):
+        try:
+            return User.query.get(int(user_id))
+        except Exception as e:
+            logger.error(f"Error loading user: {str(e)}")
+            return None
+
+    return login_manager
 
 auth = Blueprint('auth', __name__)
 
@@ -89,10 +89,10 @@ def request_reset():
         user.reset_code = code
         user.reset_code_expires = datetime.utcnow() + timedelta(minutes=15)
         db.session.commit()
-        
+
         if send_reset_code(email, code):
             return {'message': 'Código enviado'}, 200
-    
+
     return {'message': 'Si el email existe, recibirás un código'}, 200
 
 @auth.route('/verify-reset-code', methods=['POST'])
@@ -100,7 +100,7 @@ def verify_reset_code():
     """Verificar código de recuperación"""
     email = request.form.get('email')
     code = request.form.get('code')
-    
+
     user = User.query.filter_by(email=email).first()
     if user and user.reset_code == code and \
        user.reset_code_expires > datetime.utcnow():
@@ -108,19 +108,19 @@ def verify_reset_code():
         user.reset_code_expires = None
         db.session.commit()
         return {'success': True}, 200
-    
+
     return {'error': 'Código inválido o expirado'}, 400
 
 @auth.route('/google-login')
 def google_login():
     if not google.authorized:
         return redirect(url_for('google.login'))
-    
+
     resp = google.get('/oauth2/v1/userinfo')
     if resp.ok:
         google_info = resp.json()
         user = User.query.filter_by(google_id=google_info['id']).first()
-        
+
         if not user:
             user = User(
                 username=google_info['email'].split('@')[0],
@@ -129,32 +129,9 @@ def google_login():
             )
             db.session.add(user)
             db.session.commit()
-        
+
         login_user(user)
         flash('¡Inicio de sesión con Google exitoso!', 'success')
-        return redirect(url_for('routes.index'))
-
-@auth.route('/apple-login')
-def apple_login():
-    if not apple.authorized:
-        return redirect(url_for('apple.login'))
-    
-    resp = apple.get('/auth/userinfo')
-    if resp.ok:
-        apple_info = resp.json()
-        user = User.query.filter_by(apple_id=apple_info['sub']).first()
-        
-        if not user:
-            user = User(
-                username=f"apple_user_{apple_info['sub'][:8]}",
-                email=apple_info.get('email'),
-                apple_id=apple_info['sub']
-            )
-            db.session.add(user)
-            db.session.commit()
-        
-        login_user(user)
-        flash('¡Inicio de sesión con Apple exitoso!', 'success')
         return redirect(url_for('routes.index'))
 
 @auth.route('/logout')
