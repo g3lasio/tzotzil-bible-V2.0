@@ -19,8 +19,28 @@ from validation import DataValidator
 logger = logging.getLogger(__name__)
 routes = Blueprint('routes', __name__)
 
+def init_routes(app):
+    """Inicializar y registrar las rutas en la aplicación"""
+    try:
+        logger.info("Registrando rutas principales...")
+        app.register_blueprint(routes)
+        return True
+    except Exception as e:
+        logger.error(f"Error al registrar rutas: {str(e)}")
+        return False
+
 logger = logging.getLogger(__name__)
 routes = Blueprint('routes', __name__)
+
+def init_routes(app):
+    """Inicializar y registrar las rutas en la aplicación"""
+    try:
+        logger.info("Registrando rutas principales...")
+        app.register_blueprint(routes)
+        return True
+    except Exception as e:
+        logger.error(f"Error al registrar rutas: {str(e)}")
+        return False
 validator = DataValidator()
 
 # Biblical order of books

@@ -10,8 +10,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def create_app():
+    """Crear y configurar la aplicación Flask"""
+    app = Flask(__name__)
+    
     try:
-        app = Flask(__name__)
+        logger.info("Iniciando configuración de la aplicación...")
         
         # Configuración básica
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
