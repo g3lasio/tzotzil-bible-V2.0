@@ -22,6 +22,9 @@ login_manager = LoginManager() # Initialize LoginManager
 def create_app(test_config=None):
     """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
+    
+    from auth import login_manager
+    login_manager.init_app(app)
     app.secret_key = 'tu_clave_secreta_aqui'  # Necesario para manejar sesiones
 
     # Configuración base

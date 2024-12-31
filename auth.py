@@ -2,7 +2,14 @@
 Sistema de autenticación simplificado
 """
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, LoginManager
+from models import User
+
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 from models import User, db
 import logging
 
