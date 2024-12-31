@@ -140,28 +140,46 @@ function removeGlowEffect(element) {
 function downloadPDF(pdfUrl, filename) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    if (isMobile) {
-        // En móviles, mostrar opciones de descarga
-        const downloadOptions = document.createElement('div');
-        downloadOptions.className = 'download-options';
-        downloadOptions.innerHTML = `
-            <div class="download-dialog">
-                <h3>Descargar PDF</h3>
-                <button onclick="window.open('${pdfUrl}', '_blank')">Ver en navegador</button>
-                <button onclick="window.location.href='${pdfUrl}'">Descargar directamente</button>
-                <button onclick="shareFile('${pdfUrl}', '${filename}')">Compartir</button>
-            </div>
-        `;
-        document.body.appendChild(downloadOptions);
-    } else {
-        // En desktop, descarga directa
-        const link = document.createElement('a');
-        link.href = pdfUrl;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
+    // Crear un elemento para mostrar el progreso
+    const progressElement = document.createElement('div');
+    progressElement.className = 'download-progress';
+    progressElement.innerHTML = 'Descargando PDF...';
+    document.body.appendChild(progressElement);
+
+    // Descargar usando fetch
+    fetch(pdfUrl)
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            if (isMobile) {
+                // En móviles, mostrar opciones
+                const downloadOptions = document.createElement('div');
+                downloadOptions.className = 'download-options';
+                downloadOptions.innerHTML = `
+                    <div class="download-dialog">
+                        <h3>PDF Listo</h3>
+                        <button onclick="window.open('${url}', '_blank')">Ver en navegador</button>
+                        <a href="${url}" download="${filename}" class="button">Descargar</a>
+                        <button onclick="navigator.share({url: '${url}'})">Compartir</button>
+                    </div>
+                `;
+                document.body.appendChild(downloadOptions);
+            } else {
+                // En desktop, descarga directa
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = filename;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+            document.body.removeChild(progressElement);
+        })
+        .catch(error => {
+            console.error('Error downloading PDF:', error);
+            progressElement.innerHTML = 'Error al descargar. Intente nuevamente.';
+            setTimeout(() => document.body.removeChild(progressElement), 3000);
+        });
 }
 
 function shareFile(url, filename) {

@@ -608,16 +608,13 @@ def generate_seminar():
         # Generar PDF
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"seminar_{timestamp}.pdf"
-        seminars_dir = os.path.join(current_app.static_folder, 'seminars')
-        os.makedirs(seminars_dir, exist_ok=True)
         
-        pdf_path = os.path.join(seminars_dir, filename)
-        if generator.export_to_pdf(seminar, pdf_path):
-            pdf_url = url_for('static', filename=f'seminars/{filename}')
+        success, signed_url = generator.export_to_pdf(seminar, filename)
+        if success:
             return jsonify({
                 'success': True,
                 'seminar': seminar,
-                'pdf_url': pdf_url
+                'pdf_url': signed_url
             })
         else:
             return jsonify({

@@ -3,10 +3,12 @@ import os
 import logging
 from datetime import datetime
 from fpdf import FPDF
+from replit.object_storage import Client
 
 class SeminarGenerator:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
+        self.storage_client = Client()
 
     def _add_section(self, pdf, title, content):
         """Añade una sección al PDF con formato."""
@@ -16,11 +18,9 @@ class SeminarGenerator:
         pdf.set_font("Arial", "", 12)
         pdf.multi_cell(0, 10, content)
 
-    def export_to_pdf(self, seminar, filepath):
-        """Exporta el seminario a PDF optimizado para dispositivos móviles."""
+    def export_to_pdf(self, seminar, filename):
+        """Exporta el seminario a PDF y lo sube al Object Storage."""
         try:
-            os.makedirs(os.path.dirname(filepath), exist_ok=True)
-            
             pdf = FPDF(orientation='P', unit='mm', format='A4')
             pdf.set_auto_page_break(auto=True, margin=15)
             pdf.set_margins(10, 10, 10)
@@ -36,11 +36,20 @@ class SeminarGenerator:
                 
             if "conclusion" in seminar:
                 self._add_section(pdf, "Conclusión", seminar["conclusion"])
-                
-            pdf.output(filepath)
-            self.logger.info(f"PDF generado exitosamente: {filepath}")
-            return True
+            
+            # Guardar PDF en memoria
+            pdf_content = pdf.output(dest='S').encode('latin-1')
+            
+            # Subir al Object Storage
+            storage_path = f"seminars/{filename}"
+            self.storage_client.upload_bytes(storage_path, pdf_content)
+            
+            # Generar URL firmada para descarga
+            signed_url = self.storage_client.get_signed_url(storage_path, expiry=3600)  # 1 hora
+            
+            self.logger.info(f"PDF generado y subido exitosamente: {storage_path}")
+            return True, signed_url
             
         except Exception as e:
             self.logger.error(f"Error generando PDF: {str(e)}")
-            return False
+            return False, None
