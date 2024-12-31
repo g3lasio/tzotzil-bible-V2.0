@@ -23,8 +23,9 @@ def init_extensions(app):
     try:
         logger.info("Iniciando configuración de extensiones...")
 
-        # Verificar ambiente
-        if not app.config.get('SQLALCHEMY_DATABASE_URI'):
+        # Verificar ambiente y configuración de base de datos
+        database_url = app.config.get('SQLALCHEMY_DATABASE_URI')
+        if not database_url:
             logger.error("URI de base de datos no configurada")
             return False
 
@@ -37,26 +38,31 @@ def init_extensions(app):
             # Verificar conexión dentro del contexto de la aplicación
             with app.app_context():
                 try:
+                    # Intentar establecer conexión
                     db.session.execute(text('SELECT 1'))
                     logger.info("Conexión a base de datos verificada")
+
+                    # Verificar tablas requeridas
+                    required_tables = ['bibleverse', 'users', 'promise']
+                    inspector = inspect(db.engine)
+                    existing_tables = inspector.get_table_names()
+
+                    logger.info(f"Tablas existentes: {existing_tables}")
+                    logger.info(f"Tablas requeridas: {required_tables}")
+
+                    missing_tables = set(required_tables) - set(existing_tables)
+                    if missing_tables:
+                        logger.warning(f"Tablas faltantes: {missing_tables}")
+                        try:
+                            db.create_all()
+                            logger.info("Tablas creadas exitosamente")
+                        except Exception as table_error:
+                            logger.error(f"Error creando tablas: {str(table_error)}")
+                            return False
+
                 except Exception as db_error:
                     logger.error(f"Error verificando base de datos: {str(db_error)}")
                     return False
-
-                # Verificar tablas requeridas
-                required_tables = ['bibleverse', 'users', 'promise']
-                inspector = inspect(db.engine)
-                existing_tables = inspector.get_table_names()
-
-                logger.info(f"Tablas existentes: {existing_tables}")
-                logger.info(f"Tablas requeridas: {required_tables}")
-
-                missing_tables = set(required_tables) - set(existing_tables)
-                if missing_tables:
-                    logger.warning(f"Tablas faltantes: {missing_tables}")
-                    # Las migraciones se encargarán de crear las tablas
-                    db.create_all()
-                    logger.info("Tablas creadas")
 
         logger.info("Extensiones inicializadas correctamente")
         return True

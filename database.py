@@ -42,7 +42,7 @@ class DatabaseManager:
                     logger.info("Inicializando nueva sesión de base de datos")
                     self._verify_database()
                     logger.info("Creando nueva sesión de base de datos...")
-                    
+
                     for attempt in range(3):
                         try:
                             g.db_session = db.session
@@ -74,16 +74,14 @@ class DatabaseManager:
             inspector = inspect(db.engine)
             required_tables = ['bibleverse', 'users', 'promise']
             existing_tables = inspector.get_table_names()
-            
+
             missing_tables = set(required_tables) - set(existing_tables)
             if missing_tables:
                 logger.error(f"Tablas faltantes: {missing_tables}")
                 with db.engine.connect() as conn:
-                    conn.execute(text('CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY)'))
-                    conn.execute(text('CREATE TABLE IF NOT EXISTS bibleverse (id INTEGER PRIMARY KEY)'))
-                    conn.execute(text('CREATE TABLE IF NOT EXISTS promise (id INTEGER PRIMARY KEY)'))
-                logger.info("Tablas base creadas")
-                
+                    conn.execute(text('SELECT 1'))  # Verificar conexión primero
+                logger.info("Conexión verificada, procediendo con la creación de tablas")
+
         except Exception as e:
             logger.error(f"Error verificando base de datos: {str(e)}")
             raise

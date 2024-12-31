@@ -41,14 +41,15 @@ def create_app(test_config=None):
     if database_url and database_url.startswith("postgres://"):
         database_url = database_url.replace("postgres://", "postgresql://", 1)
 
-    app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///instance/bible_app.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = database_url
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         'pool_pre_ping': True,
         'pool_recycle': 300,
         'pool_timeout': 30,
         'pool_size': 30,
-        'max_overflow': 10
+        'max_overflow': 10,
+        'echo': True  # Para debugging
     }
 
     if test_config:
