@@ -1,107 +1,111 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ book }} {{ chapter }}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body class="cyberpunk">
-    <div class="container">
-        <header class="header">
-            <div class="header-content">
-                <div class="header-top">
-                    <div class="title-section">
-                        <h1>{{ book }} {{ chapter }}</h1>
-                    </div>
-                    <div class="controls-section">
-                        <div class="language-toggle-wrapper">
-                            <label class="switch">
-                                <input type="checkbox" id="languageToggle">
-                                <span class="slider">
-                                    <span class="toggle-text">Bil</span>
-                                    <span class="toggle-text">Esp</span>
-                                </span>
-                            </label>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ book }} {{ chapter }}</title>
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='css/style.css') }}"
+        />
+    </head>
+    <body class="cyberpunk">
+        <div class="container">
+            <header class="header">
+                <div class="header-content">
+                    <div class="header-top">
+                        <div class="title-section">
+                            <h1>{{ book }} {{ chapter }}</h1>
                         </div>
-                        <a href="{{ url_for('routes.books') }}" class="back-btn">
-                            <i class="bi bi-house"></i>
+                        <div class="controls-section">
+                            <div class="language-toggle-wrapper">
+                                <label class="switch">
+                                    <input
+                                        type="checkbox"
+                                        id="languageToggle"
+                                    />
+                                    <span class="slider">
+                                        <span class="toggle-text"
+                                            >Bilingual</span
+                                        >
+                                        <span class="toggle-text">.</span>
+                                    </span>
+                                </label>
+                            </div>
+                            <a
+                                href="{{ url_for('routes.books') }}"
+                                class="back-btn"
+                            >
+                                <i class="bi bi-house"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <nav class="nav-bar">
+                        <a
+                            href="{{ url_for('routes.books') }}"
+                            class="back-btn"
+                        >
+                            <i class="bi bi-arrow-left"></i> Libros
                         </a>
+                    </nav>
+                </div>
+            </header>
+
+            <main class="main-content">
+                <div class="chapter-header">
+                    <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
+
+                    <div class="navigation-section">
+                        {% if chapter > 1 %}
+                        <button
+                            class="btn btn-outline-primary cyberpunk-btn"
+                            data-direction="prev"
+                            data-book="{{ book }}"
+                            data-chapter="{{ chapter-1 }}"
+                        >
+                            <i class="bi bi-chevron-left"></i> Anterior
+                        </button>
+                        {% endif %} {% if chapter < max_chapter %}
+                        <button
+                            class="btn btn-outline-primary cyberpunk-btn"
+                            data-direction="next"
+                            data-book="{{ book }}"
+                            data-chapter="{{ chapter+1 }}"
+                        >
+                            Siguiente <i class="bi bi-chevron-right"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
-                <nav class="nav-bar">
-                    <a href="{{ url_for('routes.books') }}" class="back-btn">
-                        <i class="bi bi-arrow-left"></i> Libros
-                    </a>
-                </nav>
-            </div>
-        </header>
 
-        <main class="main-content">
-            <div class="chapter-header">
-                <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
-                <div class="language-toggle-wrapper">
-                    <label class="switch">
-                        <input type="checkbox" id="languageToggle">
-                        <span class="slider">
-                            <span class="toggle-text">Bil</span>
-                            <span class="toggle-text">Esp</span>
-                        </span>
-                    </label>
-                </div>
-                <div class="navigation-section">
-                    {% if chapter > 1 %}
-                    <button 
-                        class="btn btn-outline-primary cyberpunk-btn" 
-                        data-direction="prev"
-                        data-book="{{ book }}"
-                        data-chapter="{{ chapter-1 }}"
-                    >
-                        <i class="bi bi-chevron-left"></i> Anterior
-                    </button>
-                    {% endif %}
-                    {% if chapter < max_chapter %}
-                    <button 
-                        class="btn btn-outline-primary cyberpunk-btn"
-                        data-direction="next"
-                        data-book="{{ book }}"
-                        data-chapter="{{ chapter+1 }}"
-                    >
-                        Siguiente <i class="bi bi-chevron-right"></i>
-                    </button>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="verse-container card shadow-neon">
-                <div class="card-body">
-                    <div class="language-headers">
-                        <div class="language-header tzotzil">
-                            <i class="bi bi-translate"></i> Tzotzil
-                        </div>
-                        <div class="language-header spanish">
-                            <i class="bi bi-translate"></i> Español
-                        </div>
-                    </div>
-
-                    {% for verse in verses %}
-                    <div class="verse-row" id="verse-{{ verse.verse }}">
-                        <div class="verse-number">{{ verse.verse }}</div>
-                        <div class="verse-content">
-                            <div class="verse-text tzotzil">
-                                {{ verse.tzotzil }}
+                <div class="verse-container card shadow-neon">
+                    <div class="card-body">
+                        <div class="language-headers">
+                            <div class="language-header tzotzil">
+                                <i class="bi bi-translate"></i> Tzotzil
                             </div>
-                            <div class="verse-text spanish">
-                                {{ verse.spanish }}
+                            <div class="language-header spanish">
+                                <i class="bi bi-translate"></i> Español
                             </div>
                         </div>
+
+                        {% for verse in verses %}
+                        <div class="verse-row" id="verse-{{ verse.verse }}">
+                            <div class="verse-number">{{ verse.verse }}</div>
+                            <div class="verse-content">
+                                <div class="verse-text tzotzil">
+                                    {{ verse.tzotzil }}
+                                </div>
+                                <div class="verse-text spanish">
+                                    {{ verse.spanish }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                    {% endfor %}
                 </div>
-            </div>
-        </main>
-    </div>
-    <script src="{{ url_for('static', filename='js/bible.js') }}"></script>
-</body>
+            </main>
+        </div>
+        <script src="{{ url_for('static', filename='js/bible.js') }}"></script>
+    </body>
 </html>
