@@ -1113,6 +1113,16 @@ body {
     justify-content: center;
     transition: all 0.3s ease;
     z-index: 1000;
+    background: var(--bg-darker);
+    padding: 0.5rem;
+    border-radius: 50%;
+    border: 2px solid var(--glow-primary);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+.header-book-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--glow-primary);
 }
 
 .header-book-btn:hover {
