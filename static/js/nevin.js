@@ -211,7 +211,7 @@ class NevinChat {
                 passive: true,
             });
 
-            const writeSpeed = 30;
+            const writeSpeed = Math.max(10, Math.min(30, 30 - Math.floor(textContent.length / 100)));
             for (const word of words) {
                 buffer += word + " ";
                 await new Promise((resolve) => setTimeout(resolve, writeSpeed));
@@ -240,22 +240,25 @@ class NevinChat {
             // Asegurar que el formato final sea correcto
             messageElement.innerHTML = formattedText;
             
-            // Agregar enlace de descarga si el mensaje contiene un pdf_url
-            if (!isUser && response.pdf_url && formattedText.includes('[PDF_LINK]')) {
-                formattedText = formattedText.replace('[PDF_LINK]', '');
-                const downloadLink = document.createElement('a');
-                downloadLink.href = response.pdf_url;
-                downloadLink.className = 'seminar-download-link';
-                downloadLink.innerHTML = '📄 Descargar Seminario PDF';
-                downloadLink.target = '_blank';
-                
-                // Asegurar que el enlace sea visible y tenga estilo
-                downloadLink.style.display = 'block';
-                downloadLink.style.marginTop = '15px';
-                messageElement.appendChild(document.createElement('br'));
-                messageElement.appendChild(document.createElement('br'));
-                messageElement.appendChild(downloadLink);
-                messageElement.appendChild(downloadLink);
+            try {
+                // Agregar enlace de descarga si el mensaje contiene un pdf_url
+                if (!isUser && this.currentResponse?.pdf_url && formattedText.includes('[PDF_LINK]')) {
+                    formattedText = formattedText.replace('[PDF_LINK]', '');
+                    const downloadLink = document.createElement('a');
+                    downloadLink.href = this.currentResponse.pdf_url;
+                    downloadLink.className = 'seminar-download-link';
+                    downloadLink.innerHTML = '📄 Descargar Seminario PDF';
+                    downloadLink.target = '_blank';
+                    
+                    // Asegurar que el enlace sea visible y tenga estilo
+                    downloadLink.style.display = 'block';
+                    downloadLink.style.marginTop = '15px';
+                    messageElement.appendChild(document.createElement('br'));
+                    messageElement.appendChild(document.createElement('br'));
+                    messageElement.appendChild(downloadLink);
+                }
+            } catch (error) {
+                console.error('Error al procesar PDF:', error);
             }
         }
     }
@@ -425,8 +428,9 @@ class NevinChat {
             return;
         }
 
-        if (!chatHistory) {
-            console.error("Elemento chat-history no encontrado");
+        // Validar longitud del mensaje
+        if (message.length > 500) {
+            alert("El mensaje es demasiado largo. Por favor, acórtalo.");
             return;
         }
 
