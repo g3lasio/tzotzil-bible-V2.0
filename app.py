@@ -29,6 +29,9 @@ def create_app():
         }
         
         # Inicializar extensiones y base de datos
+        from extensions import db, init_extensions
+        db.init_app(app)
+        
         with app.app_context():
             try:
                 db.create_all()
