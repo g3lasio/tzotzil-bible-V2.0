@@ -101,4 +101,4 @@ def forgot_password():
             flash('Se han enviado instrucciones a tu correo', 'info')
             return redirect(url_for('auth.login'))
         flash('Email no encontrado', 'error')
-    return render_template('auth/forgot_password.html')outes.index'))
+    return render_template('auth/forgot_password.html')
