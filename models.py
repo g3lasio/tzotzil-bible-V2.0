@@ -23,7 +23,6 @@ class User(UserMixin, db.Model):
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
     is_active = db.Column(db.Boolean, default=True)
     preferences = db.Column(db.JSON, default=dict)
-    last_login = db.Column(db.DateTime, default=datetime.utcnow)
     interaction_count = db.Column(db.Integer, default=0)
     common_themes = db.Column(db.JSON, default=list)
     language_preference = db.Column(db.String(10), default='es')

@@ -59,6 +59,17 @@ def login():
 
     return render_template('auth/login.html')
 
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        if user:
+            flash('Las instrucciones para restablecer la contraseña han sido enviadas a tu email.', 'info')
+            return redirect(url_for('auth.login'))
+        flash('Email no encontrado', 'error')
+    return render_template('auth/forgot_password.html')
+
 @auth.route('/logout')
 @login_required
 def logout():
