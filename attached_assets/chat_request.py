@@ -104,7 +104,8 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
                 ]
             )
             
-            response_text = response.choices[0].message.content
+            if response.choices[0].message.content:
+                response_text = response.choices[0].message.content.replace("\n", "<br>")
             
             # Generar PDF si es un seminario
             pdf_url = None

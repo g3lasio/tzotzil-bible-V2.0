@@ -150,62 +150,8 @@ class NevinChat {
 
     formatReferences(text) {
         if (!text) return "";
-
-        const ALLOWED_TAGS = ['div', 'p', 'ul', 'li', 'small', 'span'];
-        const ALLOWED_CLASSES = {
-            'div': ['info-box', 'quote-box', 'verse-box', 'response-section', 'suggestions-box'],
-            'ul': ['bullet-list'],
-            'small': ['verse-ref', 'quote-ref']
-        };
-
-        try {
-            let formattedText = text;
-
-            // Referencias bíblicas (entre __)
-            formattedText = formattedText.replace(
-                /__([^_]+?)__\s*-\s*([^_]+?)(?=\s*(?:__|$|\*|\())/g,
-                (match, reference, content) => {
-                    console.log("Referencia bíblica:", { reference, content });
-                    return `<div class="verse-box" onclick="window.handleVerseClick('${reference.trim()}')">
-                        ${content.trim()}
-                        <small class="verse-ref">${reference.trim()}</small>
-                    </div>`;
-                }
-            );
-
-            // Referencias de EGW (entre *)
-            formattedText = formattedText.replace(
-                /\*([^*]+?)\*\s*-\s*([^*]+?)(?=\s*(?:\*|$|__|$|\())/g,
-                (match, source, content) => {
-                    console.log("Referencia EGW:", { source, content });
-                    return `<div class="quote-box">
-                        ${content.trim()}
-                        <small class="quote-ref">${source.trim()}</small>
-                    </div>`;
-                }
-            );
-
-            // Referencias teológicas (entre paréntesis)
-            formattedText = formattedText.replace(
-                /\(([^)]+?)\)\s*-\s*([^)]+?)(?=\s*(?:\(|$|__|$|\*))/g,
-                (match, source, content) => {
-                    console.log("Referencia teológica:", { source, content });
-                    return `<div class="theological-ref">
-                    <strong>${source.trim()}</strong>
-                    <div class="theological-content">${content.trim()}</div>
-                </div>`;
-                },
-            );
-
-            // Mantener saltos de línea
-            formattedText = formattedText.replace(/\n/g, "<br>");
-
-            console.log("Texto formateado:", formattedText);
-            return formattedText;
-        } catch (error) {
-            console.error("Error formateando referencias:", error);
-            return text;
-        }
+        // El texto ya viene formateado desde el backend
+        return text;
     }
 
     async showTransformationMessage(text, isUser = false) {
