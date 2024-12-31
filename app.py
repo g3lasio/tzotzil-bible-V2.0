@@ -1,4 +1,3 @@
-
 import os
 import logging
 from datetime import timedelta
@@ -55,7 +54,8 @@ if __name__ == '__main__':
         app.run(
             host='0.0.0.0',  # Permitir acceso externo
             port=port,
-            debug=True
+            debug=False,
+            ssl_context='adhoc'  # Para soporte HTTPS
         )
     except Exception as e:
         logger.error(f"Error fatal iniciando la aplicación: {str(e)}")

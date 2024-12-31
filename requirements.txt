@@ -73,3 +73,9 @@ numpy
 openai
 pandas
 psycopg2-binary
+Flask-Cors
+pyOpenSSL
+Flask-Cors
+pyOpenSSL
+Flask-Cors
+pyOpenSSL

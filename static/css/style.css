@@ -1,8 +1,17 @@
 /* Mobile-first responsive design */
-@media (max-width: 768px) {
+/* Mobile First Design */
+.container {
+  width: 100%;
+  padding: 10px;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Progressive Enhancement */
+@media (min-width: 768px) {
   .container {
-    width: 100%;
-    padding: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
   }
   
   input, button {
