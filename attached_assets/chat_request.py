@@ -138,6 +138,7 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
                 except Exception as e:
                     logger.error(f"Error generando PDF: {str(e)}")
 
+            # Retornar la respuesta y detener el procesamiento
             return {
                 "success": True,
                 "response": response_text,
@@ -157,3 +158,5 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
             "success": False,
             "error": "Lo siento, hubo un error inesperado. Por favor, intenta nuevamente."
         }
+    
+    # Asegurar que no haya procesamiento adicional después del return
