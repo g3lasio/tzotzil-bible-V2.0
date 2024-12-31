@@ -426,15 +426,14 @@ def search():
 @routes.route('/settings', methods=['GET', 'POST'])
 @login_required
 def settings():
-    try:
-        if request.method == 'POST':
+    if request.method == 'POST':
+        try:
             data = request.get_json()
             setting_type = data.get('type')
 
-            db = get_db()
-            cur = db.cursor()
-
             if setting_type == 'profile':
+                db = get_db()
+                cur = db.cursor()
                 cur.execute(
                     """
                     UPDATE users 
@@ -459,8 +458,7 @@ def settings():
             elif setting_type == 'reading':
                 session['verse_numbers'] = data.get('verse_numbers', True)
                 session['parallel_view'] = data.get('parallel_view', True)
-                session['primary_language'] = data.get('primary_language',
-                                                       'tzotzil')
+                session['primary_language'] = data.get('primary_language', 'tzotzil')
                 return jsonify({
                     'status': 'success',
                     'message': 'Reading preferences updated'
@@ -483,15 +481,15 @@ def settings():
             logger.error(f"Error updating settings: {str(e)}")
             return jsonify({'status': 'error', 'message': str(e)}), 500
 
-    # GET request - render settings page
+    # GET request
     try:
         return render_template('settings.html',
-                               books=get_sorted_books(),
-                               user=current_user)
+                             books=get_sorted_books(),
+                             user=current_user)
     except Exception as e:
         logger.error(f"Error loading settings page: {str(e)}")
         return render_template('error.html',
-                               error="Error loading settings"), 500
+                             error="Error loading settings"), 500
 
 
 @routes.route('/get_chapters/<book>')
