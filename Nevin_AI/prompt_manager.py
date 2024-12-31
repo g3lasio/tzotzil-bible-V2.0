@@ -11,9 +11,20 @@ class PromptManager:
     """Gestor simplificado de prompts."""
 
     def __init__(self):
-        # Cargar validación doctrinal
-        self.doctrinal_data = self._load_doctrinal_validation()
-        self.interpretation_handler = InterpretationHandler()
+        try:
+            from .interpretation_handler import InterpretationHandler
+            # Cargar validación doctrinal
+            self.doctrinal_data = self._load_doctrinal_validation()
+            self.interpretation_handler = InterpretationHandler()
+            if not self.doctrinal_data:
+                logger.error("No se pudo cargar la validación doctrinal")
+                raise ValueError("Error en carga de datos doctrinales")
+        except ImportError as e:
+            logger.error(f"Error importando dependencias: {str(e)}")
+            raise
+        except Exception as e:
+            logger.error(f"Error en inicialización: {str(e)}")
+            raise
         
         # Construir contexto doctrinal y de interpretación
         doctrinal_context = self._build_doctrinal_context()
