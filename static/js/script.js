@@ -140,11 +140,36 @@ function removeGlowEffect(element) {
 function downloadPDF(pdfUrl, filename) {
     const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     
-    // Crear un elemento para mostrar el progreso
-    const progressElement = document.createElement('div');
-    progressElement.className = 'download-progress';
-    progressElement.innerHTML = 'Descargando PDF...';
-    document.body.appendChild(progressElement);
+    // Mostrar indicador de carga
+    const loadingElement = document.createElement('div');
+    loadingElement.className = 'download-progress';
+    loadingElement.innerHTML = 'Preparando descarga...';
+    document.body.appendChild(loadingElement);
+
+    // Obtener URL de descarga
+    fetch(`/download_seminar/${filename}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.download_url) {
+                loadingElement.innerHTML = 'Descargando...';
+                window.location.href = data.download_url;
+                setTimeout(() => {
+                    document.body.removeChild(loadingElement);
+                }, 2000);
+            } else {
+                loadingElement.innerHTML = 'Error: No se pudo descargar el archivo';
+                setTimeout(() => {
+                    document.body.removeChild(loadingElement);
+                }, 3000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            loadingElement.innerHTML = 'Error en la descarga';
+            setTimeout(() => {
+                document.body.removeChild(loadingElement);
+            }, 3000);
+        });
 
     // Descargar usando fetch
     fetch(pdfUrl)

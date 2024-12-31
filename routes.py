@@ -632,20 +632,25 @@ def generate_seminar():
 @routes.route('/download_seminar/<filename>')
 def download_seminar(filename):
     try:
-        seminars_dir = os.path.join(current_app.static_folder, 'seminars')
-        response = current_app.send_from_directory(
-            seminars_dir, 
-            filename,
-            as_attachment=True
-        )
-        # Agregar headers para mejor compatibilidad móvil
-        response.headers['Content-Disposition'] = f'attachment; filename="{filename}"'
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Cache-Control'] = 'no-cache'
-        return response
+        storage_client = Client()
+        # Verificar si el archivo existe
+        if not storage_client.exists(filename):
+            return jsonify({
+                'success': False,
+                'error': 'Archivo no encontrado'
+            }), 404
+            
+        # Generar URL de descarga temporal
+        download_url = storage_client.get_download_url(filename, expire_in=3600)
+        
+        return jsonify({
+            'success': True,
+            'download_url': download_url
+        })
+        
     except Exception as e:
-        current_app.logger.error(f"Error downloading seminar: {str(e)}")
+        current_app.logger.error(f"Error obteniendo URL de descarga: {str(e)}")
         return jsonify({
             'success': False,
-            'error': 'Error downloading seminar'
+            'error': 'Error generando enlace de descarga'
         }), 500
