@@ -5,6 +5,15 @@ Sistema de autenticación simplificado
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_user, logout_user, login_required, LoginManager
 from models import User
+
+def init_login_manager(app):
+    """Initialize the login manager for the application"""
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
+    login_manager.login_message_category = 'info'
+    return login_manager
+
 import logging
 
 # Configuración del logger

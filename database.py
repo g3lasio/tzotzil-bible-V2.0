@@ -306,7 +306,14 @@ class DatabaseManager:
             verses = []
 
             for row in result:
-                verse_dict = dict(row._mapping)
+                verse_dict = {
+                    'id': row[0],
+                    'book': row[1],
+                    'chapter': row[2],
+                    'verse': row[3],
+                    'spanish_text': row[4],
+                    'tzotzil_text': row[5]
+                }
                 verses.append(verse_dict)
 
             logger.info(f"Versículos encontrados: {len(verses)}")
