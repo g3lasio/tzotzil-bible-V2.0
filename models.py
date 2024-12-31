@@ -74,9 +74,12 @@ class BibleVerse(db.Model):
     verse = db.Column(db.Integer, nullable=False, index=True)
     tzotzil_text = db.Column(db.Text, nullable=False)
     spanish_text = db.Column(db.Text, nullable=False)
+    testament = db.Column(db.String(10), nullable=True)
+    order_index = db.Column(db.Integer, nullable=True)
 
     __table_args__ = (
         db.Index('idx_book_chapter_verse', 'book', 'chapter', 'verse'),
+        db.Index('idx_book_order', 'book', 'order_index'),
     )
 
 class Promise(db.Model):
