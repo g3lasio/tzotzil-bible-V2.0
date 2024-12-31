@@ -4,14 +4,14 @@ class NevinChat {
         this.state = {
             currentEmotion: "neutral",
             chatHistory: [],
-            conversationContext: [],
             userContext: {},
             isProcessing: false,
-            userId: document.querySelector('meta[name="user-id"]')?.content || null,
+            userId:
+                document.querySelector('meta[name="user-id"]')?.content || null,
             transformationActive: false,
-            lastResponse: null
         };
-        
+
+        // Inicializar cuando el DOM esté listo
         document.addEventListener("DOMContentLoaded", () => this.init());
     }
 
@@ -404,31 +404,10 @@ class NevinChat {
         }
     }
 
-    constructor() {
-        this.state = {
-            currentEmotion: "neutral",
-            chatHistory: [],
-            conversationContext: [],
-            userContext: {},
-            isProcessing: false,
-            userId: document.querySelector('meta[name="user-id"]')?.content || null,
-            transformationActive: false,
-        };
-        document.addEventListener("DOMContentLoaded", () => this.init());
-    }
-
     async sendMessage() {
         const inputField = document.getElementById("user-input");
         const sendButton = document.getElementById("send-button");
         const message = inputField?.value.trim();
-        
-        // Mantener historial de conversación
-        if (message) {
-            this.state.conversationContext.push({
-                "role": "user",
-                "content": message
-            });
-        }
         const chatHistory = document.getElementById("chat-history");
         const suggestionsContainer = document.getElementById(
             "suggestions-container",
@@ -498,24 +477,8 @@ class NevinChat {
                 body: JSON.stringify({
                     question: message,
                     user_id: window.userId || this.state.userId,
-                    context: JSON.stringify(this.state.conversationContext.slice(-10)),
-                    emotion: this.state.currentEmotion
                 }),
             });
-            
-            if (response.ok) {
-                const data = await response.json();
-                this.state.lastResponse = data;
-                this.state.conversationContext.push({
-                    "role": "assistant",
-                    "content": data.response,
-                    "timestamp": new Date().toISOString()
-                });
-                
-                if (data.emotion) {
-                    this.state.currentEmotion = data.emotion;
-                }
-            }
 
             console.log("Respuesta del servidor:", response);
 

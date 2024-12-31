@@ -1,6 +1,5 @@
 import os
 import logging
-import json
 from datetime import datetime
 from typing import Dict, Any, List
 from openai import OpenAI, OpenAIError
@@ -94,25 +93,15 @@ def get_ai_response(question: str, context: str = "", language: str = "Spanish",
         
         logger.info("Sending request to OpenAI")
         try:
-            # Construir historial de mensajes con contexto
-            messages = [{
-                    "role": "system",
-                    "content": "Eres Nevin, un asistente virtual amigable y empático que ayuda a encontrar respuestas bíblicas y comparte pensamientos inspiradores de literatura cristiana como complemento."
-            }]
-            
-            # Agregar contexto previo si existe
-            if context:
-                context_messages = json.loads(context)
-                messages.extend(context_messages[-5:])  # Mantener últimos 5 mensajes como contexto
-                
-            # Agregar mensaje actual
-            messages.append({
-                "role": "user",
-                "content": prompt
-            })
             response = openai_client.chat.completions.create(
                 model="gpt-4",
-                messages=messages
+                messages=[
+                    {
+                        "role": "system",
+                        "content": "Eres Nevin, un asistente virtual amigable y empático que ayuda a encontrar respuestas bíblicas y comparte pensamientos inspiradores de literatura cristiana como complemento."
+                    },
+                    {"role": "user", "content": prompt}
+                ]
             )
             
             if response.choices[0].message.content:
