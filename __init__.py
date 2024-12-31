@@ -24,7 +24,7 @@ def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.secret_key = 'tu_clave_secreta_aqui'  # Necesario para manejar sesiones
     
-    login_manager = LoginManager()
+    from auth import login_manager
     login_manager.init_app(app)
     login_manager.login_view = 'auth.login'
     login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'

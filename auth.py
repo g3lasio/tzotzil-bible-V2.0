@@ -10,6 +10,14 @@ login_manager = LoginManager()
 from models import User, db
 import logging
 
+@login_manager.user_loader
+def load_user(user_id):
+    try:
+        return User.query.get(int(user_id))
+    except Exception as e:
+        logger.error(f"Error loading user: {str(e)}")
+        return None
+
 # Configuración del logger
 logger = logging.getLogger(__name__)
 
