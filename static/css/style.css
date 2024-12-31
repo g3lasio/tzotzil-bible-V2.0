@@ -346,13 +346,39 @@ body {
     position: relative;
     margin-bottom: 1.5rem;
     padding: 1rem;
-    background: var(--bg-darker);
+    background: rgba(13, 17, 23, 0.8);
     border: 1px solid var(--glow-primary);
     border-radius: 10px;
-    transition: all var(--transition-speed);
+    transition: all 0.3s ease-in-out;
     overflow: hidden;
     cursor: pointer;
-    box-shadow: 0 0 10px rgba(0, 243, 255, 0.1);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+}
+
+.verse-row:hover {
+    transform: translateX(5px);
+    background: rgba(0, 243, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+}
+
+.verse-row::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(0, 243, 255, 0.1),
+        transparent
+    );
+    transition: var(--transition-speed);
+}
+
+.verse-row:hover::before {
+    left: 100%;
 }
 
 .verse-row:hover {
