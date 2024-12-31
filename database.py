@@ -142,6 +142,54 @@ class DatabaseManager:
                 'error': error_msg
             }
 
+    def get_verses(self, book: str, chapter: Optional[int] = None) -> Dict[str, Any]:
+        """Obtiene los versículos o capítulos de un libro"""
+        try:
+            session = self.get_session()
+            start_time = datetime.now()
+
+            if chapter is None:
+                # Obtener solo capítulos disponibles
+                query = text("""
+                    SELECT DISTINCT chapter 
+                    FROM bibleverse 
+                    WHERE book = :book 
+                    ORDER BY chapter
+                """)
+                result = session.execute(query, {'book': book}).fetchall()
+                chapters = [row[0] for row in result]
+                
+                return {
+                    'success': True,
+                    'data': {'chapters': chapters},
+                    'error': None,
+                    'query_time': (datetime.now() - start_time).total_seconds()
+                }
+            else:
+                # Obtener versículos del capítulo específico
+                query = text("""
+                    SELECT verse, tzotzil_text, spanish_text 
+                    FROM bibleverse 
+                    WHERE book = :book AND chapter = :chapter 
+                    ORDER BY verse
+                """)
+                result = session.execute(query, {'book': book, 'chapter': chapter}).fetchall()
+                verses = [{'verse': row[0], 'tzotzil': row[1], 'spanish': row[2]} for row in result]
+                
+                return {
+                    'success': True,
+                    'data': {'verses': verses},
+                    'error': None,
+                    'query_time': (datetime.now() - start_time).total_seconds()
+                }
+        except Exception as e:
+            logger.error(f"Error getting verses: {str(e)}")
+            return {
+                'success': False,
+                'error': str(e),
+                'data': None
+            }
+
 # Instancia global del gestor
 db_manager = DatabaseManager()
 
