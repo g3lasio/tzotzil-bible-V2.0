@@ -28,6 +28,11 @@ class DatabaseManager:
             'last_reconnection': None,
             'initialization_complete': False
         }
+        self._max_reconnection_attempts = 5
+        self._reconnection_delay = 2
+        self._initialization_lock = Lock()
+        self._session_lock = Lock()
+        logger.info("DatabaseManager inicializado con locks")
         
     def get_books(self):
         """Obtiene la lista de libros de la base de datos"""
