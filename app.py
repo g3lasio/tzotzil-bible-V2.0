@@ -40,7 +40,7 @@ def init_app():
             db.session.rollback()
             return render_template('error.html', error="Ha ocurrido un error inesperado"), 500
 
-        port = int(os.environ.get('PORT', 5000))
+        port = int(os.environ.get('PORT', 8080))
         return app, port
 
     except Exception as e:
