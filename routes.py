@@ -606,13 +606,28 @@ def generate_seminar():
         seminar = generator.generate_seminar(topic, audience, duration)
         
         # Generar PDF
-        filename = f"seminar_{datetime.now().strftime('%Y%m%d_%H%M%S')}.pdf"
-        pdf_path = os.path.join('static', 'seminars', filename)
-        generator.export_to_pdf(seminar, pdf_path)
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f"seminar_{timestamp}.pdf"
+        seminars_dir = os.path.join(current_app.static_folder, 'seminars')
+        os.makedirs(seminars_dir, exist_ok=True)
         
-        return jsonify({
-            'seminar': seminar,
-            'pdf_url': f'/static/seminars/{filename}'
-        })
+        pdf_path = os.path.join(seminars_dir, filename)
+        if generator.export_to_pdf(seminar, pdf_path):
+            pdf_url = url_for('static', filename=f'seminars/{filename}')
+            return jsonify({
+                'success': True,
+                'seminar': seminar,
+                'pdf_url': pdf_url
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'Error generating PDF'
+            }), 500
+            
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        current_app.logger.error(f"Error in generate_seminar: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
