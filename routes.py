@@ -3,7 +3,7 @@ from flask_login import login_required, current_user
 from database import db_manager, get_db
 from extensions import db
 from datetime import datetime, timedelta
-from sqlalchemy import text
+from sqlalchemy import text, func
 from auth import auth
 from models import Promise, BibleVerse
 from flask import current_app
@@ -181,28 +181,18 @@ def validate_test():
         }), 500
 
 
-@routes.route('/random_promise', methods=['GET'])
+@routes.route('/random_promise')
 def random_promise():
     try:
-        # Usar directamente la sesión de SQLAlchemy
-        total_promises = Promise.query.count()
+        # Intentar obtener una promesa aleatoria directamente con SQL
+        random_promise = db.session.query(Promise).order_by(func.random()).first()
 
-        if total_promises == 0:
+        if not random_promise:
             logger.warning("No hay promesas disponibles en la base de datos")
             return jsonify({
                 'status': 'error',
                 'message': 'No hay promesas disponibles'
             }), 404
-
-        random_index = random.randint(0, total_promises - 1)
-        random_promise = Promise.query.offset(random_index).first()
-
-        if not random_promise:
-            logger.error("No se pudo obtener la promesa aleatoria")
-            return jsonify({
-                'status': 'error',
-                'message': 'Error al obtener la promesa'
-            }), 500
 
         return jsonify({
             'status': 'success',
