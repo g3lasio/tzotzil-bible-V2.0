@@ -19,6 +19,11 @@ cors = CORS()
 def init_extensions(app):
     """Inicializar extensiones de Flask"""
     try:
+        # Configurar logging
+        logging.basicConfig(level=logging.INFO)
+        logger.info("Iniciando configuración de extensiones...")
+
+        # Inicializar extensiones
         cors.init_app(app)
         db.init_app(app)
         migrate.init_app(app, db)
@@ -26,9 +31,28 @@ def init_extensions(app):
         babel.init_app(app)
         
         with app.app_context():
+            # Crear tablas si no existen
+            logger.info("Verificando estructura de base de datos...")
             db.create_all()
             
+            # Verificar conexión
+            try:
+                db.session.execute(text('SELECT 1'))
+                logger.info("Conexión a base de datos verificada")
+            except Exception as db_error:
+                logger.error(f"Error verificando base de datos: {str(db_error)}")
+                return False
+
+            # Verificar tablas requeridas
+            required_tables = ['bibleverse', 'users', 'promise']
+            for table in required_tables:
+                if not db.engine.dialect.has_table(db.engine, table):
+                    logger.error(f"Tabla requerida no encontrada: {table}")
+                    return False
+                    
+        logger.info("Extensiones inicializadas correctamente")
         return True
+        
     except Exception as e:
-        logger.error(f"Error inicializando extensiones: {str(e)}")
+        logger.error(f"Error crítico inicializando extensiones: {str(e)}")
         return False

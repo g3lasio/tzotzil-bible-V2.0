@@ -10,7 +10,7 @@ from extensions import mail
 import random
 from datetime import datetime, timedelta
 from flask_dance.contrib.google import make_google_blueprint, google
-from flask_dance.contrib.apple import make_apple_blueprint, apple
+# Apple Auth temporalmente removido
 import jwt
 import logging
 
