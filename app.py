@@ -18,7 +18,7 @@ def create_app():
         
         # Configuración básica
         app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-key-123')
-        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///instance/bible_app.db')
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
             'pool_pre_ping': True,
@@ -27,6 +27,10 @@ def create_app():
             'pool_size': 30,
             'max_overflow': 10
         }
+        
+        # Inicializar extensiones
+        from extensions import db, migrate, mail, babel, cors
+        db.init_app(app)
         
         # Inicializar extensiones y base de datos
         with app.app_context():
