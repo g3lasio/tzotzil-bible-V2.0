@@ -39,10 +39,10 @@ class DatabaseManager:
         try:
             session = self.get_session()
             query = text('''
-                SELECT DISTINCT book, MIN(id) OVER (PARTITION BY book) as order_id
+                SELECT DISTINCT book 
                 FROM bibleverse 
-                ORDER BY order_id
-            ''')
+                ORDER BY MIN(id)
+            ''').group_by(text('book'))
             result = session.execute(query).fetchall()
             
             return {
