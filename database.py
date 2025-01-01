@@ -85,6 +85,24 @@ class DatabaseManager:
                 'data': None
             }
 
+def get_sorted_books():
+    """Obtiene los libros ordenados según el orden bíblico"""
+    try:
+        books_result = db_manager.get_books()
+        if not books_result['success']:
+            return []
+            
+        books = books_result['data']
+        
+        # Ordenar según el orden bíblico definido en routes.py
+        from routes import BIBLE_BOOKS_ORDER
+        sorted_books = sorted(books, key=lambda x: BIBLE_BOOKS_ORDER.index(x) if x in BIBLE_BOOKS_ORDER else len(BIBLE_BOOKS_ORDER))
+        return sorted_books
+        
+    except Exception as e:
+        logger.error(f"Error ordenando libros: {str(e)}")
+        return []
+
 db_manager = DatabaseManager()
 
 def get_db():
