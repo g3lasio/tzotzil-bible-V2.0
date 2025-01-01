@@ -16,34 +16,50 @@ document.addEventListener("DOMContentLoaded", function () {
 function initializeLanguageToggle() {
     const toggle = document.getElementById('languageToggle');
     const container = document.querySelector('.verse-container');
+    const verses = document.querySelectorAll('.verse-content');
+    const headers = document.querySelector('.language-headers');
     
-    if (!toggle || !container) {
-        console.warn('Language toggle elements not found - skipping initialization');
+    if (!toggle) {
+        console.error('Language toggle switch not found');
         return;
     }
-    
-    // Set initial state
-    if (toggle.checked) {
-        container.classList.add('show-both');
-        container.classList.remove('show-spanish');
-    } else {
-        container.classList.add('show-spanish');
-        container.classList.remove('show-both');
-    }
-    
-    toggle.addEventListener('change', function() {
-        if (this.checked) {
-            container.classList.remove('show-spanish');
-            container.classList.add('show-both');
-            localStorage.setItem('languageMode', 'both');
-            console.log('Changed to bilingual mode successfully');
-        } else {
-            container.classList.remove('show-both');
-            container.classList.add('show-spanish');
-            localStorage.setItem('languageMode', 'spanish');
-            console.log('Changed to spanish mode successfully');
+
+    function updateLanguageDisplay(showBoth) {
+        verses.forEach(verse => {
+            if (showBoth) {
+                verse.classList.remove('spanish-only');
+                verse.querySelector('.verse-text.tzotzil').style.display = 'block';
+                verse.querySelector('.verse-text.spanish').style.display = 'block';
+            } else {
+                verse.classList.add('spanish-only');
+                verse.querySelector('.verse-text.tzotzil').style.display = 'none';
+                verse.querySelector('.verse-text.spanish').style.display = 'block';
+            }
+        });
+
+        if (headers) {
+            if (showBoth) {
+                headers.classList.remove('spanish-only');
+                headers.querySelector('.language-header.tzotzil').style.display = 'block';
+            } else {
+                headers.classList.add('spanish-only');
+                headers.querySelector('.language-header.tzotzil').style.display = 'none';
+            }
         }
+    }
+
+    // Set initial state from localStorage or default to bilingual
+    const savedMode = localStorage.getItem('languageMode') || 'both';
+    toggle.checked = savedMode === 'both';
+    updateLanguageDisplay(toggle.checked);
+
+    // Add event listener for toggle changes
+    toggle.addEventListener('change', function() {
+        updateLanguageDisplay(this.checked);
+        localStorage.setItem('languageMode', this.checked ? 'both' : 'spanish');
+        console.log(this.checked ? 'Changed to bilingual mode' : 'Changed to spanish mode');
     });
+}
     
     // Restore user preference
     const savedMode = localStorage.getItem('languageMode');

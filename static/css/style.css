@@ -1118,6 +1118,22 @@ body {
     width: 100% !important;
 }
 
+.verse-text {
+    transition: all 0.3s ease-in-out;
+}
+
+.language-headers.spanish-only .language-header.tzotzil {
+    display: none !important;
+}
+
+.language-headers.spanish-only .language-header.spanish {
+    grid-column: 1 / -1;
+}
+
+.slider {
+    transition: all 0.3s ease;
+}
+
 .language-headers.spanish-only .language-header.tzotzil {
     display: none !important;
 }
