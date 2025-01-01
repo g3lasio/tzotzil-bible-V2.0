@@ -15,23 +15,42 @@ document.addEventListener("DOMContentLoaded", function () {
 
 function initializeLanguageToggle() {
     const toggle = document.getElementById('languageToggle');
-    if (!toggle) {
-        console.warn('Language toggle switch not found - skipping initialization');
+    const container = document.querySelector('.verse-container');
+    
+    if (!toggle || !container) {
+        console.warn('Language toggle elements not found - skipping initialization');
         return;
     }
     
+    // Set initial state
+    if (toggle.checked) {
+        container.classList.add('show-both');
+        container.classList.remove('show-spanish');
+    } else {
+        container.classList.add('show-spanish');
+        container.classList.remove('show-both');
+    }
+    
     toggle.addEventListener('change', function() {
-        const container = document.querySelector('.verse-container');
         if (this.checked) {
-            container.classList.add('show-both');
             container.classList.remove('show-spanish');
+            container.classList.add('show-both');
+            localStorage.setItem('languageMode', 'both');
             console.log('Changed to bilingual mode successfully');
         } else {
-            container.classList.add('show-spanish');
             container.classList.remove('show-both');
+            container.classList.add('show-spanish');
+            localStorage.setItem('languageMode', 'spanish');
             console.log('Changed to spanish mode successfully');
         }
     });
+    
+    // Restore user preference
+    const savedMode = localStorage.getItem('languageMode');
+    if (savedMode) {
+        toggle.checked = savedMode === 'both';
+        toggle.dispatchEvent(new Event('change'));
+    }
 }
 
 function initializeVerseActions() {
