@@ -14,50 +14,25 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initializeLanguageToggle() {
-    const toggleSwitch = document.getElementById('languageToggle');
-    if (!toggleSwitch) {
-        console.error("Language toggle switch not found");
+    const toggle = document.getElementById('languageToggle');
+    if (!toggle) {
+        console.warn('Language toggle switch not found - skipping initialization');
         return;
     }
-
-    function updateLanguageMode(isBilingual) {
-        try {
-            const contentElements = document.querySelectorAll('.verse-content');
-            const headerElements = document.querySelector('.language-headers');
-
-            // Actualizar los elementos de contenido
-            contentElements.forEach(el => {
-                el.classList.toggle('spanish-only', !isBilingual);
-            });
-
-            // Actualizar los encabezados si existen
-            if (headerElements) {
-                headerElements.classList.toggle('spanish-only', !isBilingual);
-            }
-
-            // Actualizar el estado del toggle
-            toggleSwitch.dataset.mode = isBilingual ? 'bilingual' : 'spanish';
-            
-            console.log(`Changed to ${isBilingual ? 'bilingual' : 'spanish'} mode successfully`);
-        } catch (error) {
-            console.error('Error updating language mode:', error);
+    
+    toggle.addEventListener('change', function() {
+        const container = document.querySelector('.verse-container');
+        if (this.checked) {
+            container.classList.add('show-both');
+            container.classList.remove('show-spanish');
+            console.log('Changed to bilingual mode successfully');
+        } else {
+            container.classList.add('show-spanish');
+            container.classList.remove('show-both');
+            console.log('Changed to spanish mode successfully');
         }
-    }
-
-    // Establecer modo inicial como bilingüe
-    toggleSwitch.checked = false;
-    toggleSwitch.dataset.mode = 'bilingual';
-
-    // Manejar cambios en el toggle
-    toggleSwitch.addEventListener('change', function() {
-        const isBilingual = !this.checked;
-        updateLanguageMode(isBilingual);
     });
-
-    console.log("Language toggle initialized successfully");
 }
-
-document.addEventListener('DOMContentLoaded', initializeLanguageToggle);
 
 function initializeVerseActions() {
     console.log("Initializing Verse Actions...");
@@ -303,14 +278,6 @@ function navigateToChapter(book, chapter) {
         console.error("Invalid book or chapter data");
         return;
     }
-    window.location.href = `/chapter/${encodeURIComponent(book)}/${chapter}`;
-}
-
-function navigateToChapter(book, chapter) {
-    if (!book || !chapter) {
-        console.error("Invalid book or chapter data");
-        return;
-    }
     window.location.href = `/chapter/${book}/${chapter}`;
 }
 
@@ -393,4 +360,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("DOM fully loaded and parsed, all initializers have been called.");
 });
-
