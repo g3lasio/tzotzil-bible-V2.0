@@ -2,6 +2,14 @@
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+class Promise(db.Model):
+    __tablename__ = 'promise'
+    id = db.Column(db.Integer, primary_key=True)
+    verse_text = db.Column(db.Text, nullable=False)
+    book_reference = db.Column(db.String(100), nullable=False)
+    background_image = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
