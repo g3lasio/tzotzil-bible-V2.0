@@ -18,52 +18,32 @@ function initializeLanguageToggle() {
     const toggle = document.getElementById('languageToggle');
     const verseContainer = document.querySelector('.verse-container');
     
-    // Log DOM elements state
-    console.log({
-        toggleExists: !!toggle,
-        toggleId: toggle?.id,
-        verseContainerExists: !!verseContainer,
-        verseContainerChildren: verseContainer?.children?.length
+    console.log("DOM elements found:", {
+        toggle: toggle?.id,
+        verseContainer: !!verseContainer
     });
-    
+
     if (!toggle || !verseContainer) {
-        console.error('Required elements not found:', {
-            toggleElement: toggle,
-            verseContainerElement: verseContainer,
-            documentBody: document.body.innerHTML
-        });
+        console.error('Toggle elements not found');
         return;
     }
 
-    function updateDisplay() {
+    function updateDisplay(event) {
         const showBoth = toggle.checked;
-        const verseContents = verseContainer.querySelectorAll('.verse-content');
-        const headers = verseContainer.querySelector('.language-headers');
+        console.log(`Toggle state changed: ${showBoth ? 'bilingual' : 'spanish only'}`);
         
-        console.log('Update Display called:', {
-            toggleChecked: showBoth,
-            verseContentsCount: verseContents.length,
-            headersExists: !!headers,
-            event: event?.type
-        });
-        
-        verseContents.forEach(content => {
+        verseContainer.querySelectorAll('.verse-content').forEach(content => {
             const tzotzilText = content.querySelector('.verse-text.tzotzil');
             const spanishText = content.querySelector('.verse-text.spanish');
             
             if (tzotzilText && spanishText) {
-                if (showBoth) {
-                    tzotzilText.style.display = 'block';
-                    spanishText.style.display = 'block';
-                    content.classList.remove('spanish-only');
-                } else {
-                    tzotzilText.style.display = 'none';
-                    spanishText.style.display = 'block';
-                    content.classList.add('spanish-only');
-                }
+                tzotzilText.style.display = showBoth ? 'block' : 'none';
+                spanishText.style.display = 'block';
+                content.classList.toggle('spanish-only', !showBoth);
             }
         });
 
+        const headers = verseContainer.querySelector('.language-headers');
         if (headers) {
             const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
             if (tzotzilHeader) {
@@ -73,31 +53,24 @@ function initializeLanguageToggle() {
         }
         
         localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
-        console.log(`Display updated: ${showBoth ? 'bilingual' : 'spanish only'} mode`);
+        console.log('Display updated successfully');
     }
 
-    // Initialize state from localStorage
+    // Remove any existing listeners
+    toggle.removeEventListener('change', updateDisplay);
+    
+    // Add new change listener
+    toggle.addEventListener('change', updateDisplay);
+    
+    // Set initial state
     const savedMode = localStorage.getItem('languageMode') || 'both';
     toggle.checked = savedMode === 'both';
     
-    // Initial display update
+    // Trigger initial display update
     updateDisplay();
     
-    // Add change listener
-    toggle.addEventListener('change', updateDisplay);
-    
-    console.log('Language toggle initialized:', {
-        initialMode: savedMode,
-        isChecked: toggle.checked
-    });
+    console.log('Language toggle fully initialized');
 }
-    
-    // Restore user preference
-    const savedMode = localStorage.getItem('languageMode');
-    if (savedMode) {
-        toggle.checked = savedMode === 'both';
-        toggle.dispatchEvent(new Event('change'));
-    }
 }
 
 function initializeVerseActions() {
