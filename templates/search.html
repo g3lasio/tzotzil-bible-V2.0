@@ -51,6 +51,20 @@
                                     
                                     <div class="col-md-6">
                                         <h6 class="mb-3">Filtros</h6>
+                                        <div class="mb-3">
+                                            <label class="form-label">Testamento</label>
+                                            <select name="testament" class="form-select">
+                                                <option value="both" {% if testament == 'both' %}selected{% endif %}>
+                                                    Ambos Testamentos
+                                                </option>
+                                                <option value="old" {% if testament == 'old' %}selected{% endif %}>
+                                                    Antiguo Testamento
+                                                </option>
+                                                <option value="new" {% if testament == 'new' %}selected{% endif %}>
+                                                    Nuevo Testamento
+                                                </option>
+                                            </select>
+                                        </div>
                                         <div>
                                             <label class="form-label">Libro</label>
                                             <select name="book" class="form-select">
