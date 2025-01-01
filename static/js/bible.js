@@ -59,7 +59,6 @@ function initializeLanguageToggle() {
     toggle.checked = savedMode === 'both';
     updateLanguageDisplay(toggle.checked);
 }
-}
 
 function initializeVerseActions() {
     console.log("Initializing Verse Actions...");
