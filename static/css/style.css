@@ -879,13 +879,72 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .nav-grid {
-        padding: 0 0.5rem;
+    .container-fluid {
+        padding: 0.5rem !important;
+        overflow-x: hidden;
     }
 
-    .nav-item {
-        padding: 0.75rem 0.25rem;
+    .header-top {
+        grid-template-columns: auto 1fr auto;
+        gap: 0.5rem;
+        padding: 0.5rem;
     }
+
+    .title-section h1.chapter-title {
+        font-size: 1rem;
+        text-align: center;
+    }
+
+    .verse-row {
+        padding: 0.75rem;
+        margin: 0.5rem 0;
+    }
+
+    .verse-content {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .verse-text {
+        font-size: 0.9rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    .nav-arrows {
+        gap: 0.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .nav-arrow-btn {
+        padding: 0.5rem;
+        min-width: auto;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-top {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .controls-section {
+        order: 2;
+    }
+
+    .book-nav {
+        justify-self: center;
+    }
+
+    .verse-number {
+        min-width: 1.5rem;
+        font-size: 0.9rem;
+    }
+}
 
     .nav-icon {
         font-size: 1.25rem;
