@@ -1,4 +1,3 @@
-
 """
 DatabaseManager - Sistema simplificado de gestión de base de datos
 """
@@ -84,6 +83,25 @@ class DatabaseManager:
                 'error': str(e),
                 'data': None
             }
+
+    def check_health(self) -> Dict[str, Any]:
+        """Verifica el estado de la conexión a la base de datos"""
+        try:
+            session = self.get_session()
+            session.execute(text('SELECT 1')).scalar()
+            return {
+                'is_healthy': True,
+                'error': None
+            }
+        except Exception as e:
+            logger.error(f"Error en health check: {str(e)}")
+            return {
+                'is_healthy': False,
+                'error': str(e)
+            }
+
+    def get_db():
+        return db_manager.get_session()
 
 def get_sorted_books():
     """Obtiene los libros ordenados según el orden bíblico"""
