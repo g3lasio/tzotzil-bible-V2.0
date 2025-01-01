@@ -18,8 +18,20 @@ function initializeLanguageToggle() {
     const toggle = document.getElementById('languageToggle');
     const verseContainer = document.querySelector('.verse-container');
     
+    // Log DOM elements state
+    console.log({
+        toggleExists: !!toggle,
+        toggleId: toggle?.id,
+        verseContainerExists: !!verseContainer,
+        verseContainerChildren: verseContainer?.children?.length
+    });
+    
     if (!toggle || !verseContainer) {
-        console.error('Required elements not found:', {toggle: !!toggle, verseContainer: !!verseContainer});
+        console.error('Required elements not found:', {
+            toggleElement: toggle,
+            verseContainerElement: verseContainer,
+            documentBody: document.body.innerHTML
+        });
         return;
     }
 
@@ -27,6 +39,13 @@ function initializeLanguageToggle() {
         const showBoth = toggle.checked;
         const verseContents = verseContainer.querySelectorAll('.verse-content');
         const headers = verseContainer.querySelector('.language-headers');
+        
+        console.log('Update Display called:', {
+            toggleChecked: showBoth,
+            verseContentsCount: verseContents.length,
+            headersExists: !!headers,
+            event: event?.type
+        });
         
         verseContents.forEach(content => {
             const tzotzilText = content.querySelector('.verse-text.tzotzil');
