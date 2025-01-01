@@ -14,50 +14,62 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initializeLanguageToggle() {
+    console.log("Initializing language toggle...");
     const toggle = document.getElementById('languageToggle');
-    const container = document.querySelector('.verse-container');
-    const verses = document.querySelectorAll('.verse-content');
-    const headers = document.querySelector('.language-headers');
+    const verseContainer = document.querySelector('.verse-container');
     
-    if (!toggle) {
-        console.error('Language toggle switch not found');
+    if (!toggle || !verseContainer) {
+        console.error('Required elements not found:', {toggle: !!toggle, verseContainer: !!verseContainer});
         return;
     }
 
-    function updateLanguageDisplay(showBoth) {
-        verses.forEach(verse => {
-            if (showBoth) {
-                verse.classList.remove('spanish-only');
-                verse.querySelector('.verse-text.tzotzil').style.display = 'block';
-                verse.querySelector('.verse-text.spanish').style.display = 'block';
-            } else {
-                verse.classList.add('spanish-only');
-                verse.querySelector('.verse-text.tzotzil').style.display = 'none';
-                verse.querySelector('.verse-text.spanish').style.display = 'block';
+    function updateDisplay() {
+        const showBoth = toggle.checked;
+        const verseContents = verseContainer.querySelectorAll('.verse-content');
+        const headers = verseContainer.querySelector('.language-headers');
+        
+        verseContents.forEach(content => {
+            const tzotzilText = content.querySelector('.verse-text.tzotzil');
+            const spanishText = content.querySelector('.verse-text.spanish');
+            
+            if (tzotzilText && spanishText) {
+                if (showBoth) {
+                    tzotzilText.style.display = 'block';
+                    spanishText.style.display = 'block';
+                    content.classList.remove('spanish-only');
+                } else {
+                    tzotzilText.style.display = 'none';
+                    spanishText.style.display = 'block';
+                    content.classList.add('spanish-only');
+                }
             }
         });
 
         if (headers) {
-            if (showBoth) {
-                headers.classList.remove('spanish-only');
-                headers.querySelector('.language-header.tzotzil').style.display = 'block';
-            } else {
-                headers.classList.add('spanish-only');
-                headers.querySelector('.language-header.tzotzil').style.display = 'none';
+            const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
+            if (tzotzilHeader) {
+                tzotzilHeader.style.display = showBoth ? 'block' : 'none';
+                headers.classList.toggle('spanish-only', !showBoth);
             }
         }
+        
+        localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
+        console.log(`Display updated: ${showBoth ? 'bilingual' : 'spanish only'} mode`);
     }
 
-    // Set initial state from localStorage or default to bilingual
+    // Initialize state from localStorage
     const savedMode = localStorage.getItem('languageMode') || 'both';
     toggle.checked = savedMode === 'both';
-    updateLanguageDisplay(toggle.checked);
-
-    // Add event listener for toggle changes
-    toggle.addEventListener('change', function() {
-        updateLanguageDisplay(this.checked);
-        localStorage.setItem('languageMode', this.checked ? 'both' : 'spanish');
-        console.log(this.checked ? 'Changed to bilingual mode' : 'Changed to spanish mode');
+    
+    // Initial display update
+    updateDisplay();
+    
+    // Add change listener
+    toggle.addEventListener('change', updateDisplay);
+    
+    console.log('Language toggle initialized:', {
+        initialMode: savedMode,
+        isChecked: toggle.checked
     });
 }
     

@@ -1109,8 +1109,25 @@ body {
 .highlight-purple { background-color: rgba(214, 188, 250, 0.8); }
 
 /* Language Mode Styles */
+.verse-text {
+    transition: all 0.3s ease-in-out;
+}
+
 .verse-content.spanish-only .verse-text.tzotzil {
     display: none !important;
+}
+
+.verse-content.spanish-only .verse-text.spanish {
+    grid-column: 1 / -1;
+    width: 100%;
+}
+
+.language-headers.spanish-only .language-header.tzotzil {
+    display: none !important;
+}
+
+.language-headers.spanish-only .language-header.spanish {
+    grid-column: 1 / -1;
 }
 
 .verse-content.spanish-only .verse-text.spanish {
