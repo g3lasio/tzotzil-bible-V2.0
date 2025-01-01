@@ -37,12 +37,38 @@ class DatabaseManager:
     def get_books(self):
         """Obtiene la lista de libros de la base de datos"""
         try:
+
+    def verify_bible_data(self):
+        """Verifica la integridad de los datos bíblicos"""
+        try:
+            session = self.get_session()
+            
+            # Verificar libros
+            books = session.execute(text('SELECT COUNT(DISTINCT book) FROM bibleverse')).scalar()
+            if not books:
+                logger.error("No se encontraron libros en la base de datos")
+                return False
+                
+            # Verificar versículos
+            verses = session.execute(text('SELECT COUNT(*) FROM bibleverse')).scalar()
+            if not verses:
+                logger.error("No se encontraron versículos en la base de datos")
+                return False
+                
+            logger.info(f"Verificación completa: {books} libros, {verses} versículos")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error verificando datos bíblicos: {str(e)}")
+            return False
+
             session = self.get_session()
             query = text('''
-                SELECT DISTINCT book 
+                SELECT DISTINCT book, MIN(id) as order_id
                 FROM bibleverse 
-                ORDER BY MIN(id)
-            ''').group_by(text('book'))
+                GROUP BY book
+                ORDER BY order_id
+            ''')
             result = session.execute(query).fetchall()
             
             return {
