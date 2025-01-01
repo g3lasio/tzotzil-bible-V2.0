@@ -386,12 +386,10 @@ def search():
             return render_template('search.html',
                                  books=books,
                                  versions=['tzotzil', 'spanish'],
-                                 testament='both',
                                  book='all')
 
         keyword = request.args.get('keyword', '').strip()
         versions = request.args.getlist('version') or ['tzotzil', 'spanish']
-        testament = request.args.get('testament', 'both')
         book = request.args.get('book', 'all')
 
         # Usar SQLAlchemy para la consulta
@@ -400,9 +398,6 @@ def search():
 
         if book != 'all':
             query = query.filter(BibleVerse.book == book)
-
-        if testament != 'both':
-            query = query.filter(BibleVerse.testament == testament)
 
         # Construir condiciones de búsqueda
         search_conditions = []
