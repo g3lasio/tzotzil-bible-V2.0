@@ -386,12 +386,10 @@ def search():
             return render_template('search.html',
                                  books=books,
                                  versions=['tzotzil', 'spanish'],
-                                 testament='both',
                                  book='all')
 
         keyword = request.args.get('keyword', '').strip()
         versions = request.args.getlist('version') or ['tzotzil', 'spanish']
-        testament = request.args.get('testament', 'both')
         book = request.args.get('book', 'all')
 
         # Usar SQLAlchemy para la consulta
@@ -400,9 +398,6 @@ def search():
 
         if book != 'all':
             query = query.filter(BibleVerse.book == book)
-
-        if testament != 'both':
-            query = query.filter(BibleVerse.testament == testament)
 
         # Construir condiciones de búsqueda
         search_conditions = []
@@ -415,8 +410,32 @@ def search():
             from sqlalchemy import or_
             query = query.filter(or_(*search_conditions))
 
-        # Ordenar resultados
-        results = query.order_by(BibleVerse.book, BibleVerse.chapter, BibleVerse.verse).all()
+        try:
+            # Ordenar resultados
+            results = query.order_by(BibleVerse.book, BibleVerse.chapter, BibleVerse.verse).all()
+            
+            # Convertir resultados a diccionarios
+            results_dict = [{
+                'id': verse.id,
+                'book': verse.book,
+                'chapter': verse.chapter,
+                'verse': verse.verse,
+                'tzotzil_text': verse.tzotzil_text,
+                'spanish_text': verse.spanish_text
+            } for verse in results]
+            
+            logger.info(f"Búsqueda completada. Encontrados {len(results_dict)} resultados")
+            return render_template('search_results.html',
+                                results=results_dict,
+                                keyword=keyword,
+                                versions=versions,
+                                book=book,
+                                books=books)
+                                
+        except Exception as e:
+            logger.error(f"Error en la búsqueda: {str(e)}")
+            return render_template('error.html',
+                                error="Error al realizar la búsqueda. Por favor, intente nuevamente."), 500
 
         # Convertir resultados a diccionarios
         results_dict = [{

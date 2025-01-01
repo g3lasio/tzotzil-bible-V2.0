@@ -14,50 +14,52 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initializeLanguageToggle() {
-    const toggleSwitch = document.getElementById('languageToggle');
-    if (!toggleSwitch) {
-        console.error("Language toggle switch not found");
+    const toggle = document.getElementById('languageToggle');
+    const verseContainer = document.querySelector('.verse-container');
+    
+    if (!toggle || !verseContainer) {
+        console.error('Language toggle elements not found - skipping initialization');
         return;
     }
 
-    function updateLanguageMode(isBilingual) {
+    const updateLanguageDisplay = (showBoth) => {
         try {
-            const contentElements = document.querySelectorAll('.verse-content');
-            const headerElements = document.querySelector('.language-headers');
-
-            // Actualizar los elementos de contenido
-            contentElements.forEach(el => {
-                el.classList.toggle('spanish-only', !isBilingual);
+            // Actualizar textos
+            verseContainer.querySelectorAll('.verse-content').forEach(content => {
+                const tzotzilText = content.querySelector('.verse-text.tzotzil');
+                if (tzotzilText) {
+                    tzotzilText.style.display = showBoth ? 'block' : 'none';
+                }
             });
 
-            // Actualizar los encabezados si existen
-            if (headerElements) {
-                headerElements.classList.toggle('spanish-only', !isBilingual);
+            // Actualizar encabezados
+            const headers = verseContainer.querySelector('.language-headers');
+            if (headers) {
+                const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
+                if (tzotzilHeader) {
+                    tzotzilHeader.style.display = showBoth ? 'block' : 'none';
+                    headers.classList.toggle('spanish-only', !showBoth);
+                }
             }
 
-            // Actualizar el estado del toggle
-            toggleSwitch.dataset.mode = isBilingual ? 'bilingual' : 'spanish';
-            
-            console.log(`Changed to ${isBilingual ? 'bilingual' : 'spanish'} mode successfully`);
+            localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
+            console.log(`Changed to ${showBoth ? 'bilingual' : 'spanish'} mode successfully`);
         } catch (error) {
-            console.error('Error updating language mode:', error);
+            console.error('Error updating language display:', error);
         }
-    }
+    };
 
-    // Establecer modo inicial como bilingüe
-    toggleSwitch.checked = false;
-    toggleSwitch.dataset.mode = 'bilingual';
+    // Limpiar listeners anteriores
+    const handleChange = () => updateLanguageDisplay(toggle.checked);
+    toggle.removeEventListener('change', handleChange);
+    toggle.addEventListener('change', handleChange);
 
-    // Manejar cambios en el toggle
-    toggleSwitch.addEventListener('change', function() {
-        const isBilingual = !this.checked;
-        updateLanguageMode(isBilingual);
-    });
-
-    console.log("Language toggle initialized successfully");
+    // Establecer estado inicial
+    const savedMode = localStorage.getItem('languageMode') || 'both';
+    toggle.checked = savedMode === 'both';
+    updateLanguageDisplay(toggle.checked);
 }
-
-document.addEventListener('DOMContentLoaded', initializeLanguageToggle);
+}
 
 function initializeVerseActions() {
     console.log("Initializing Verse Actions...");
@@ -278,13 +280,9 @@ function setupVerseHighlighting() {
 }
 
 function initializeChapterNavigation() {
-    const prevButton = document.querySelector(
-        '.navigation-buttons [data-direction="prev"]',
-    );
-    const nextButton = document.querySelector(
-        '.navigation-buttons [data-direction="next"]',
-    );
-
+    const prevButton = document.querySelector('.nav-arrow-btn.prev-btn');
+    const nextButton = document.querySelector('.nav-arrow-btn.next-btn');
+    
     if (prevButton) {
         prevButton.addEventListener("click", () => {
             const prevChapter = prevButton.dataset.chapter;
@@ -389,4 +387,3 @@ document.addEventListener("DOMContentLoaded", function () {
 
     console.log("DOM fully loaded and parsed, all initializers have been called.");
 });
-

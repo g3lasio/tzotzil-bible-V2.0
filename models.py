@@ -1,68 +1,27 @@
+
 from extensions import db
-from datetime import datetime
-from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
-class Conversation(db.Model):
-    __tablename__ = 'conversations'
+class Promise(db.Model):
+    __tablename__ = 'promise'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    question = db.Column(db.Text, nullable=False)
-    response = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    verse_text = db.Column(db.Text, nullable=False)
+    book_reference = db.Column(db.String(100), nullable=False)
+    background_image = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
-class User(UserMixin, db.Model):
-    """Modelo de usuario para autenticación"""
+class User(db.Model):
     __tablename__ = 'users'
-
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime, default=datetime.utcnow)
-    is_active = db.Column(db.Boolean, default=True)
-    preferences = db.Column(db.JSON, default=dict)
-    interaction_count = db.Column(db.Integer, default=0)
-    common_themes = db.Column(db.JSON, default=list)
-    language_preference = db.Column(db.String(10), default='es')
-    social_id = db.Column(db.String(64), unique=True)
-    social_provider = db.Column(db.String(20))
-    reset_code = db.Column(db.String(6))
-    reset_code_expires = db.Column(db.DateTime)
-    apple_id = db.Column(db.String(64), unique=True)
-    google_id = db.Column(db.String(64), unique=True)
-    
-    conversations = db.relationship('Conversation', backref='user', lazy=True)
 
     def set_password(self, password):
-        """Establece la contraseña del usuario"""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
-        """Verifica la contraseña del usuario"""
         return check_password_hash(self.password_hash, password)
-        
-    def get_reset_token(self, expires_in=3600):
-        """Genera un token temporal para reset de contraseña"""
-        from time import time
-        import jwt
-        from flask import current_app
-        return jwt.encode(
-            {'reset_password': self.id, 'exp': time() + expires_in},
-            current_app.config['SECRET_KEY'], algorithm='HS256')
-
-    @staticmethod
-    def verify_reset_token(token):
-        """Verifica el token de reset de contraseña"""
-        import jwt
-        from flask import current_app
-        try:
-            id = jwt.decode(token, current_app.config['SECRET_KEY'],
-                          algorithms=['HS256'])['reset_password']
-        except:
-            return None
-        return User.query.get(id)
 
 class BibleVerse(db.Model):
     """Modelo para versículos bíblicos"""
@@ -74,20 +33,7 @@ class BibleVerse(db.Model):
     verse = db.Column(db.Integer, nullable=False, index=True)
     tzotzil_text = db.Column(db.Text, nullable=False)
     spanish_text = db.Column(db.Text, nullable=False)
-    testament = db.Column(db.String(10), nullable=True)
-    order_index = db.Column(db.Integer, nullable=True)
 
     __table_args__ = (
         db.Index('idx_book_chapter_verse', 'book', 'chapter', 'verse'),
-        db.Index('idx_book_order', 'book', 'order_index'),
     )
-
-class Promise(db.Model):
-    """Modelo para promesas bíblicas"""
-    __tablename__ = 'promise'
-
-    id = db.Column(db.Integer, primary_key=True)
-    verse_text = db.Column(db.Text, nullable=False)
-    background_image = db.Column(db.String(255), nullable=False)
-    book_reference = db.Column(db.String(100), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)

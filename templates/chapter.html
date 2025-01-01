@@ -5,54 +5,65 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{{ book }} {{ chapter }}</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
         <link
             rel="stylesheet"
             href="{{ url_for('static', filename='css/style.css') }}"
         />
     </head>
     <body class="cyberpunk">
-        <div class="container">
+        <div class="container-fluid px-4">
             <header class="header">
                 <div class="header-content">
                     <div class="header-top">
-                        <div class="title-section">
-                            <h1>{{ book }} {{ chapter }}</h1>
+                        <div class="book-nav">
+                            <a href="{{ url_for('routes.books') }}" class="header-book-btn">
+                                <i class="bi bi-book-half"></i>
+                            </a>
                         </div>
                         <div class="controls-section">
                             <div class="language-toggle-wrapper">
                                 <label class="switch">
-                                    <input type="checkbox" id="languageToggle"/>
-                                    <span class="slider">
-                                        <span class="toggle-text">Bilingual</span>
+                                    <input type="checkbox" id="languageToggle" checked/>
+                                    <span class="slider round">
+                                        <span class="toggle-text-bilingual">Bilingual</span>
+                                        <span class="toggle-text-spanish">Spanish</span>
                                     </span>
                                 </label>
                             </div>
-                            <a href="{{ url_for('routes.books') }}" class="back-btn">
-                                <i class="bi bi-house"></i> Libros
-                            </a>
+                        </div>
+                        <div class="title-section">
+                            <h1 class="chapter-title">{{ book }} {{ chapter }}</h1>
                         </div>
                     </div>
 
                     <div class="navigation-section">
-                        {% if chapter > 1 %}
-                        <button
-                            class="btn btn-outline-primary cyberpunk-btn"
-                            data-direction="prev"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter-1 }}"
-                        >
-                            <i class="bi bi-chevron-left"></i> Anterior
-                        </button>
-                        {% endif %} {% if chapter < max_chapter %}
-                        <button
-                            class="btn btn-outline-primary cyberpunk-btn"
-                            data-direction="next"
-                            data-book="{{ book }}"
-                            data-chapter="{{ chapter+1 }}"
-                        >
-                            Siguiente <i class="bi bi-chevron-right"></i>
-                        </button>
-                        {% endif %}
+                        
+                        <div class="nav-arrows">
+                            {% if chapter > 1 %}
+                            <button
+                                class="nav-arrow-btn prev-btn"
+                                data-direction="prev"
+                                data-book="{{ book }}"
+                                data-chapter="{{ chapter-1 }}"
+                            >
+                                <i class="bi bi-arrow-left"></i>
+                                <span class="nav-text">Anterior</span>
+                            </button>
+                            {% endif %}
+                            
+                            {% if chapter < max_chapter %}
+                            <button
+                                class="nav-arrow-btn next-btn"
+                                data-direction="next"
+                                data-book="{{ book }}"
+                                data-chapter="{{ chapter+1 }}"
+                            >
+                                <span class="nav-text">Siguiente</span>
+                                <i class="bi bi-arrow-right"></i>
+                            </button>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             </header>
