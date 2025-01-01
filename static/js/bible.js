@@ -14,62 +14,50 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function initializeLanguageToggle() {
-    console.log("Initializing language toggle...");
     const toggle = document.getElementById('languageToggle');
     const verseContainer = document.querySelector('.verse-container');
     
-    console.log("DOM elements found:", {
-        toggle: toggle?.id,
-        verseContainer: !!verseContainer
-    });
-
     if (!toggle || !verseContainer) {
-        console.error('Toggle elements not found');
+        console.error('Language toggle elements not found - skipping initialization');
         return;
     }
 
-    function updateDisplay(event) {
-        const showBoth = toggle.checked;
-        console.log(`Toggle state changed: ${showBoth ? 'bilingual' : 'spanish only'}`);
-        
-        verseContainer.querySelectorAll('.verse-content').forEach(content => {
-            const tzotzilText = content.querySelector('.verse-text.tzotzil');
-            const spanishText = content.querySelector('.verse-text.spanish');
-            
-            if (tzotzilText && spanishText) {
-                tzotzilText.style.display = showBoth ? 'block' : 'none';
-                spanishText.style.display = 'block';
-                content.classList.toggle('spanish-only', !showBoth);
-            }
-        });
+    const updateLanguageDisplay = (showBoth) => {
+        try {
+            // Actualizar textos
+            verseContainer.querySelectorAll('.verse-content').forEach(content => {
+                const tzotzilText = content.querySelector('.verse-text.tzotzil');
+                if (tzotzilText) {
+                    tzotzilText.style.display = showBoth ? 'block' : 'none';
+                }
+            });
 
-        const headers = verseContainer.querySelector('.language-headers');
-        if (headers) {
-            const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
-            if (tzotzilHeader) {
-                tzotzilHeader.style.display = showBoth ? 'block' : 'none';
-                headers.classList.toggle('spanish-only', !showBoth);
+            // Actualizar encabezados
+            const headers = verseContainer.querySelector('.language-headers');
+            if (headers) {
+                const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
+                if (tzotzilHeader) {
+                    tzotzilHeader.style.display = showBoth ? 'block' : 'none';
+                    headers.classList.toggle('spanish-only', !showBoth);
+                }
             }
+
+            localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
+            console.log(`Changed to ${showBoth ? 'bilingual' : 'spanish'} mode successfully`);
+        } catch (error) {
+            console.error('Error updating language display:', error);
         }
-        
-        localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
-        console.log('Display updated successfully');
-    }
+    };
 
-    // Remove any existing listeners
-    toggle.removeEventListener('change', updateDisplay);
-    
-    // Add new change listener
-    toggle.addEventListener('change', updateDisplay);
-    
-    // Set initial state
+    // Limpiar listeners anteriores
+    const handleChange = () => updateLanguageDisplay(toggle.checked);
+    toggle.removeEventListener('change', handleChange);
+    toggle.addEventListener('change', handleChange);
+
+    // Establecer estado inicial
     const savedMode = localStorage.getItem('languageMode') || 'both';
     toggle.checked = savedMode === 'both';
-    
-    // Trigger initial display update
-    updateDisplay();
-    
-    console.log('Language toggle fully initialized');
+    updateLanguageDisplay(toggle.checked);
 }
 }
 
