@@ -72,7 +72,7 @@ def create_app():
 def main():
     app = create_app()
     if app:
-        port = int(os.environ.get('PORT', 5000))
+        port = int(os.environ.get('PORT', 8080)) # Changed default port to 8080
         app.run(host='0.0.0.0', port=port, debug=True)
     else:
         logger.error("No se pudo iniciar la aplicación")
