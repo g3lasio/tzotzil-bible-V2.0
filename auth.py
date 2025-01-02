@@ -184,8 +184,21 @@ def signup():
             db.session.add(user)
             db.session.commit()
             
-            flash('¡Registro exitoso! Por favor inicia sesión', 'success')
-            return redirect(url_for('auth.login'))
+            # Enviar email de confirmación
+            try:
+                msg = Message('Bienvenido a la Biblia Tzotzil',
+                            sender='gelasio@chyrris.com',
+                            recipients=[email])
+                msg.html = render_template('auth/email/welcome.html', 
+                                        username=username)
+                mail.send(msg)
+            except Exception as e:
+                logger.warning(f"Error enviando email de bienvenida: {str(e)}")
+
+            # Iniciar sesión automáticamente
+            login_user(user)
+            flash('¡Registro exitoso! Bienvenido.', 'success')
+            return redirect(url_for('routes.index'))
             
         except Exception as e:
             logger.error(f"Error en signup: {str(e)}")
