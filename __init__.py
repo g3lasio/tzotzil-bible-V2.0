@@ -11,6 +11,9 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-nevin')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///bible_app.db'
 CORS(app)
 
+from auth import auth
+app.register_blueprint(auth)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
