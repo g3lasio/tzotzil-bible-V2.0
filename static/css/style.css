@@ -1452,7 +1452,7 @@ body {
     box-shadow: 0 0 8px rgba(255, 51, 102, 0.6);
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
     transform: translate(88px, -50%);
     background: #ff3366;
 }
@@ -1483,11 +1483,11 @@ input:checked + .slider:before {
     opacity: 0;
 }
 
-input:checked + .slider .toggle-text-bilingual {
+input:checked+.slider .toggle-text-bilingual {
     opacity: 0;
 }
 
-input:checked + .slider .toggle-text-spanish {
+input:checked+.slider .toggle-text-spanish {
     opacity: 1;
 }
 
