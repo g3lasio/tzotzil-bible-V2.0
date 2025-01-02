@@ -1,7 +1,4 @@
 
-"""
-Inicialización principal de la aplicación
-"""
 import os
 import logging
 from flask import Flask
@@ -23,7 +20,6 @@ login_manager = LoginManager()
 mail = Mail()
 
 def create_app(test_config=None):
-    """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
     
     database_url = os.environ.get('DATABASE_URL', 'sqlite:///bible_app.db')
@@ -36,7 +32,7 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False,
         SQLALCHEMY_ENGINE_OPTIONS={
             'pool_pre_ping': True,
-            'pool_recycle': 300
+            'pool_recycle': 300,
         }
     )
 
@@ -55,15 +51,15 @@ def create_app(test_config=None):
     login_manager.init_app(app)
     mail.init_app(app)
 
-    from auth import auth
-    from routes import routes
-    from nevin_routes import nevin_bp
-    
-    app.register_blueprint(auth)
-    app.register_blueprint(routes)
-    app.register_blueprint(nevin_bp, url_prefix='/nevin')
-    
     with app.app_context():
+        from auth import auth
+        from routes import routes
+        from nevin_routes import nevin_bp
+        
+        app.register_blueprint(auth)
+        app.register_blueprint(routes)
+        app.register_blueprint(nevin_bp, url_prefix='/nevin')
+        
         db.create_all()
         
     return app
