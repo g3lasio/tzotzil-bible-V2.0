@@ -12,7 +12,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
-    last_login = db.Column(db.DateTime, default=None)
     reset_code = db.Column(db.String(32), unique=True, nullable=True)
     reset_code_expires = db.Column(db.DateTime, nullable=True)
 
