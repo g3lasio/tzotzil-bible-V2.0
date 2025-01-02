@@ -1,7 +1,19 @@
 document.addEventListener('DOMContentLoaded', function() {
-    initializeSettings();
-    setupEventListeners();
-    setupBackupAndSync();
+    try {
+        console.log("Iniciando configuración de settings...");
+        initializeSettings();
+        setupEventListeners();
+        setupBackupAndSync();
+    } catch (error) {
+        console.error("Error durante la inicialización:", error);
+        window.createToast("Error al cargar la configuración", "error");
+    }
+});
+
+// Agregar manejador global de errores
+window.addEventListener('error', function(event) {
+    console.error("Error global:", event.error);
+    window.createToast("Error en la aplicación", "error");
 });
 
 async function updateSettings(type, settings) {

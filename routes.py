@@ -470,7 +470,13 @@ def settings():
         try:
             data = request.get_json()
             if not data:
+                logger.error("No se proporcionaron datos en la solicitud POST")
                 return jsonify({'status': 'error', 'message': 'No data provided'}), 400
+
+            # Validar sesión
+            if not session:
+                logger.error("No hay sesión activa")
+                return jsonify({'status': 'error', 'message': 'No active session'}), 401
                 
             setting_type = data.get('type')
             if not setting_type:
