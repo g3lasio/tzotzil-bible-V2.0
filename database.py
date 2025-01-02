@@ -50,30 +50,33 @@ class DatabaseManager:
         try:
             session = self.get_session()
             if chapter is None:
+                # Solo obtenemos los números de capítulo distintos
                 query = text("""
                     SELECT DISTINCT chapter 
                     FROM bibleverse 
                     WHERE book = :book 
-                    ORDER BY chapter
+                    ORDER BY CAST(chapter AS INTEGER)
                 """)
                 result = session.execute(query, {'book': book}).fetchall()
+                chapters = [int(row[0]) for row in result]
                 return {
                     'success': True,
-                    'data': {'chapters': [row[0] for row in result]},
+                    'data': {'chapters': chapters},
                     'error': None
                 }
             else:
+                # Consulta para obtener versículos de un capítulo específico
                 query = text("""
                     SELECT verse, tzotzil_text, spanish_text 
                     FROM bibleverse 
                     WHERE book = :book AND chapter = :chapter 
-                    ORDER BY verse
+                    ORDER BY CAST(verse AS INTEGER)
                 """)
                 result = session.execute(query, {'book': book, 'chapter': chapter}).fetchall()
+                verses = [{'verse': int(row[0]), 'tzotzil': row[1], 'spanish': row[2]} for row in result]
                 return {
                     'success': True,
-                    'data': {'verses': [{'verse': row[0], 'tzotzil': row[1], 'spanish': row[2]} 
-                            for row in result]},
+                    'data': {'verses': verses},
                     'error': None
                 }
         except Exception as e:
