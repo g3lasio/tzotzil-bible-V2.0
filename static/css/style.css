@@ -1459,7 +1459,7 @@ input:checked + .slider:before {
 .toggle-text-bilingual,
 .toggle-text-spanish {
     color: #ffffff;
-    font-size: 12px;
+    font-size: 11px;
     font-family: 'Orbitron', sans-serif;
     font-weight: 600;
     text-transform: uppercase;
@@ -1467,15 +1467,16 @@ input:checked + .slider:before {
     transition: all 0.3s ease;
     text-shadow: 0 0 5px rgba(255, 51, 102, 0.5);
     z-index: 1;
+    position: absolute;
 }
 
 .toggle-text-bilingual {
-    padding-left: 5px;
+    left: 8px;
     opacity: 1;
 }
 
 .toggle-text-spanish {
-    padding-right: 5px;
+    right: 8px;
     opacity: 0;
 }
 
