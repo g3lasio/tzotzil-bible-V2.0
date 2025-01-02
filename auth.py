@@ -1,27 +1,167 @@
 """
-Sistema de autenticación mejorado con login social y recuperación por código
+Sistema de autenticación simplificado usando JWT
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
-from flask_login import login_user, logout_user, login_required, LoginManager, current_user
-from models import User, db
-from flask_mail import Message
-from extensions import mail
-import random
 from datetime import datetime, timedelta
-import logging
 import jwt
-from flask_dance.contrib.google import make_google_blueprint, google
+from flask import Blueprint, request, jsonify, current_app
+from werkzeug.security import generate_password_hash, check_password_hash
+from models import User, db
+import logging
 
 logger = logging.getLogger(__name__)
-login_manager = LoginManager()
+auth = Blueprint('auth', __name__)
+
+def generate_token(user_id):
+    """Genera un token JWT para el usuario"""
+    try:
+        payload = {
+            'exp': datetime.utcnow() + timedelta(days=1),
+            'iat': datetime.utcnow(),
+            'sub': user_id
+        }
+        return jwt.encode(
+            payload,
+            current_app.config.get('SECRET_KEY'),
+            algorithm='HS256'
+        )
+    except Exception as e:
+        logger.error(f"Error generando token: {str(e)}")
+        return None
+
+def token_required(f):
+    """Decorador para proteger rutas"""
+    from functools import wraps
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = None
+        if 'Authorization' in request.headers:
+            auth_header = request.headers['Authorization']
+            try:
+                token = auth_header.split(" ")[1]
+            except IndexError:
+                return jsonify({'message': 'Token mal formado'}), 401
+
+        if not token:
+            return jsonify({'message': 'Token no proporcionado'}), 401
+
+        try:
+            data = jwt.decode(
+                token, 
+                current_app.config.get('SECRET_KEY'),
+                algorithms=['HS256']
+            )
+            current_user = User.query.get(data['sub'])
+            if not current_user:
+                return jsonify({'message': 'Usuario no encontrado'}), 401
+            return f(current_user, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify({'message': 'Token expirado'}), 401
+        except jwt.InvalidTokenError:
+            return jsonify({'message': 'Token inválido'}), 401
+        except Exception as e:
+            logger.error(f"Error validando token: {str(e)}")
+            return jsonify({'message': 'Error al procesar token'}), 500
+
+    return decorated
+
+@auth.route('/auth/login', methods=['POST'])
+def login():
+    """Inicio de sesión de usuario"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'message': 'No se proporcionaron datos'}), 400
+
+        email = data.get('email')
+        password = data.get('password')
+
+        if not email or not password:
+            return jsonify({'message': 'Faltan credenciales'}), 400
+
+        user = User.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.password_hash, password):
+            return jsonify({'message': 'Credenciales inválidas'}), 401
+
+        token = generate_token(user.id)
+        if not token:
+            return jsonify({'message': 'Error generando token'}), 500
+
+        return jsonify({
+            'token': token,
+            'user_id': user.id,
+            'email': user.email
+        }), 200
+
+    except Exception as e:
+        logger.error(f"Error en login: {str(e)}")
+        return jsonify({'message': 'Error en el servidor'}), 500
+
+@auth.route('/auth/register', methods=['POST'])
+def register():
+    """Registro de nuevo usuario"""
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'message': 'No se proporcionaron datos'}), 400
+
+        email = data.get('email')
+        password = data.get('password')
+        username = data.get('username', email.split('@')[0])
+
+        if not email or not password:
+            return jsonify({'message': 'Faltan datos requeridos'}), 400
+
+        if User.query.filter_by(email=email).first():
+            return jsonify({'message': 'El email ya está registrado'}), 400
+
+        if User.query.filter_by(username=username).first():
+            return jsonify({'message': 'El nombre de usuario ya está registrado'}), 400
+
+        user = User(
+            username=username,
+            email=email,
+            password_hash=generate_password_hash(password)
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        token = generate_token(user.id)
+        if not token:
+            return jsonify({'message': 'Error generando token'}), 500
+
+        return jsonify({
+            'message': 'Usuario registrado exitosamente',
+            'token': token,
+            'user_id': user.id
+        }), 201
+
+    except Exception as e:
+        logger.error(f"Error en registro: {str(e)}")
+        db.session.rollback()
+        return jsonify({'message': 'Error en el servidor'}), 500
+
+@auth.route('/auth/me', methods=['GET'])
+@token_required
+def get_user(current_user):
+    """Obtiene información del usuario actual"""
+    try:
+        return jsonify({
+            'id': current_user.id,
+            'email': current_user.email,
+            'username': current_user.username
+        }), 200
+    except Exception as e:
+        logger.error(f"Error obteniendo usuario: {str(e)}")
+        return jsonify({'message': 'Error en el servidor'}), 500
 
 def init_login_manager(app):
     """Initialize the login manager"""
+    from flask_login import LoginManager
     try:
+        login_manager = LoginManager()
         login_manager.init_app(app)
         login_manager.login_view = 'auth.login'
-        login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
-        login_manager.login_message_category = 'info'
 
         @login_manager.user_loader
         def load_user(user_id):
@@ -35,222 +175,3 @@ def init_login_manager(app):
     except Exception as e:
         logger.error(f"Error inicializando login manager: {str(e)}")
         raise
-
-auth = Blueprint('auth', __name__)
-
-def send_reset_code(email, code):
-    """Envía el código de recuperación por email"""
-    try:
-        msg = Message('Código de Verificación - Sistema Nevin',
-                     sender='gelasio@chyrris.com',
-                     recipients=[email])
-        msg.html = render_template('auth/email/reset_code.html',
-                               code=code,
-                               valid_minutes=15)
-        mail.send(msg)
-        logger.info(f"Código de verificación enviado a {email}")
-        return True
-    except Exception as e:
-        logger.error(f"Error enviando código de verificación: {str(e)}")
-        return False
-
-@auth.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            password = request.form.get('password')
-            remember = request.form.get('remember')
-            
-            logger.info(f"Intento de login para usuario: {username}")
-            logger.info(f"Remember me activado: {bool(remember)}")
-
-            user = User.query.filter(
-                (User.username == username) | (User.email == username)
-            ).first()
-
-            if not user:
-                logger.warning(f"Intento de login con usuario no existente: {username}")
-                flash('Usuario no encontrado', 'error')
-                return render_template('auth/login.html')
-
-            if not user.check_password(password):
-                logger.warning(f"Contraseña incorrecta para usuario: {username}")
-                flash('Contraseña incorrecta', 'error')
-                return render_template('auth/login.html')
-
-            login_user(user, remember=bool(remember))
-            logger.info(f"Login exitoso para usuario: {username}")
-            flash('¡Inicio de sesión exitoso!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('routes.index'))
-
-        except Exception as e:
-            logger.error(f"Error en proceso de login: {str(e)}")
-            db.session.rollback()
-            flash('Error al intentar iniciar sesión', 'error')
-
-    return render_template('auth/login.html')
-
-@auth.route('/request-reset', methods=['POST'])
-def request_reset():
-    """Solicitar código de recuperación"""
-    try:
-        data = request.get_json()
-        email = data.get('email')
-        if not email:
-            return jsonify({'error': 'Email requerido'}), 400
-
-        user = User.query.filter_by(email=email).first()
-        if user:
-            code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
-            user.reset_code = code
-            user.reset_code_expires = datetime.utcnow() + timedelta(minutes=15)
-            db.session.commit()
-
-            if send_reset_code(email, code):
-                logger.info(f"Código de recuperación enviado a: {email}")
-                return jsonify({'message': 'Código enviado'}), 200
-            else:
-                logger.error(f"Error enviando código de recuperación a: {email}")
-
-    except Exception as e:
-        logger.error(f"Error en request_reset: {str(e)}")
-        db.session.rollback()
-
-    return jsonify({'message': 'Si el email existe, recibirás un código'}), 200
-
-@auth.route('/verify-reset-code', methods=['POST'])
-def verify_reset_code():
-    """Verificar código y actualizar contraseña"""
-    try:
-        data = request.get_json()
-        email = data.get('email')
-        code = data.get('code')
-        new_password = data.get('new_password')
-
-        if not all([email, code, new_password]):
-            return jsonify({'error': 'Datos incompletos'}), 400
-
-        user = User.query.filter_by(email=email).first()
-        if user and user.reset_code == code and \
-           user.reset_code_expires > datetime.utcnow():
-            user.set_password(new_password)
-            user.reset_code = None
-            user.reset_code_expires = None
-            db.session.commit()
-            logger.info(f"Contraseña actualizada exitosamente para: {email}")
-            return jsonify({'success': True}), 200
-
-    except Exception as e:
-        logger.error(f"Error en verify_reset_code: {str(e)}")
-        db.session.rollback()
-
-    return jsonify({'error': 'Código inválido o expirado'}), 400
-
-@auth.route('/logout')
-@login_required
-def logout():
-    try:
-        user_id = current_user.get_id()
-        logout_user()
-        logger.info(f"Usuario {user_id} cerró sesión exitosamente")
-        flash('Has cerrado sesión exitosamente', 'info')
-    except Exception as e:
-        logger.error(f"Error en logout: {str(e)}")
-    return redirect(url_for('routes.index'))
-
-@auth.route('/google-login')
-def google_login():
-    try:
-        if not google.authorized:
-            return redirect(url_for('google.login'))
-
-        resp = google.get('/oauth2/v1/userinfo')
-        if resp.ok:
-            google_info = resp.json()
-            user = User.query.filter_by(google_id=google_info['id']).first()
-
-            if not user:
-                user = User(
-                    username=google_info['email'].split('@')[0],
-                    email=google_info['email'],
-                    google_id=google_info['id']
-                )
-                db.session.add(user)
-                db.session.commit()
-
-            login_user(user)
-            flash('¡Inicio de sesión con Google exitoso!', 'success')
-            return redirect(url_for('routes.index'))
-    except Exception as e:
-        logger.error(f"Error en google_login: {str(e)}")
-        db.session.rollback()
-        flash('Error al intentar iniciar sesión con Google', 'error')
-        return redirect(url_for('auth.login'))
-
-@auth.route('/signup', methods=['GET', 'POST'])
-def signup():
-    if request.method == 'POST':
-        try:
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
-            confirm_password = request.form.get('confirm_password')
-
-            if not username or not email or not password:
-                flash('Todos los campos son requeridos', 'error')
-                return render_template('auth/signup.html')
-
-            if password != confirm_password:
-                flash('Las contraseñas no coinciden', 'error')
-                return render_template('auth/signup.html')
-
-            # Verificar usuario existente
-            if User.query.filter_by(username=username).first():
-                flash('El nombre de usuario ya existe', 'error')
-                return render_template('auth/signup.html')
-
-            if User.query.filter_by(email=email).first():
-                flash('El email ya está registrado', 'error')
-                return render_template('auth/signup.html')
-
-            # Crear nuevo usuario
-            user = User(username=username, email=email)
-            user.set_password(password)
-            
-            try:
-                db.session.add(user)
-                db.session.commit()
-                logger.info(f"Usuario creado exitosamente: {username}")
-
-                # Enviar email de confirmación
-                try:
-                    msg = Message('Bienvenido a la Biblia Tzotzil',
-                                sender='gelasio@chyrris.com',
-                                recipients=[email])
-                    msg.html = render_template('auth/email/welcome.html', 
-                                            username=username)
-                    mail.send(msg)
-                except Exception as mail_error:
-                    logger.error(f"Error enviando email: {str(mail_error)}")
-                    # Continuar aunque falle el email
-
-                # Iniciar sesión automáticamente
-                login_user(user)
-                flash('¡Registro exitoso! Bienvenido.', 'success')
-                return redirect(url_for('routes.index'))
-
-            except Exception as db_error:
-                db.session.rollback()
-                logger.error(f"Error en base de datos: {str(db_error)}")
-                flash('Error al crear la cuenta. Por favor intente nuevamente.', 'error')
-                return render_template('auth/signup.html')
-
-        except Exception as e:
-            logger.error(f"Error general en signup: {str(e)}")
-            db.session.rollback()
-            flash('Error al procesar el registro', 'error')
-            return render_template('auth/signup.html')
-
-    return render_template('auth/signup.html')

@@ -44,6 +44,10 @@ args = "Import Bible Data"
 task = "workflow.run"
 args = "Flask Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Initialize Database"
+
 [[workflows.workflow]]
 name = "Process Outbox"
 author = "agent"
@@ -165,6 +169,20 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "python __init__.py"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Initialize Database"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python init_db.py"
 
 [deployment]
 run = ["sh", "-c", "node index.js"]

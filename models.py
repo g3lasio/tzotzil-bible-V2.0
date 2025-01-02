@@ -9,9 +9,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
-    reset_code = db.Column(db.String(6), nullable=True)
-    reset_code_expires = db.Column(db.DateTime, nullable=True)
-    google_id = db.Column(db.String(100), unique=True, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
