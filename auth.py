@@ -98,7 +98,7 @@ def validate_credentials(data):
 def login():
     """Inicio de sesión de usuario"""
     try:
-        data = request.get_json()
+        data = request.get_json() if request.is_json else request.form
         if not data:
             return jsonify({'message': 'No se proporcionaron datos'}), 400
 
@@ -106,25 +106,33 @@ def login():
         if errors:
             return jsonify({'message': 'Error de validación', 'errors': errors}), 400
 
-        user = User.query.filter_by(email=email).first()
-        if not user or not check_password_hash(user.password_hash, password):
+        user = User.query.filter(
+            db.or_(User.email == email, User.username == email)
+        ).first()
+
+        if not user or not user.check_password(password):
+            logger.warning(f"Intento de login fallido para: {email}")
             return jsonify({'message': 'Credenciales inválidas'}), 401
 
         if not user.is_active:
+            logger.warning(f"Intento de login con cuenta inactiva: {email}")
             return jsonify({'message': 'Usuario inactivo'}), 401
 
+        user.last_login = datetime.utcnow()
+        db.session.commit()
+
+        login_user(user)
         token = generate_token(user.id)
-        if not token:
-            return jsonify({'message': 'Error generando token'}), 500
 
         return jsonify({
             'token': token,
-            'user': {
-                'id': user.id,
-                'email': user.email,
-                'username': user.username
-            }
+            'user': user.to_dict()
         }), 200
+
+    except Exception as e:
+        logger.error(f"Error en login: {str(e)}")
+        db.session.rollback()
+        return jsonify({'message': 'Error en el servidor'}), 500
 
     except Exception as e:
         logger.error(f"Error en login: {str(e)}")
