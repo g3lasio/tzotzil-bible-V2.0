@@ -84,9 +84,10 @@ def login():
 def request_reset():
     """Solicitar código de recuperación"""
     try:
-        email = request.form.get('email')
+        data = request.get_json()
+        email = data.get('email')
         if not email:
-            return {'error': 'Email requerido'}, 400
+            return jsonify({'error': 'Email requerido'}), 400
 
         user = User.query.filter_by(email=email).first()
         if user:
@@ -96,12 +97,40 @@ def request_reset():
             db.session.commit()
 
             if send_reset_code(email, code):
-                return {'message': 'Código enviado'}, 200
+                return jsonify({'message': 'Código enviado'}), 200
+
     except Exception as e:
         logger.error(f"Error en request_reset: {str(e)}")
         db.session.rollback()
 
-    return {'message': 'Si el email existe, recibirás un código'}, 200
+    return jsonify({'message': 'Si el email existe, recibirás un código'}), 200
+
+@auth.route('/verify-reset-code', methods=['POST'])
+def verify_reset_code():
+    """Verificar código y actualizar contraseña"""
+    try:
+        data = request.get_json()
+        email = data.get('email')
+        code = data.get('code')
+        new_password = data.get('new_password')
+
+        if not all([email, code, new_password]):
+            return jsonify({'error': 'Datos incompletos'}), 400
+
+        user = User.query.filter_by(email=email).first()
+        if user and user.reset_code == code and \
+           user.reset_code_expires > datetime.utcnow():
+            user.set_password(new_password)
+            user.reset_code = None
+            user.reset_code_expires = None
+            db.session.commit()
+            return jsonify({'success': True}), 200
+
+    except Exception as e:
+        logger.error(f"Error en verify_reset_code: {str(e)}")
+        db.session.rollback()
+
+    return jsonify({'error': 'Código inválido o expirado'}), 400
 
 @auth.route('/verify-reset-code', methods=['POST'])
 def verify_reset_code():
