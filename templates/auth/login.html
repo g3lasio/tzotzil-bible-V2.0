@@ -34,9 +34,27 @@
         </form>
 
         <div class="register-link">
-            ¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}">Regístrate</a>
+            <p>¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}" class="signup-link">Regístrate aquí</a></p>
         </div>
     </div>
+
+    <style>
+        .signup-link {
+            color: var(--glow-primary);
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .signup-link:hover {
+            text-shadow: 0 0 10px var(--glow-primary);
+            color: #fff;
+        }
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.1em;
+        }
+    </style>
 
     <!-- Modal de Recuperación -->
     <div id="resetModal" class="modal">
