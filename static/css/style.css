@@ -1396,7 +1396,7 @@ body {
     background: #0056b3;
 }
 
-/* Language Toggle Styles - Nueva Versión */
+/* Language Toggle Styles - Modern Version */
 .language-toggle-wrapper {
     display: flex;
     justify-content: flex-end;
@@ -1408,15 +1408,30 @@ body {
 .switch {
     position: relative;
     display: inline-block;
-    width: 120px;
-    height: 34px;
-    background: linear-gradient(145deg, #0a0a0a, #1e1e1e);
-    border: 2px solid var(--glow-primary);
-    border-radius: 17px;
+    width: 140px;
+    height: 40px;
+    background: rgba(13, 17, 23, 0.8);
+    border: 2px solid transparent;
+    border-radius: 20px;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+    transition: all 0.4s ease;
     overflow: hidden;
+    backdrop-filter: blur(8px);
+}
+
+.switch::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    background: linear-gradient(45deg, var(--glow-primary), #ff3366, var(--glow-primary));
+    border-radius: 22px;
+    z-index: -1;
+    animation: borderRotate 4s linear infinite;
+}
+
+@keyframes borderRotate {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
 }
 
 .switch input {
@@ -1429,70 +1444,93 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    border-radius: 15px;
-    overflow: hidden;
+    border-radius: 20px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0;
+    justify-content: space-around;
+    padding: 0 10px;
     background: transparent;
+    overflow: hidden;
+}
+
+.slider::after {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.1) 0%, transparent 70%);
+    animation: glowPulse 3s infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
 }
 
 .slider:before {
     content: "";
     position: absolute;
-    width: 26px;
-    height: 26px;
-    left: 3px;
+    width: 32px;
+    height: 32px;
+    left: 4px;
     top: 50%;
     transform: translateY(-50%);
-    background: var(--glow-primary);
+    background: linear-gradient(135deg, var(--glow-primary), #00ffcc);
     border-radius: 50%;
-    transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
     z-index: 2;
-    box-shadow: 0 0 12px var(--glow-primary),
-                inset 0 0 6px rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 20px var(--glow-primary),
+                inset 0 0 10px rgba(255, 255, 255, 0.8);
 }
 
-input:checked+.slider:before {
-    transform: translate(86px, -50%);
-    background: var(--glow-primary);
+input:checked + .slider:before {
+    transform: translate(100px, -50%);
+    background: linear-gradient(135deg, #ff3366, #ff6b88);
 }
 
 .toggle-text-bilingual,
 .toggle-text-spanish {
     color: #ffffff;
-    font-size: 10px;
+    font-size: 11px;
     font-family: 'Orbitron', sans-serif;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    transition: all 0.3s ease;
-    text-shadow: 0 0 4px rgba(255, 51, 102, 0.4);
-    z-index: 1;
+    letter-spacing: 1px;
+    transition: all 0.4s ease;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    text-shadow: 0 0 8px var(--glow-primary);
 }
 
 .toggle-text-bilingual {
-    left: 32px;
+    left: 45px;
     opacity: 1;
 }
 
 .toggle-text-spanish {
-    right: 32px;
+    right: 45px;
     opacity: 0;
 }
 
-input:checked+.slider .toggle-text-bilingual {
+input:checked + .slider .toggle-text-bilingual {
     opacity: 0;
+    transform: translateY(-50%) translateX(-10px);
 }
 
-input:checked+.slider .toggle-text-spanish {
+input:checked + .slider .toggle-text-spanish {
     opacity: 1;
+    transform: translateY(-50%) translateX(10px);
 }
 
 .switch:hover {
-    box-shadow: 0 0 20px rgba(255, 51, 102, 0.5);
+    transform: scale(1.02);
+}
+
+.switch:hover::before {
+    filter: brightness(1.2);
+}
+
+.switch:active {
+    transform: scale(0.98);
 }
