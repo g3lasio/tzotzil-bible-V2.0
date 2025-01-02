@@ -23,7 +23,7 @@ def check_auth():
     if not request.path.startswith('/static'):
         user = get_replit_user()
         if not user and request.path != '/login':
-            return redirect('/login')
+            return redirect(url_for('login'))
         session['user'] = user
 
 @app.route('/login')
