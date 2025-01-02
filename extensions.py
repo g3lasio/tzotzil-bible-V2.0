@@ -43,23 +43,12 @@ def init_extensions(app):
                     logger.info("Conexión a base de datos verificada")
 
                     # Verificar tablas requeridas
-                    required_tables = ['bibleverse', 'users', 'promise']
                     inspector = inspect(db.engine)
                     existing_tables = inspector.get_table_names()
 
                     logger.info(f"Tablas existentes: {existing_tables}")
-                    logger.info(f"Tablas requeridas: {required_tables}")
 
-                    missing_tables = set(required_tables) - set(existing_tables)
-                    if missing_tables:
-                        logger.warning(f"Tablas faltantes: {missing_tables}")
-                        try:
-                            # Asegurarse de que todas las tablas se creen, incluso si algunas ya existen
-                            db.create_all()
-                            logger.info("Tablas creadas exitosamente")
-                        except Exception as table_error:
-                            logger.error(f"Error creando tablas: {str(table_error)}")
-                            return False
+                    return True
 
                 except Exception as db_error:
                     logger.error(f"Error verificando base de datos: {str(db_error)}")

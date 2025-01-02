@@ -1,4 +1,3 @@
-
 import logging
 from flask import Blueprint, render_template, request, jsonify, session
 from attached_assets.chat_request import get_ai_response
@@ -12,20 +11,10 @@ def init_nevin_routes(app):
     """Inicializa las rutas de Nevin"""
     try:
         app.register_blueprint(nevin_bp, url_prefix='/nevin')
-        return init_nevin_service(app)
-    except Exception as e:
-        logger.error(f"Error inicializando rutas Nevin: {str(e)}")
-        return False
-
-def init_nevin_service(app):
-    """Inicializa el servicio de Nevin"""
-    try:
-        from nevin_service import NevinService
-        app.nevin_service = NevinService(app)
-        logger.info("Servicio Nevin inicializado correctamente")
+        logger.info("Nevin blueprint registrado correctamente")
         return True
     except Exception as e:
-        logger.error(f"Error inicializando servicio Nevin: {str(e)}")
+        logger.error(f"Error inicializando rutas Nevin: {str(e)}")
         return False
 
 @nevin_bp.route('/')

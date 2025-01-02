@@ -11,58 +11,88 @@ import logging
 logger = logging.getLogger(__name__)
 auth = Blueprint('auth', __name__)
 
+# Centralizar configuración de JWT
+JWT_EXPIRATION_DAYS = 1
+JWT_ALGORITHM = 'HS256'
+
 def generate_token(user_id):
     """Genera un token JWT para el usuario"""
     try:
         payload = {
-            'exp': datetime.utcnow() + timedelta(days=1),
+            'exp': datetime.utcnow() + timedelta(days=JWT_EXPIRATION_DAYS),
             'iat': datetime.utcnow(),
             'sub': user_id
         }
         return jwt.encode(
             payload,
             current_app.config.get('SECRET_KEY'),
-            algorithm='HS256'
+            algorithm=JWT_ALGORITHM
         )
     except Exception as e:
         logger.error(f"Error generando token: {str(e)}")
         return None
 
+def validate_token(token):
+    """Valida y decodifica un token JWT"""
+    try:
+        payload = jwt.decode(
+            token,
+            current_app.config.get('SECRET_KEY'),
+            algorithms=[JWT_ALGORITHM]
+        )
+        return payload
+    except jwt.ExpiredSignatureError:
+        return None
+    except jwt.InvalidTokenError:
+        return None
+
 def token_required(f):
     """Decorador para proteger rutas"""
     from functools import wraps
+
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        if 'Authorization' in request.headers:
-            auth_header = request.headers['Authorization']
-            try:
-                token = auth_header.split(" ")[1]
-            except IndexError:
-                return jsonify({'message': 'Token mal formado'}), 401
+        auth_header = request.headers.get('Authorization')
 
-        if not token:
-            return jsonify({'message': 'Token no proporcionado'}), 401
+        if not auth_header:
+            return jsonify({'message': 'No se proporcionó token de autorización'}), 401
 
         try:
-            data = jwt.decode(
-                token, 
-                current_app.config.get('SECRET_KEY'),
-                algorithms=['HS256']
-            )
-            current_user = User.query.get(data['sub'])
+            token = auth_header.split(" ")[1]
+        except IndexError:
+            return jsonify({'message': 'Token mal formado'}), 401
+
+        payload = validate_token(token)
+        if not payload:
+            return jsonify({'message': 'Token inválido o expirado'}), 401
+
+        try:
+            current_user = User.query.get(payload['sub'])
             if not current_user:
                 return jsonify({'message': 'Usuario no encontrado'}), 401
+            if not current_user.is_active:
+                return jsonify({'message': 'Usuario inactivo'}), 401
+
             return f(current_user, *args, **kwargs)
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token expirado'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token inválido'}), 401
         except Exception as e:
-            logger.error(f"Error validando token: {str(e)}")
-            return jsonify({'message': 'Error al procesar token'}), 500
+            logger.error(f"Error en autenticación: {str(e)}")
+            return jsonify({'message': 'Error de autenticación'}), 500
 
     return decorated
+
+def validate_credentials(data):
+    """Valida las credenciales proporcionadas"""
+    errors = []
+    email = data.get('email', '').strip()
+    password = data.get('password', '').strip()
+
+    if not email:
+        errors.append('El email es requerido')
+    if not password:
+        errors.append('La contraseña es requerida')
+
+    return errors, email, password
 
 @auth.route('/auth/login', methods=['POST'])
 def login():
@@ -72,15 +102,16 @@ def login():
         if not data:
             return jsonify({'message': 'No se proporcionaron datos'}), 400
 
-        email = data.get('email')
-        password = data.get('password')
-
-        if not email or not password:
-            return jsonify({'message': 'Faltan credenciales'}), 400
+        errors, email, password = validate_credentials(data)
+        if errors:
+            return jsonify({'message': 'Error de validación', 'errors': errors}), 400
 
         user = User.query.filter_by(email=email).first()
         if not user or not check_password_hash(user.password_hash, password):
             return jsonify({'message': 'Credenciales inválidas'}), 401
+
+        if not user.is_active:
+            return jsonify({'message': 'Usuario inactivo'}), 401
 
         token = generate_token(user.id)
         if not token:
@@ -88,8 +119,11 @@ def login():
 
         return jsonify({
             'token': token,
-            'user_id': user.id,
-            'email': user.email
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username
+            }
         }), 200
 
     except Exception as e:
@@ -104,12 +138,11 @@ def register():
         if not data:
             return jsonify({'message': 'No se proporcionaron datos'}), 400
 
-        email = data.get('email')
-        password = data.get('password')
-        username = data.get('username', email.split('@')[0])
+        errors, email, password = validate_credentials(data)
+        if errors:
+            return jsonify({'message': 'Error de validación', 'errors': errors}), 400
 
-        if not email or not password:
-            return jsonify({'message': 'Faltan datos requeridos'}), 400
+        username = data.get('username', email.split('@')[0])
 
         if User.query.filter_by(email=email).first():
             return jsonify({'message': 'El email ya está registrado'}), 400
@@ -120,7 +153,8 @@ def register():
         user = User(
             username=username,
             email=email,
-            password_hash=generate_password_hash(password)
+            password_hash=generate_password_hash(password),
+            is_active=True
         )
 
         db.session.add(user)
@@ -133,7 +167,11 @@ def register():
         return jsonify({
             'message': 'Usuario registrado exitosamente',
             'token': token,
-            'user_id': user.id
+            'user': {
+                'id': user.id,
+                'email': user.email,
+                'username': user.username
+            }
         }), 201
 
     except Exception as e:
