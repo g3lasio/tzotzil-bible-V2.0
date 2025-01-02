@@ -42,3 +42,25 @@ def upgrade():
 def downgrade():
     op.drop_column('users', 'reset_code_expires')
     op.drop_column('users', 'reset_code')
+"""Add reset fields
+
+Revision ID: add_reset_fields
+Revises: fix_last_login_field
+Create Date: 2025-01-02 17:30:00.000000
+"""
+from alembic import op
+import sqlalchemy as sa
+
+# revision identifiers
+revision = 'add_reset_fields'
+down_revision = 'fix_last_login_field'
+branch_labels = None
+depends_on = None
+
+def upgrade():
+    op.add_column('users', sa.Column('reset_code', sa.String(6), nullable=True))
+    op.add_column('users', sa.Column('reset_code_expires', sa.DateTime(), nullable=True))
+
+def downgrade():
+    op.drop_column('users', 'reset_code')
+    op.drop_column('users', 'reset_code_expires')
