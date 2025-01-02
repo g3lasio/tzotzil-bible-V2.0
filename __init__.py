@@ -33,8 +33,9 @@ def create_app(test_config=None):
             MAIL_SERVER='smtp.gmail.com',
             MAIL_PORT=587,
             MAIL_USE_TLS=True,
-            MAIL_USERNAME=os.environ.get('MAIL_USERNAME'),
-            MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD')
+            MAIL_USERNAME='gelasio@chyrris.com',
+            MAIL_PASSWORD=os.environ.get('MAIL_PASSWORD'),
+            MAIL_DEFAULT_SENDER='gelasio@chyrris.com'
         )
 
         # Configurar Database URL

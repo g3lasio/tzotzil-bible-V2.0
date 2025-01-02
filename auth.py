@@ -1,16 +1,16 @@
 """
 Sistema de autenticación mejorado con login social y recuperación por código
 """
-from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
-from flask_login import login_user, logout_user, login_required, LoginManager
+from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app, jsonify
+from flask_login import login_user, logout_user, login_required, LoginManager, current_user
 from models import User, db
 from flask_mail import Message
 from extensions import mail
 import random
 from datetime import datetime, timedelta
-from flask_dance.contrib.google import make_google_blueprint, google
-import jwt
 import logging
+import jwt
+from flask_dance.contrib.google import make_google_blueprint, google
 
 logger = logging.getLogger(__name__)
 login_manager = LoginManager()
@@ -41,15 +41,17 @@ auth = Blueprint('auth', __name__)
 def send_reset_code(email, code):
     """Envía el código de recuperación por email"""
     try:
-        msg = Message('Código de Recuperación - Nevin',
+        msg = Message('Código de Verificación - Sistema Nevin',
                      sender='gelasio@chyrris.com',
                      recipients=[email])
         msg.html = render_template('auth/email/reset_code.html',
-                               code=code)
+                               code=code,
+                               valid_minutes=15)
         mail.send(msg)
+        logger.info(f"Código de verificación enviado a {email}")
         return True
     except Exception as e:
-        logger.error(f"Error enviando código: {str(e)}")
+        logger.error(f"Error enviando código de verificación: {str(e)}")
         return False
 
 @auth.route('/login', methods=['GET', 'POST'])
@@ -65,21 +67,23 @@ def login():
             ).first()
 
             if not user:
+                logger.warning(f"Intento de login con usuario no existente: {username}")
                 flash('Usuario no encontrado', 'error')
                 return render_template('auth/login.html')
-                
+
             if not user.check_password(password):
+                logger.warning(f"Contraseña incorrecta para usuario: {username}")
                 flash('Contraseña incorrecta', 'error')
                 return render_template('auth/login.html')
 
             login_user(user, remember=bool(remember))
-            user.last_login = datetime.utcnow()
-            db.session.commit()
+            logger.info(f"Login exitoso para usuario: {username}")
             flash('¡Inicio de sesión exitoso!', 'success')
             next_page = request.args.get('next')
             return redirect(next_page or url_for('routes.index'))
+
         except Exception as e:
-            logger.error(f"Error en login: {str(e)}")
+            logger.error(f"Error en proceso de login: {str(e)}")
             db.session.rollback()
             flash('Error al intentar iniciar sesión', 'error')
 
@@ -96,13 +100,16 @@ def request_reset():
 
         user = User.query.filter_by(email=email).first()
         if user:
-            code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+            code = ''.join([str(random.randint(0, 9)) for _ in range(6)])
             user.reset_code = code
             user.reset_code_expires = datetime.utcnow() + timedelta(minutes=15)
             db.session.commit()
 
             if send_reset_code(email, code):
+                logger.info(f"Código de recuperación enviado a: {email}")
                 return jsonify({'message': 'Código enviado'}), 200
+            else:
+                logger.error(f"Error enviando código de recuperación a: {email}")
 
     except Exception as e:
         logger.error(f"Error en request_reset: {str(e)}")
@@ -129,6 +136,7 @@ def verify_reset_code():
             user.reset_code = None
             user.reset_code_expires = None
             db.session.commit()
+            logger.info(f"Contraseña actualizada exitosamente para: {email}")
             return jsonify({'success': True}), 200
 
     except Exception as e:
@@ -137,7 +145,17 @@ def verify_reset_code():
 
     return jsonify({'error': 'Código inválido o expirado'}), 400
 
-
+@auth.route('/logout')
+@login_required
+def logout():
+    try:
+        user_id = current_user.get_id()
+        logout_user()
+        logger.info(f"Usuario {user_id} cerró sesión exitosamente")
+        flash('Has cerrado sesión exitosamente', 'info')
+    except Exception as e:
+        logger.error(f"Error en logout: {str(e)}")
+    return redirect(url_for('routes.index'))
 
 @auth.route('/google-login')
 def google_login():
@@ -175,15 +193,15 @@ def signup():
             username = request.form.get('username')
             email = request.form.get('email')
             password = request.form.get('password')
-            
+
             if User.query.filter_by(username=username).first():
                 flash('El nombre de usuario ya existe', 'error')
                 return render_template('auth/signup.html')
-                
+
             if User.query.filter_by(email=email).first():
                 flash('El email ya está registrado', 'error')
                 return render_template('auth/signup.html')
-            
+
             try:
                 user = User(username=username, email=email)
                 user.set_password(password)
@@ -207,20 +225,10 @@ def signup():
                 logger.error(f"Error en signup final: {str(e)}")
                 flash('Error al crear la cuenta. Por favor intente nuevamente.', 'error')
                 return render_template('auth/signup.html')
-            
+
         except Exception as e:
             logger.error(f"Error en signup: {str(e)}")
             db.session.rollback()
             flash('Error al crear la cuenta', 'error')
-            
-    return render_template('auth/signup.html')
 
-@auth.route('/logout')
-@login_required
-def logout():
-    try:
-        logout_user()
-        flash('Has cerrado sesión exitosamente', 'info')
-    except Exception as e:
-        logger.error(f"Error en logout: {str(e)}")
-    return redirect(url_for('routes.index'))
+    return render_template('auth/signup.html')

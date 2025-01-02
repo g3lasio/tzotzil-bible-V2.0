@@ -1,4 +1,3 @@
-
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -15,7 +14,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
     reset_code = db.Column(db.String(6), nullable=True)
     reset_code_expires = db.Column(db.DateTime, nullable=True)
