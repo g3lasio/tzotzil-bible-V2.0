@@ -94,8 +94,10 @@ def validate_credentials(data):
 
     return errors, email, password
 
-@auth.route('/auth/login', methods=['POST'])
+@auth.route('/auth/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'GET':
+        return render_template('auth/login.html')
     """Inicio de sesión de usuario"""
     try:
         data = request.get_json() if request.is_json else request.form
