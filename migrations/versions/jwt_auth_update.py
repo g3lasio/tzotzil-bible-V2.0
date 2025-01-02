@@ -21,6 +21,8 @@ def upgrade():
         BEGIN 
             BEGIN
                 ALTER TABLE users ADD COLUMN IF NOT EXISTS is_active BOOLEAN DEFAULT TRUE;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS last_login TIMESTAMP WITH TIME ZONE;
+                ALTER TABLE users ADD COLUMN IF NOT EXISTS password_hash VARCHAR(256) NOT NULL DEFAULT '';
             EXCEPTION WHEN duplicate_column THEN 
                 NULL;
             END;

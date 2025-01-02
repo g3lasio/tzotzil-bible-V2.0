@@ -193,6 +193,19 @@ def get_user(current_user):
         logger.error(f"Error obteniendo usuario: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
+@auth.route('/auth/logout', methods=['POST'])
+@token_required
+def logout(current_user):
+    """Cierra la sesión del usuario actual"""
+    try:
+        # Aquí podríamos implementar una lista negra de tokens si fuera necesario
+        return jsonify({
+            'message': 'Sesión cerrada exitosamente'
+        }), 200
+    except Exception as e:
+        logger.error(f"Error en logout: {str(e)}")
+        return jsonify({'message': 'Error al cerrar sesión'}), 500
+
 def init_login_manager(app):
     """Initialize the login manager"""
     from flask_login import LoginManager

@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask
 from flask_cors import CORS
+from flask_migrate import Migrate
 from models import db
 from auth import auth, init_login_manager
 from routes import init_routes
@@ -43,6 +44,9 @@ def create_app():
             logger.error("Error inicializando extensiones")
             return None
         logger.info("Extensiones inicializadas correctamente")
+
+        # Inicializar migración después de las extensiones
+        migrate = Migrate(app, db)
 
         # Registrar blueprints
         app.register_blueprint(auth, url_prefix='/api')
