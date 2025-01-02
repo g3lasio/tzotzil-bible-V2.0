@@ -1,72 +1,25 @@
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login - Biblia Tzotzil</title>
-    <link rel="stylesheet" href="/static/css/style.css">
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-form">
-            <h2>Iniciar Sesión</h2>
-            
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
-
-            <form method="POST" action="{{ url_for('login') }}">
-                <div class="form-group">
-                    <input type="email" name="email" placeholder="Email" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" name="password" placeholder="Contraseña" required>
-                </div>
-                <div class="form-options">
-                    <label>
-                        <input type="checkbox" name="remember"> Recordarme
-                    </label>
-                    <a href="{{ url_for('auth.request_reset') }}">¿Olvidaste tu contraseña?</a>
-                </div>
-                <button type="submit" class="login-btn">Iniciar Sesión</button>
-            </form>
-
-            <div class="divider">O</div>
-
-            <button onclick="login()" class="replit-login-btn">
-                Iniciar sesión con Replit
-            </button>
-
-            <div class="register-link">
-                <p>¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}">Regístrate aquí</a></p>
+{% extends "base.html" %}
+{% block content %}
+<div class="login-container">
+    <div class="login-form">
+        <h2>Iniciar Sesión</h2>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <form method="POST">
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required>
             </div>
-        </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <button type="submit" class="login-btn">Iniciar Sesión</button>
+        </form>
     </div>
-
-    <script>
-        function login() {
-            window.addEventListener('message', authComplete);
-            var h = 500;
-            var w = 350;
-            var left = screen.width / 2 - w / 2;
-            var top = screen.height / 2 - h / 2;
-            
-            var authWindow = window.open(
-                'https://replit.com/auth_with_repl_site?domain=' + location.host,
-                '_blank',
-                'modal=yes,toolbar=no,location=no,directories=no,status=no,menubar=no,scrollbars=no,resizable=no,copyhistory=no,width=' + w + ',height=' + h + ',top=' + top + ',left=' + left
-            );
-
-            function authComplete(e) {
-                if (e.data !== 'auth_complete') return;
-                window.removeEventListener('message', authComplete);
-                authWindow.close();
-                location.reload();
-            }
-        }
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
