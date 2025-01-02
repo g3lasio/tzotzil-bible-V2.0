@@ -21,6 +21,19 @@ class User(UserMixin, db.Model):
     def get_id(self):
         return str(self.id)
 
+class BibleVerse(db.Model):
+    __tablename__ = 'bibleverse'
+    id = db.Column(db.Integer, primary_key=True)
+    book = db.Column(db.String(50), nullable=False, index=True)
+    chapter = db.Column(db.Integer, nullable=False, index=True)
+    verse = db.Column(db.Integer, nullable=False, index=True)
+    tzotzil_text = db.Column(db.Text, nullable=False)
+    spanish_text = db.Column(db.Text, nullable=False)
+
+    __table_args__ = (
+        db.Index('idx_book_chapter_verse', 'book', 'chapter', 'verse'),
+    )
+
 class Promise(db.Model):
     __tablename__ = 'promise'
     id = db.Column(db.Integer, primary_key=True)
