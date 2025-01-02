@@ -132,25 +132,7 @@ def verify_reset_code():
 
     return jsonify({'error': 'Código inválido o expirado'}), 400
 
-@auth.route('/verify-reset-code', methods=['POST'])
-def verify_reset_code():
-    """Verificar código de recuperación"""
-    try:
-        email = request.form.get('email')
-        code = request.form.get('code')
 
-        user = User.query.filter_by(email=email).first()
-        if user and user.reset_code == code and \
-           user.reset_code_expires > datetime.utcnow():
-            user.reset_code = None
-            user.reset_code_expires = None
-            db.session.commit()
-            return {'success': True}, 200
-    except Exception as e:
-        logger.error(f"Error en verify_reset_code: {str(e)}")
-        db.session.rollback()
-
-    return {'error': 'Código inválido o expirado'}, 400
 
 @auth.route('/google-login')
 def google_login():
