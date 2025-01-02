@@ -1403,6 +1403,8 @@ body {
     align-items: center;
     margin: 20px 0;
     padding-right: 20px;
+    position: relative;
+    z-index: 10;
 }
 
 .switch {
@@ -1410,13 +1412,14 @@ body {
     display: inline-block;
     width: 140px;
     height: 40px;
-    background: rgba(13, 17, 23, 0.8);
+    background: rgba(13, 17, 23, 0.95);
     border: 2px solid transparent;
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.4s ease;
     overflow: hidden;
     backdrop-filter: blur(8px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .switch::before {
@@ -1438,6 +1441,7 @@ body {
     opacity: 0;
     width: 0;
     height: 0;
+    position: absolute;
 }
 
 .slider {
@@ -1451,6 +1455,7 @@ body {
     padding: 0 10px;
     background: transparent;
     overflow: hidden;
+    user-select: none;
 }
 
 .slider::after {
@@ -1458,8 +1463,9 @@ body {
     position: absolute;
     width: 200%;
     height: 200%;
-    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.1) 0%, transparent 70%);
+    background: radial-gradient(circle at center, rgba(0, 243, 255, 0.15) 0%, transparent 70%);
     animation: glowPulse 3s infinite;
+    pointer-events: none;
 }
 
 @keyframes glowPulse {
@@ -1486,6 +1492,8 @@ body {
 input:checked + .slider:before {
     transform: translate(100px, -50%);
     background: linear-gradient(135deg, #ff3366, #ff6b88);
+    box-shadow: 0 0 25px #ff3366,
+                inset 0 0 12px rgba(255, 255, 255, 0.8);
 }
 
 .toggle-text-bilingual,
