@@ -1,8 +1,7 @@
 
+from flask_login import UserMixin
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
-from flask_login import UserMixin
-from datetime import datetime
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -12,8 +11,6 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
-    reset_code = db.Column(db.String(32), unique=True, nullable=True)
-    reset_code_expires = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -29,8 +26,7 @@ class User(UserMixin, db.Model):
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'is_active': self.is_active,
-            'last_login': self.last_login.isoformat() if self.last_login else None
+            'is_active': self.is_active
         }
 
 class BibleVerse(db.Model):
@@ -41,10 +37,6 @@ class BibleVerse(db.Model):
     verse = db.Column(db.Integer, nullable=False, index=True)
     tzotzil_text = db.Column(db.Text, nullable=False)
     spanish_text = db.Column(db.Text, nullable=False)
-
-    __table_args__ = (
-        db.Index('idx_book_chapter_verse', 'book', 'chapter', 'verse'),
-    )
 
 class Promise(db.Model):
     __tablename__ = 'promise'
