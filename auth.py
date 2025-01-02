@@ -152,6 +152,37 @@ def google_login():
         flash('Error al intentar iniciar sesión con Google', 'error')
         return redirect(url_for('auth.login'))
 
+@auth.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        try:
+            username = request.form.get('username')
+            email = request.form.get('email')
+            password = request.form.get('password')
+            
+            if User.query.filter_by(username=username).first():
+                flash('El nombre de usuario ya existe', 'error')
+                return render_template('auth/signup.html')
+                
+            if User.query.filter_by(email=email).first():
+                flash('El email ya está registrado', 'error')
+                return render_template('auth/signup.html')
+            
+            user = User(username=username, email=email)
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+            
+            flash('¡Registro exitoso! Por favor inicia sesión', 'success')
+            return redirect(url_for('auth.login'))
+            
+        except Exception as e:
+            logger.error(f"Error en signup: {str(e)}")
+            db.session.rollback()
+            flash('Error al crear la cuenta', 'error')
+            
+    return render_template('auth/signup.html')
+
 @auth.route('/logout')
 @login_required
 def logout():
