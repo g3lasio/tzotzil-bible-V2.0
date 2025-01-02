@@ -94,10 +94,11 @@ def validate_credentials(data):
 
     return errors, email, password
 
-@auth.route('/auth/login', methods=['GET', 'POST'])
+@auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('auth/login.html')
+        next_page = request.args.get('next')
+        return render_template('auth/login.html', next=next_page)
     
     try:
         from flask_login import login_user
@@ -216,6 +217,7 @@ def init_login_manager(app):
         login_manager = LoginManager()
         login_manager.init_app(app)
         login_manager.login_view = 'auth.login'
+        login_manager.login_message = 'Por favor inicie sesión para acceder a esta página'
 
         @login_manager.user_loader
         def load_user(user_id):
