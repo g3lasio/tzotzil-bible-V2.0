@@ -1,144 +1,38 @@
-{% extends "base.html" %} {% block title %}Sign Up - Bible Reader{% endblock %}
-{% block content %}
-<div class="container my-4">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h1 class="card-title text-center mb-4">Create Account</h1>
 
-                    {% if error %}
-                    <div class="alert alert-danger">{{ error }}</div>
-                    {% endif %}
-
-                    <form method="POST" action="{{ url_for('auth.signup') }}">
-                        <!-- Información Personal -->
-                        <div class="mb-3">
-                            <label for="first_name" class="form-label"
-                                >Nombre</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="first_name"
-                                name="first_name"
-                                required
-                            />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="last_name" class="form-label"
-                                >Apellido</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="last_name"
-                                name="last_name"
-                                required
-                            />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="phone" class="form-label"
-                                >Teléfono (opcional)</label
-                            >
-                            <input
-                                type="tel"
-                                class="form-control"
-                                id="phone"
-                                name="phone"
-                            />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="username" class="form-label"
-                                >Nombre de Usuario</label
-                            >
-                            <input
-                                type="text"
-                                class="form-control"
-                                id="username"
-                                name="username"
-                                required
-                            />
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input
-                                type="email"
-                                class="form-control"
-                                id="email"
-                                name="email"
-                                required
-                            />
-                        </div>
-
-                        <!-- Campo de Contraseña con botón integrado -->
-                        <div class="mb-3">
-                            <label for="password" class="form-label"
-                                >Contraseña</label
-                            >
-                            <div class="input-group">
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="password"
-                                    name="password"
-                                    required
-                                />
-                                <button
-                                    class="btn btn-outline-secondary"
-                                    type="button"
-                                    onclick="document.getElementById('password').type = document.getElementById('password').type === 'password' ? 'text' : 'password'"
-                                >
-                                    👁️
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Campo de Confirmar Contraseña con botón integrado -->
-                        <div class="mb-3">
-                            <label for="confirm_password" class="form-label"
-                                >Confirmar Contraseña</label
-                            >
-                            <div class="input-group">
-                                <input
-                                    type="password"
-                                    class="form-control"
-                                    id="confirm_password"
-                                    name="confirm_password"
-                                    required
-                                />
-                                <button
-                                    class="btn btn-outline-secondary"
-                                    type="button"
-                                    onclick="document.getElementById('confirm_password').type = document.getElementById('confirm_password').type === 'password' ? 'text' : 'password'"
-                                >
-                                    👁️
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Botón de Registro -->
-                        <button type="submit" class="btn btn-primary w-100">
-                            Sign Up
-                        </button>
-                    </form>
-
-                    <hr />
-
-                    <!-- Enlace a login -->
-                    <div class="text-center">
-                        <p>
-                            Already have an account?
-                            <a href="{{ url_for('auth.login') }}">Login</a>
-                        </p>
-                    </div>
-                </div>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sign Up - Bible Reader</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="cyberpunk">
+    <div class="signup-container">
+        <form method="POST" class="signup-form" action="{{ url_for('auth.signup') }}">
+            <h2>Crear Cuenta</h2>
+            {% if error %}
+                <div class="alert">{{ error }}</div>
+            {% endif %}
+            
+            <div class="form-group">
+                <input type="text" name="username" placeholder="Nombre de Usuario" required>
             </div>
-        </div>
+            <div class="form-group">
+                <input type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="password" placeholder="Contraseña" required>
+            </div>
+            <div class="form-group">
+                <input type="password" name="confirm_password" placeholder="Confirmar Contraseña" required>
+            </div>
+            
+            <button type="submit" class="signup-btn">Crear Cuenta</button>
+            
+            <div class="register-link">
+                <p>¿Ya tienes una cuenta? <a href="{{ url_for('auth.login') }}" class="auth-link">Inicia Sesión</a></p>
+            </div>
+        </form>
     </div>
-</div>
-{% endblock %}
+</body>
+</html>

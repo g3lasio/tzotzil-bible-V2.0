@@ -2,10 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>Login - Bible Reader</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="cyberpunk">
     <div class="login-container">
         <form method="POST" class="login-form">
             <h2>Iniciar Sesión</h2>
@@ -25,108 +26,15 @@
             <div class="form-options">
                 <label class="remember-me">
                     <input type="checkbox" name="remember">
-                    <span class="checkmark"></span>
                     Recordarme
                 </label>
                 <a href="#" onclick="showResetModal()" class="forgot-password">¿Olvidaste tu contraseña?</a>
             </div>
             <button type="submit" class="login-btn">Iniciar Sesión</button>
+            <div class="register-link">
+                <p>¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}" class="auth-link">Regístrate aquí</a></p>
+            </div>
         </form>
-
-        <div class="register-link">
-            <p>¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}" class="signup-link">Regístrate aquí</a></p>
-        </div>
     </div>
-
-    <style>
-        .signup-link {
-            color: var(--glow-primary);
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-        .signup-link:hover {
-            text-shadow: 0 0 10px var(--glow-primary);
-            color: #fff;
-        }
-        .register-link {
-            margin-top: 20px;
-            text-align: center;
-            font-size: 1.1em;
-        }
-    </style>
-
-    <!-- Modal de Recuperación -->
-    <div id="resetModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="emailStep">
-                <h3>Recuperar Contraseña</h3>
-                <div class="form-group">
-                    <input type="email" id="resetEmail" placeholder="Email" required>
-                </div>
-                <button onclick="requestCode()" class="reset-btn">Enviar Código</button>
-            </div>
-            <div id="codeStep" style="display:none">
-                <h3>Verificar Código</h3>
-                <div class="form-group">
-                    <input type="text" id="resetCode" maxlength="4" placeholder="Código de 4 dígitos" required>
-                </div>
-                <div class="form-group">
-                    <input type="password" id="newPassword" placeholder="Nueva Contraseña" required>
-                </div>
-                <button onclick="verifyCode()" class="reset-btn">Cambiar Contraseña</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function showResetModal() {
-            document.getElementById('resetModal').style.display = 'block';
-            document.getElementById('emailStep').style.display = 'block';
-            document.getElementById('codeStep').style.display = 'none';
-        }
-
-        async function requestCode() {
-            const email = document.getElementById('resetEmail').value;
-            const response = await fetch('/auth/request-reset', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email})
-            });
-            const data = await response.json();
-            if (data.message) {
-                alert(data.message);
-                document.getElementById('emailStep').style.display = 'none';
-                document.getElementById('codeStep').style.display = 'block';
-            }
-        }
-
-        async function verifyCode() {
-            const email = document.getElementById('resetEmail').value;
-            const code = document.getElementById('resetCode').value;
-            const newPassword = document.getElementById('newPassword').value;
-            const response = await fetch('/auth/verify-reset-code', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({email, code, new_password: newPassword})
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert('Contraseña actualizada correctamente');
-                window.location.href = '/login';
-            } else {
-                alert(data.error || 'Error al verificar el código');
-            }
-        }
-
-        // Cerrar modal
-        const modal = document.getElementById('resetModal');
-        const span = document.getElementsByClassName('close')[0];
-        span.onclick = () => modal.style.display = 'none';
-        window.onclick = (e) => {
-            if (e.target == modal) modal.style.display = 'none';
-        }
-    </script>
 </body>
 </html>
