@@ -25,6 +25,7 @@ login_manager = LoginManager()
 mail = Mail()
 
 def create_app(test_config=None):
+    """Create and configure the app"""
     app = Flask(__name__, instance_relative_config=True)
     
     # Configuración base
@@ -34,19 +35,28 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
+    if test_config:
+        app.config.update(test_config)
+
+    # Inicializar extensiones
+    db.init_app(app)
+    migrate.init_app(app, db)
+    babel.init_app(app)
+    cors.init_app(app)
+    login_manager.init_app(app)
+    mail.init_app(app)
+
     with app.app_context():
-        # Inicializar extensiones
-        db.init_app(app)
-        migrate.init_app(app, db)
+        from auth import auth
+        from routes import routes
+        from nevin_routes import nevin_bp
+        
+        app.register_blueprint(auth)
+        app.register_blueprint(routes)
+        app.register_blueprint(nevin_bp, url_prefix='/nevin')
+        
+        # Crear tablas
         db.create_all()
-    
-    from auth import auth
-    from routes import routes
-    from nevin_routes import nevin_bp
-    
-    app.register_blueprint(auth)
-    app.register_blueprint(routes)
-    app.register_blueprint(nevin_bp, url_prefix='/nevin')
 
     return app
 
