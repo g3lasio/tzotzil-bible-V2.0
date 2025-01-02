@@ -17,21 +17,24 @@ login_manager = LoginManager()
 
 def init_login_manager(app):
     """Initialize the login manager"""
-    login_manager.init_app(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
-    login_manager.login_message_category = 'info'
+    try:
+        login_manager.init_app(app)
+        login_manager.login_view = 'auth.login'
+        login_manager.login_message = 'Por favor inicia sesión para acceder a esta página'
+        login_manager.login_message_category = 'info'
 
-    # Registrar el loader aquí para asegurar que esté disponible
-    @login_manager.user_loader
-    def load_user(user_id):
-        try:
-            return User.query.get(int(user_id))
-        except Exception as e:
-            logger.error(f"Error loading user: {str(e)}")
-            return None
+        @login_manager.user_loader
+        def load_user(user_id):
+            try:
+                return User.query.get(int(user_id))
+            except Exception as e:
+                logger.error(f"Error cargando usuario: {str(e)}")
+                return None
 
-    return login_manager
+        return login_manager
+    except Exception as e:
+        logger.error(f"Error inicializando login manager: {str(e)}")
+        raise
 
 auth = Blueprint('auth', __name__)
 
@@ -46,17 +49,17 @@ def send_reset_code(email, code):
         mail.send(msg)
         return True
     except Exception as e:
-        logger.error(f"Error sending reset code: {str(e)}")
+        logger.error(f"Error enviando código: {str(e)}")
         return False
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        remember = request.form.get('remember')
-
         try:
+            username = request.form.get('username')
+            password = request.form.get('password')
+            remember = request.form.get('remember')
+
             user = User.query.filter(
                 (User.username == username) | (User.email == username)
             ).first()
@@ -72,6 +75,7 @@ def login():
             flash('Usuario o contraseña inválidos', 'error')
         except Exception as e:
             logger.error(f"Error en login: {str(e)}")
+            db.session.rollback()
             flash('Error al intentar iniciar sesión', 'error')
 
     return render_template('auth/login.html')
@@ -79,64 +83,81 @@ def login():
 @auth.route('/request-reset', methods=['POST'])
 def request_reset():
     """Solicitar código de recuperación"""
-    email = request.form.get('email')
-    if not email:
-        return {'error': 'Email requerido'}, 400
+    try:
+        email = request.form.get('email')
+        if not email:
+            return {'error': 'Email requerido'}, 400
 
-    user = User.query.filter_by(email=email).first()
-    if user:
-        code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
-        user.reset_code = code
-        user.reset_code_expires = datetime.utcnow() + timedelta(minutes=15)
-        db.session.commit()
+        user = User.query.filter_by(email=email).first()
+        if user:
+            code = ''.join([str(random.randint(0, 9)) for _ in range(4)])
+            user.reset_code = code
+            user.reset_code_expires = datetime.utcnow() + timedelta(minutes=15)
+            db.session.commit()
 
-        if send_reset_code(email, code):
-            return {'message': 'Código enviado'}, 200
+            if send_reset_code(email, code):
+                return {'message': 'Código enviado'}, 200
+    except Exception as e:
+        logger.error(f"Error en request_reset: {str(e)}")
+        db.session.rollback()
 
     return {'message': 'Si el email existe, recibirás un código'}, 200
 
 @auth.route('/verify-reset-code', methods=['POST'])
 def verify_reset_code():
     """Verificar código de recuperación"""
-    email = request.form.get('email')
-    code = request.form.get('code')
+    try:
+        email = request.form.get('email')
+        code = request.form.get('code')
 
-    user = User.query.filter_by(email=email).first()
-    if user and user.reset_code == code and \
-       user.reset_code_expires > datetime.utcnow():
-        user.reset_code = None
-        user.reset_code_expires = None
-        db.session.commit()
-        return {'success': True}, 200
+        user = User.query.filter_by(email=email).first()
+        if user and user.reset_code == code and \
+           user.reset_code_expires > datetime.utcnow():
+            user.reset_code = None
+            user.reset_code_expires = None
+            db.session.commit()
+            return {'success': True}, 200
+    except Exception as e:
+        logger.error(f"Error en verify_reset_code: {str(e)}")
+        db.session.rollback()
 
     return {'error': 'Código inválido o expirado'}, 400
 
 @auth.route('/google-login')
 def google_login():
-    if not google.authorized:
-        return redirect(url_for('google.login'))
+    try:
+        if not google.authorized:
+            return redirect(url_for('google.login'))
 
-    resp = google.get('/oauth2/v1/userinfo')
-    if resp.ok:
-        google_info = resp.json()
-        user = User.query.filter_by(google_id=google_info['id']).first()
+        resp = google.get('/oauth2/v1/userinfo')
+        if resp.ok:
+            google_info = resp.json()
+            user = User.query.filter_by(google_id=google_info['id']).first()
 
-        if not user:
-            user = User(
-                username=google_info['email'].split('@')[0],
-                email=google_info['email'],
-                google_id=google_info['id']
-            )
-            db.session.add(user)
-            db.session.commit()
+            if not user:
+                user = User(
+                    username=google_info['email'].split('@')[0],
+                    email=google_info['email'],
+                    google_id=google_info['id']
+                )
+                db.session.add(user)
+                db.session.commit()
 
-        login_user(user)
-        flash('¡Inicio de sesión con Google exitoso!', 'success')
-        return redirect(url_for('routes.index'))
+            login_user(user)
+            flash('¡Inicio de sesión con Google exitoso!', 'success')
+            return redirect(url_for('routes.index'))
+    except Exception as e:
+        logger.error(f"Error en google_login: {str(e)}")
+        db.session.rollback()
+        flash('Error al intentar iniciar sesión con Google', 'error')
+        return redirect(url_for('auth.login'))
 
 @auth.route('/logout')
 @login_required
 def logout():
-    logout_user()
-    flash('Has cerrado sesión exitosamente', 'info')
+    try:
+        logout_user()
+        flash('Has cerrado sesión exitosamente', 'info')
+    except Exception as e:
+        logger.error(f"Error en logout: {str(e)}")
     return redirect(url_for('routes.index'))

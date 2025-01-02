@@ -54,6 +54,7 @@ def init_extensions(app):
                     if missing_tables:
                         logger.warning(f"Tablas faltantes: {missing_tables}")
                         try:
+                            # Asegurarse de que todas las tablas se creen, incluso si algunas ya existen
                             db.create_all()
                             logger.info("Tablas creadas exitosamente")
                         except Exception as table_error:

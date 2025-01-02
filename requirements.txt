@@ -91,3 +91,7 @@ python-jose[cryptography]
 flask-migrate
 psycopg2-binary
 python-dotenv
+flask-login
+flask-wtf
+flask-login
+oauthlib
