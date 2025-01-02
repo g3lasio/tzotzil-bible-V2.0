@@ -1,15 +1,9 @@
+
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_login import UserMixin
 
-class Promise(db.Model):
-    __tablename__ = 'promise'
-    id = db.Column(db.Integer, primary_key=True)
-    verse_text = db.Column(db.Text, nullable=False)
-    book_reference = db.Column(db.String(100), nullable=False)
-    background_image = db.Column(db.String(200))
-    created_at = db.Column(db.DateTime, server_default=db.func.now())
-
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -25,21 +19,19 @@ class User(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    @property
-    def is_authenticated(self):
-        return True
-
     def get_id(self):
         return str(self.id)
 
-    @property
-    def is_anonymous(self):
-        return False
+class Promise(db.Model):
+    __tablename__ = 'promise'
+    id = db.Column(db.Integer, primary_key=True)
+    verse_text = db.Column(db.Text, nullable=False)
+    book_reference = db.Column(db.String(100), nullable=False)
+    background_image = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 class BibleVerse(db.Model):
-    """Modelo para versículos bíblicos"""
     __tablename__ = 'bibleverse'
-
     id = db.Column(db.Integer, primary_key=True)
     book = db.Column(db.String(50), nullable=False, index=True)
     chapter = db.Column(db.Integer, nullable=False, index=True)
