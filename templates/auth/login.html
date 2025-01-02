@@ -4,6 +4,48 @@
 <head>
     <title>Login - Biblia Tzotzil</title>
     <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-form">
+            <h2>Iniciar Sesión</h2>
+            
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email" required>
+                </div>
+                <div class="form-group">
+                    <input type="password" name="password" placeholder="Contraseña" required>
+                </div>
+                <div class="form-options">
+                    <label>
+                        <input type="checkbox" name="remember"> Recordarme
+                    </label>
+                    <a href="{{ url_for('auth.forgot_password') }}">¿Olvidaste tu contraseña?</a>
+                </div>
+                <button type="submit" class="login-btn">Iniciar Sesión</button>
+            </form>
+
+            <div class="divider">O</div>
+
+            <button onclick="login()" class="replit-login-btn">
+                Iniciar sesión con Replit
+            </button>
+
+            <div class="register-link">
+                <p>¿No tienes una cuenta? <a href="{{ url_for('auth.signup') }}">Regístrate aquí</a></p>
+            </div>
+        </div>
+    </div>
+
     <script>
         function login() {
             window.addEventListener('message', authComplete);
@@ -26,15 +68,5 @@
             }
         }
     </script>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-form">
-            <h2>Iniciar Sesión</h2>
-            <button onclick="login()" class="login-btn">
-                Iniciar sesión con Replit
-            </button>
-        </div>
-    </div>
 </body>
 </html>
