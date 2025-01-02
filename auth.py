@@ -64,15 +64,20 @@ def login():
                 (User.username == username) | (User.email == username)
             ).first()
 
-            if user and user.check_password(password):
-                login_user(user, remember=bool(remember))
-                user.last_login = datetime.utcnow()
-                db.session.commit()
-                flash('¡Inicio de sesión exitoso!', 'success')
-                next_page = request.args.get('next')
-                return redirect(next_page or url_for('routes.index'))
+            if not user:
+                flash('Usuario no encontrado', 'error')
+                return render_template('auth/login.html')
+                
+            if not user.check_password(password):
+                flash('Contraseña incorrecta', 'error')
+                return render_template('auth/login.html')
 
-            flash('Usuario o contraseña inválidos', 'error')
+            login_user(user, remember=bool(remember))
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            flash('¡Inicio de sesión exitoso!', 'success')
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('routes.index'))
         except Exception as e:
             logger.error(f"Error en login: {str(e)}")
             db.session.rollback()

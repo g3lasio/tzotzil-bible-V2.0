@@ -16,12 +16,26 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(128))
+    is_active = db.Column(db.Boolean, default=True)
+    reset_code = db.Column(db.String(6), nullable=True)
+    reset_code_expires = db.Column(db.DateTime, nullable=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    def get_id(self):
+        return str(self.id)
+
+    @property
+    def is_anonymous(self):
+        return False
 
 class BibleVerse(db.Model):
     """Modelo para versículos bíblicos"""
