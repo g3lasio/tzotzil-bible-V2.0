@@ -1,4 +1,3 @@
-
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
@@ -21,3 +20,11 @@ class User(UserMixin, db.Model):
 
     def get_id(self):
         return str(self.id)
+
+class Promise(db.Model):
+    __tablename__ = 'promise'
+    id = db.Column(db.Integer, primary_key=True)
+    verse_text = db.Column(db.Text, nullable=False)
+    book_reference = db.Column(db.String(100), nullable=False)
+    background_image = db.Column(db.String(200))
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
