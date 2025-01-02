@@ -3,7 +3,7 @@ Sistema de autenticación simplificado usando JWT
 """
 from datetime import datetime, timedelta
 import jwt
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, request, jsonify, current_app, render_template
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
 import logging
