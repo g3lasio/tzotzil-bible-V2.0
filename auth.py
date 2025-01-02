@@ -184,26 +184,29 @@ def signup():
                 flash('El email ya está registrado', 'error')
                 return render_template('auth/signup.html')
             
-            user = User(username=username, email=email)
-            user.set_password(password)
-            db.session.add(user)
-            db.session.commit()
-            
-            # Enviar email de confirmación
             try:
+                user = User(username=username, email=email)
+                user.set_password(password)
+                db.session.add(user)
+                db.session.commit()
+
+                # Enviar email de confirmación
                 msg = Message('Bienvenido a la Biblia Tzotzil',
                             sender='gelasio@chyrris.com',
                             recipients=[email])
                 msg.html = render_template('auth/email/welcome.html', 
                                         username=username)
                 mail.send(msg)
-            except Exception as e:
-                logger.warning(f"Error enviando email de bienvenida: {str(e)}")
 
-            # Iniciar sesión automáticamente
-            login_user(user)
-            flash('¡Registro exitoso! Bienvenido.', 'success')
-            return redirect(url_for('routes.index'))
+                # Iniciar sesión automáticamente
+                login_user(user)
+                flash('¡Registro exitoso! Bienvenido.', 'success')
+                return redirect(url_for('routes.index'))
+            except Exception as e:
+                db.session.rollback()
+                logger.error(f"Error en signup final: {str(e)}")
+                flash('Error al crear la cuenta. Por favor intente nuevamente.', 'error')
+                return render_template('auth/signup.html')
             
         except Exception as e:
             logger.error(f"Error en signup: {str(e)}")
