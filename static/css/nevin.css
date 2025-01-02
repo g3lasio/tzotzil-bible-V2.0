@@ -1066,3 +1066,16 @@ header {
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
+/* Nevin Chat Styles */
+.nevin-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.chat-window {
+    background: rgba(13, 17, 23, 0.8);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
