@@ -34,9 +34,11 @@ def create_app(test_config=None):
         SQLALCHEMY_TRACK_MODIFICATIONS=False
     )
 
-    # Inicializar extensiones
-    db.init_app(app)
-    migrate.init_app(app, db)
+    with app.app_context():
+        # Inicializar extensiones
+        db.init_app(app)
+        migrate.init_app(app, db)
+        db.create_all()
     
     from auth import auth
     from routes import routes
