@@ -1,3 +1,4 @@
+
 :root {
     /* Colores Principales */
     --transformer-primary: #0984e3;
@@ -29,6 +30,7 @@
     --text-highlight: #ffffff;
 }
 
+/* Base Styles */
 body {
     margin: 0;
     padding: 0;
@@ -39,7 +41,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Contenedor del Chat */
+/* Chat Container */
 #chat-container {
     margin-top: 4rem;
     padding: 1rem;
@@ -57,7 +59,7 @@ body {
     background: rgba(0, 168, 255, 0.02);
 }
 
-/* Mensajes */
+/* Message Styles */
 .nevin-message {
     background: linear-gradient(135deg, 
         var(--metal-dark) 0%,
@@ -65,12 +67,17 @@ body {
         var(--metal-dark) 100%);
     padding: 1.5rem;
     border-radius: 15px 0 15px 15px;
-    margin-right: auto;
+    margin: 1rem 0 1rem auto;
     max-width: 80%;
     word-wrap: break-word;
     border: 2px solid var(--transformer-primary);
     box-shadow: 0 0 10px var(--neon-blue);
-    margin: 1rem 0;
+    position: relative;
+    transform-origin: left top;
+    animation: nevinMessageAppear 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    backdrop-filter: blur(10px) contrast(120%);
+    clip-path: polygon(0% 0%, 95% 0, 100% 5%, 100% 100%, 5% 100%, 0 95%);
+    transition: all 0.3s ease;
 }
 
 .user-message {
@@ -82,6 +89,9 @@ body {
     margin-left: auto;
     word-wrap: break-word;
     border: 1px solid var(--transformer-primary);
+    position: relative;
+    transform-origin: right bottom;
+    animation: messageAppear 0.3s ease-out;
 }
 
 /* Input Container */
@@ -109,7 +119,7 @@ body {
     color: var(--text-primary);
 }
 
-/* Botones */
+/* Buttons */
 button {
     background: linear-gradient(135deg, var(--transformer-primary), var(--transformer-secondary));
     color: white;
@@ -156,4 +166,40 @@ header {
 .nevin-icon {
     width: 24px;
     height: 24px;
+}
+
+/* Animations */
+@keyframes nevinMessageAppear {
+    0% { 
+        opacity: 0;
+        transform: scale(0.8) translateX(-20px) rotateY(-30deg);
+        filter: blur(10px);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1) translateX(0) rotateY(0);
+        filter: blur(0);
+    }
+}
+
+@keyframes messageAppear {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes hologramPulse {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: translateX(-10px);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: translateX(10px);
+    }
 }
