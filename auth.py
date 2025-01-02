@@ -61,6 +61,9 @@ def login():
             username = request.form.get('username')
             password = request.form.get('password')
             remember = request.form.get('remember')
+            
+            logger.info(f"Intento de login para usuario: {username}")
+            logger.info(f"Remember me activado: {bool(remember)}")
 
             user = User.query.filter(
                 (User.username == username) | (User.email == username)
