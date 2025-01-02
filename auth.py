@@ -100,6 +100,7 @@ def login():
         return render_template('auth/login.html')
     
     try:
+        from flask_login import login_user
         data = request.get_json() if request.is_json else request.form
         email = data.get('email', '').strip()
         password = data.get('password', '').strip()
@@ -110,8 +111,12 @@ def login():
         user = User.query.filter(User.email == email).first()
         
         if user and user.check_password(password):
-            login_user(user)
-            return jsonify({'message': 'Login exitoso'}), 200
+            login_user(user, remember=True)
+            next_page = request.args.get('next')
+            return jsonify({
+                'message': 'Login exitoso',
+                'redirect': next_page if next_page else '/'
+            }), 200
         
         return jsonify({'message': 'Credenciales inválidas'}), 401
 
