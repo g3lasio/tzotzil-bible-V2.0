@@ -1410,8 +1410,8 @@ body {
 .switch {
     position: relative;
     display: inline-block;
-    width: 140px;
-    height: 40px;
+    width: 100px;
+    height: 32px;
     background: rgba(13, 17, 23, 0.95);
     border: 2px solid transparent;
     border-radius: 20px;
@@ -1476,8 +1476,8 @@ body {
 .slider:before {
     content: "";
     position: absolute;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     left: 4px;
     top: 50%;
     transform: translateY(-50%);
@@ -1490,7 +1490,7 @@ body {
 }
 
 input:checked + .slider:before {
-    transform: translate(100px, -50%);
+    transform: translate(68px, -50%);
     background: linear-gradient(135deg, #ff3366, #ff6b88);
     box-shadow: 0 0 25px #ff3366,
                 inset 0 0 12px rgba(255, 255, 255, 0.8);
