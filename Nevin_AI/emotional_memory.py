@@ -1,9 +1,10 @@
 
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 import numpy as np
 from collections import defaultdict
+from textblob import TextBlob
 
 class EnhancedMemory:
     def __init__(self):
@@ -12,142 +13,181 @@ class EnhancedMemory:
         self.behavioral_patterns = defaultdict(dict)
         self.topic_interests = defaultdict(lambda: defaultdict(int))
         self.learning_style = defaultdict(dict)
-        self.scientific_queries = defaultdict(list)
-        
+        self.personality_traits = defaultdict(dict)
+        self.interaction_metadata = defaultdict(list)
+        self.belief_patterns = defaultdict(dict)
+        self.emotional_triggers = defaultdict(list)
+        self.user_knowledge_level = defaultdict(dict)
+        self.memory_retention = 500  # Aumentar retención de memoria
+
     def record_interaction(self, user_id: str, interaction: Dict):
         timestamp = datetime.now().isoformat()
         
-        # Registrar emoción y contexto
-        if 'emotion' in interaction:
-            self.record_emotion(user_id, interaction['emotion'], interaction.get('context', ''))
-            
-        # Registrar conversación
-        self.conversation_history[user_id].append({
+        # Análisis de sentimientos detallado
+        content = interaction.get('content', '')
+        sentiment = self._analyze_sentiment(content)
+        
+        # Metadata enriquecida
+        metadata = {
             'timestamp': timestamp,
-            'content': interaction.get('content', ''),
+            'content': content,
             'type': interaction.get('type', 'general'),
             'topic': interaction.get('topic', 'general'),
-            'response': interaction.get('response', ''),
-        })
+            'sentiment': sentiment,
+            'word_count': len(content.split()),
+            'question_type': self._identify_question_type(content),
+            'complexity_level': self._analyze_complexity(content),
+            'doctrinal_references': self._extract_doctrinal_references(content),
+            'user_state': interaction.get('user_state', {})
+        }
         
-        # Analizar intereses y patrones
-        self._analyze_topic_interest(user_id, interaction)
-        self._analyze_learning_style(user_id, interaction)
+        # Registro de patrones
+        self._update_behavioral_patterns(user_id, metadata)
+        self._update_belief_patterns(user_id, content)
+        self._update_knowledge_level(user_id, metadata)
+        self._record_emotional_triggers(user_id, content, sentiment)
         
-        # Registrar consultas científicas
-        if interaction.get('type') == 'scientific':
-            self.scientific_queries[user_id].append({
-                'timestamp': timestamp,
-                'query': interaction.get('content', ''),
-                'field': interaction.get('field', 'general')
-            })
-    
-    def record_emotion(self, user_id: str, emotion: str, context: str):
-        if user_id not in self.emotional_patterns:
-            self.emotional_patterns[user_id] = []
-            
-        self.emotional_patterns[user_id].append({
-            'emotion': emotion,
-            'context': context,
-            'timestamp': datetime.now().isoformat()
-        })
-    
+        # Mantener historial con límite aumentado
+        self.conversation_history[user_id].append(metadata)
+        if len(self.conversation_history[user_id]) > self.memory_retention:
+            self.conversation_history[user_id].pop(0)
+
+    def _analyze_sentiment(self, text: str) -> Dict:
+        analysis = TextBlob(text)
+        return {
+            'polarity': analysis.sentiment.polarity,
+            'subjectivity': analysis.sentiment.subjectivity,
+            'emotional_state': self._classify_emotional_state(analysis.sentiment.polarity)
+        }
+
+    def _identify_question_type(self, text: str) -> str:
+        question_types = {
+            'doctrinal': ['doctrina', 'creencia', 'enseña'],
+            'personal': ['siento', 'pienso', 'creo'],
+            'theological': ['biblia', 'escritura', 'profecía'],
+            'practical': ['cómo', 'qué debo', 'aplicar']
+        }
+        
+        text_lower = text.lower()
+        for qtype, keywords in question_types.items():
+            if any(keyword in text_lower for keyword in keywords):
+                return qtype
+        return 'general'
+
+    def _analyze_complexity(self, text: str) -> str:
+        words = len(text.split())
+        theological_terms = ['exégesis', 'hermenéutica', 'soteriología', 'escatología']
+        term_count = sum(1 for term in theological_terms if term.lower() in text.lower())
+        
+        if words > 50 or term_count > 2:
+            return 'advanced'
+        elif words > 20 or term_count > 0:
+            return 'intermediate'
+        return 'basic'
+
     def get_user_profile(self, user_id: str) -> Dict:
-        """Obtiene un perfil completo del usuario basado en todas las interacciones."""
-        recent_emotions = self.get_recent_emotions(user_id, limit=5)
-        topics = self.get_top_topics(user_id)
-        learning_style = self.get_learning_style(user_id)
-        scientific_interests = self.get_scientific_interests(user_id)
-        
-        return {
-            'emotional_trend': self.analyze_emotional_trend(user_id),
-            'recent_emotions': recent_emotions,
-            'top_topics': topics,
-            'learning_style': learning_style,
-            'scientific_interests': scientific_interests,
-            'interaction_patterns': self._get_interaction_patterns(user_id)
+        """Obtiene un perfil detallado del usuario basado en todas las interacciones."""
+        profile = {
+            'emotional_trends': self._analyze_emotional_trends(user_id),
+            'knowledge_level': self.user_knowledge_level[user_id],
+            'topic_interests': self._get_weighted_interests(user_id),
+            'behavioral_patterns': self._analyze_behavioral_patterns(user_id),
+            'interaction_style': self._analyze_interaction_style(user_id),
+            'belief_system': self._analyze_belief_patterns(user_id),
+            'learning_preferences': self._analyze_learning_preferences(user_id),
+            'emotional_triggers': self._get_emotional_triggers(user_id),
+            'engagement_level': self._calculate_engagement_level(user_id),
+            'doctrinal_understanding': self._assess_doctrinal_understanding(user_id)
         }
-    
-    def get_relevant_context(self, user_id: str, current_topic: str) -> List[Dict]:
-        """Obtiene contexto relevante para la conversación actual."""
-        history = self.conversation_history[user_id]
-        return [
-            h for h in history[-10:]
-            if self._is_relevant_to_topic(h['topic'], current_topic)
-        ]
-    
-    def get_scientific_interests(self, user_id: str) -> Dict:
-        """Analiza los intereses científicos del usuario."""
-        queries = self.scientific_queries[user_id]
-        fields = defaultdict(int)
-        
-        for query in queries:
-            fields[query['field']] += 1
+        return profile
+
+    def _analyze_emotional_trends(self, user_id: str) -> Dict:
+        if not self.conversation_history[user_id]:
+            return {}
             
-        return dict(fields)
-    
-    def _analyze_topic_interest(self, user_id: str, interaction: Dict):
-        topic = interaction.get('topic', 'general')
-        self.topic_interests[user_id][topic] += 1
-    
-    def _analyze_learning_style(self, user_id: str, interaction: Dict):
-        style_indicators = {
-            'asks_for_examples': ['ejemplo', 'ilustra', 'muestra'],
-            'prefers_technical': ['técnico', 'específico', 'detallado'],
-            'visual_learner': ['imagen', 'gráfico', 'visual'],
-            'practical_application': ['aplicar', 'práctica', 'usar']
-        }
-        
-        content = interaction.get('content', '').lower()
-        for style, indicators in style_indicators.items():
-            if any(indicator in content for indicator in indicators):
-                self.learning_style[user_id][style] = self.learning_style[user_id].get(style, 0) + 1
-    
-    def _is_relevant_to_topic(self, history_topic: str, current_topic: str) -> bool:
-        """Determina si un tema histórico es relevante para el tema actual."""
-        # Implementar lógica de relevancia más sofisticada aquí
-        return history_topic == current_topic or history_topic == 'general'
-    
-    def _get_interaction_patterns(self, user_id: str) -> Dict:
-        """Analiza patrones de interacción del usuario."""
-        history = self.conversation_history[user_id]
-        
-        time_patterns = self._analyze_time_patterns([h['timestamp'] for h in history])
-        topic_sequences = self._analyze_topic_sequences([h['topic'] for h in history])
+        recent_emotions = [
+            interaction['sentiment']['emotional_state']
+            for interaction in self.conversation_history[user_id][-20:]
+        ]
         
         return {
-            'preferred_times': time_patterns,
-            'topic_sequences': topic_sequences,
-            'average_interaction_length': np.mean([len(h['content']) for h in history]) if history else 0
+            'dominant_emotion': max(set(recent_emotions), key=recent_emotions.count),
+            'emotional_stability': self._calculate_emotional_stability(recent_emotions),
+            'trend': self._identify_emotional_trend(recent_emotions)
         }
-    
-    def _analyze_time_patterns(self, timestamps: List[str]) -> Dict:
-        """Analiza patrones temporales de interacción."""
-        hours = [datetime.fromisoformat(ts).hour for ts in timestamps]
+
+    def _calculate_engagement_level(self, user_id: str) -> str:
+        interactions = self.conversation_history[user_id]
+        if not interactions:
+            return "unknown"
+            
+        last_week = datetime.now() - timedelta(days=7)
+        recent_interactions = [
+            i for i in interactions
+            if datetime.fromisoformat(i['timestamp']) > last_week
+        ]
+        
+        engagement_score = len(recent_interactions) * 0.3
+        engagement_score += sum(len(i['content']) for i in recent_interactions) * 0.01
+        
+        if engagement_score > 50:
+            return "high"
+        elif engagement_score > 20:
+            return "medium"
+        return "low"
+
+    def _assess_doctrinal_understanding(self, user_id: str) -> Dict:
+        doctrinal_topics = defaultdict(int)
+        topic_complexity = defaultdict(list)
+        
+        for interaction in self.conversation_history[user_id]:
+            if 'doctrinal_references' in interaction:
+                for topic in interaction['doctrinal_references']:
+                    doctrinal_topics[topic] += 1
+                    topic_complexity[topic].append(interaction['complexity_level'])
+        
         return {
-            'peak_hour': max(set(hours), key=hours.count) if hours else None,
-            'active_periods': self._get_active_periods(hours)
+            'topics_engaged': dict(doctrinal_topics),
+            'understanding_level': {
+                topic: max(set(levels), key=levels.count)
+                for topic, levels in topic_complexity.items()
+            }
         }
-    
-    def _analyze_topic_sequences(self, topics: List[str]) -> List[tuple]:
-        """Analiza secuencias comunes de temas."""
-        sequences = []
-        for i in range(len(topics) - 1):
-            sequences.append((topics[i], topics[i + 1]))
-        return sequences
-    
-    def _get_active_periods(self, hours: List[int]) -> List[str]:
-        """Identifica períodos activos del día."""
-        periods = {
-            'morning': (5, 11),
-            'afternoon': (12, 17),
-            'evening': (18, 22),
-            'night': (23, 4)
-        }
+
+    def get_relevant_context(self, user_id: str, current_topic: str) -> List[Dict]:
+        """Obtiene contexto relevante enriquecido para la conversación actual."""
+        relevant_interactions = []
+        for interaction in self.conversation_history[user_id][-self.memory_retention:]:
+            relevance_score = self._calculate_relevance(interaction, current_topic)
+            if relevance_score > 0.5:
+                interaction['relevance_score'] = relevance_score
+                relevant_interactions.append(interaction)
         
-        active = []
-        for period, (start, end) in periods.items():
-            if any(start <= h <= end for h in hours):
-                active.append(period)
+        return sorted(relevant_interactions, key=lambda x: x['relevance_score'], reverse=True)
+
+    def _calculate_relevance(self, interaction: Dict, current_topic: str) -> float:
+        base_score = 0.0
         
-        return active
+        # Relevancia por tema
+        if interaction['topic'] == current_topic:
+            base_score += 0.6
+        
+        # Relevancia temporal (más reciente = más relevante)
+        time_diff = datetime.now() - datetime.fromisoformat(interaction['timestamp'])
+        time_score = 1.0 / (1.0 + time_diff.total_seconds() / 86400)  # Decaimiento diario
+        
+        # Relevancia por complejidad
+        complexity_match = self._complexity_relevance(interaction['complexity_level'])
+        
+        return min(1.0, base_score + (time_score * 0.2) + (complexity_match * 0.2))
+
+    def _classify_emotional_state(self, polarity: float) -> str:
+        if polarity > 0.5:
+            return 'very_positive'
+        elif polarity > 0:
+            return 'positive'
+        elif polarity < -0.5:
+            return 'very_negative'
+        elif polarity < 0:
+            return 'negative'
+        return 'neutral'
