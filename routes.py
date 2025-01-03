@@ -463,7 +463,6 @@ def search():
 
 
 @routes.route('/settings', methods=['GET', 'POST'])
-@login_required
 def settings():
     """Maneja las configuraciones del usuario"""
     if request.method == 'POST':
