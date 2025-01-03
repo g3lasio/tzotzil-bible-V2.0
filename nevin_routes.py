@@ -1,3 +1,4 @@
+
 import logging
 from flask import Blueprint, render_template, request, jsonify, session
 from flask_login import login_required, current_user
@@ -30,23 +31,9 @@ def nevin_page():
 
 @nevin_bp.route('/query', methods=['POST'])
 def nevin_query():
-    try:
-        data = request.get_json()
-        if not data:
-            return jsonify({
-                'response': "No se recibieron datos en la consulta.",
-                'success': False
-            }), 400
-
-        question = data.get('question', '').strip()
-        from nevin_service import NevinService
-        nevin = NevinService()
-        response = nevin.process_query(question)
-        return jsonify(response), 200
     """Procesa consultas enviadas a Nevin."""
     try:
         data = request.get_json()
-        user_id = session.get('user_id')
         if not data:
             return jsonify({
                 'response': "No se recibieron datos en la consulta.",
@@ -54,6 +41,8 @@ def nevin_query():
             }), 400
 
         question = data.get('question', '').strip()
+        user_id = session.get('user_id')
+        
         if not question:
             return jsonify({
                 'response': "Por favor, escribe tu pregunta.",
