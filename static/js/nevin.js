@@ -4,11 +4,14 @@ class NevinChat {
         this.state = {
             currentEmotion: "neutral",
             chatHistory: [],
-            userContext: {},
+            userContext: {
+                username: localStorage.getItem("username") || null,
+                preferences: this.loadUserPreferences()
+            },
             isProcessing: false,
-            userId:
-                document.querySelector('meta[name="user-id"]')?.content || null,
+            userId: document.querySelector('meta[name="user-id"]')?.content || null,
             transformationActive: false,
+            error: null
         };
 
         // Inicializar cuando el DOM esté listo
@@ -216,7 +219,8 @@ class NevinChat {
                 buffer += word + " ";
                 await new Promise((resolve) => setTimeout(resolve, writeSpeed));
                 const partialFormatted = this.formatReferences(buffer);
-                messageElement.innerHTML = partialFormatted;
+                const sanitizedContent = DOMPurify.sanitize(partialFormatted);
+            messageElement.innerHTML = sanitizedContent;
 
                 if (!userScrolled) {
                     const isNearBottom =
@@ -405,9 +409,14 @@ class NevinChat {
     }
 
     async sendMessage() {
-        const inputField = document.getElementById("user-input");
-        const sendButton = document.getElementById("send-button");
-        const message = inputField?.value.trim();
+        try {
+            const inputField = document.getElementById("user-input");
+            const sendButton = document.getElementById("send-button");
+            const message = inputField?.value.trim();
+            
+            if (!inputField || !message) {
+                throw new Error("Campo de mensaje inválido");
+            }
         const chatHistory = document.getElementById("chat-history");
         const suggestionsContainer = document.getElementById(
             "suggestions-container",
