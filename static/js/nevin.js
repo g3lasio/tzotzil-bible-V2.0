@@ -389,11 +389,14 @@ class NevinChat {
             "¿Por qué el sábado será un tema de conflicto en el tiempo del fin?",
         ];
 
-        const container = document.getElementById("suggestions-container");
-        if (!container) return;
+        const suggestionsContainer = document.getElementById("suggestions-container");
+        if (!suggestionsContainer) {
+            console.error("Contenedor de sugerencias no encontrado");
+            return;
+        }
 
-        container.innerHTML = "";
-        container.style.display = "flex";
+        suggestionsContainer.innerHTML = "";
+        suggestionsContainer.style.display = "flex";
 
         suggestions
             .sort(() => Math.random() - 0.5)
@@ -424,10 +427,23 @@ class NevinChat {
             if (!inputField || !message) {
                 throw new Error("Campo de mensaje inválido");
             }
-        } catch (error) {
-            console.error("Error al enviar mensaje:", error);
-            return;
-        }
+            
+            if (this.state.isProcessing) {
+                console.log("El sistema está ocupado");
+                return;
+            }
+
+            const chatHistory = document.getElementById("chat-history");
+            const suggestionsContainer = document.getElementById("suggestions-container");
+
+            if (suggestionsContainer) {
+                suggestionsContainer.style.display = "none";
+            }
+
+            if (!chatHistory) {
+                console.error("Elemento chat-history no encontrado");
+                return;
+            }
         const chatHistory = document.getElementById("chat-history");
         const suggestionsContainer = document.getElementById(
             "suggestions-container",
@@ -549,10 +565,18 @@ class NevinChat {
 const nevinChat = new NevinChat();
 
 // Exponer funciones globalmente
-window.sendMessage = () => nevinChat.sendMessage();
+window.sendMessage = () => nevinChat.sendMessage().catch(console.error);
 window.startNewChat = () => nevinChat.startNewChat();
 window.goHome = () => nevinChat.goHome();
 window.showChatHistory = () => nevinChat.showChatHistory();
+
+// Asegurar que el objeto nevinChat esté disponible globalmente
+window.nevinChat = nevinChat;
+
+// Inicializar cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    nevinChat.init();
+});
 
 window.handleVerseClick = (reference) => {
     // Extrae el libro y versículo
