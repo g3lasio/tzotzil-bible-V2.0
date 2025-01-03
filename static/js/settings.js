@@ -76,13 +76,7 @@ function initializeSettings() {
         document.getElementById('primaryLanguage').value = localStorage.getItem('primaryLanguage') || 'tzotzil';
     }
     
-    // Language preferences
-    if (document.getElementById('languageSelect')) {
-        document.getElementById('languageSelect').value = localStorage.getItem('language') || 'es';
-    }
-    if (document.getElementById('bilingualMode')) {
-        document.getElementById('bilingualMode').checked = localStorage.getItem('bilingualMode') === 'true';
-    }
+    
 }
 
 function setupEventListeners() {
@@ -152,9 +146,6 @@ function setupEventListeners() {
 
     // Reading preferences
     setupReadingPreferences();
-    
-    // Language preferences
-    setupLanguagePreferences();
 }
 
 function setupReadingPreferences() {
@@ -199,38 +190,7 @@ function setupReadingPreferences() {
     }
 }
 
-function setupLanguagePreferences() {
-    const languageSelect = document.getElementById('languageSelect');
-    const bilingualMode = document.getElementById('bilingualMode');
-    
-    if (languageSelect) {
-        languageSelect.addEventListener('change', async function() {
-            try {
-                const language = this.value;
-                localStorage.setItem('language', language);
-                await updateSettings('language', { 
-                    language: language,
-                    bilingual_mode: bilingualMode.checked 
-                });
-            } catch (error) {
-                console.error('Error updating language:', error);
-                window.createToast('Error updating language preferences', 'danger');
-            }
-        });
-    }
-    
-    if (bilingualMode) {
-        bilingualMode.addEventListener('change', async function() {
-            try {
-                localStorage.setItem('bilingualMode', this.checked);
-                await updateSettings('language', { bilingual_mode: this.checked });
-            } catch (error) {
-                console.error('Error updating bilingual mode:', error);
-                window.createToast('Error updating language preferences', 'danger');
-            }
-        });
-    }
-}
+
 
 function setupBackupAndSync() {
     const backupBtn = document.querySelector('[data-action="backup"]');
