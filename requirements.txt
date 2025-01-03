@@ -100,10 +100,3 @@ flask-wtf
 flask-login
 oauthlib
 pyjwt
-fpdf2
-fpdf2
-fpdf2
-fpdf2
-fpdf2
-fpdf2
-fpdf2

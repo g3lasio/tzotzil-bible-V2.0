@@ -531,24 +531,7 @@ class NevinChat {
 
             const data = await response.json();
             console.log("Datos recibidos del servidor:", data);
-            
-            // Manejar respuesta con PDF si existe
-            if (data.pdf_url) {
-                await this.showTransformationMessage(data.response);
-                const downloadLink = document.createElement('a');
-                downloadLink.href = data.pdf_url;
-                downloadLink.className = 'pdf-download-button';
-                downloadLink.innerHTML = '📄 Descargar PDF';
-                downloadLink.download = 'nevin_respuesta.pdf';
-                
-                const lastMessage = document.querySelector('.nevin-message:last-child');
-                if (lastMessage) {
-                    lastMessage.appendChild(document.createElement('br'));
-                    lastMessage.appendChild(downloadLink);
-                }
-            } else {
-                await this.showTransformationMessage(data.response);
-            }
+            await this.showTransformationMessage(data.response);
         } catch (error) {
             console.error("Error enviando mensaje:", error);
             await this.showTransformationMessage(

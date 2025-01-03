@@ -246,22 +246,6 @@ Estructura tu respuesta con:
 
             logger.info(f"Respuesta generada exitosamente para: {question[:50]}...")
 
-            # Generar PDF para respuestas largas
-            if len(final_response) > 500:
-                try:
-                    from seminar_generator import PDFGenerator
-                    pdf_gen = PDFGenerator()
-                    success, pdf_url = pdf_gen.generate_pdf(final_response)
-                    
-                    if success:
-                        return {
-                            'response': final_response,
-                            'success': True,
-                            'pdf_url': pdf_url
-                        }
-                except Exception as e:
-                    self.logger.error(f"Error generando PDF: {str(e)}")
-                    
             return {
                 'response': final_response,
                 'success': True
