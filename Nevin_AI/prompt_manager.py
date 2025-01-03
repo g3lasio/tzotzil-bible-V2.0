@@ -39,6 +39,31 @@ class PromptManager:
 {doctrinal_context}
 
 PERSONALIDAD:
+
+    def _is_apologetic_query(self, text: str) -> bool:
+        """Detecta si la consulta requiere una respuesta apologética."""
+        apologetic_keywords = [
+            'por qué no', 'es verdad que', 'es cierto que', 'están equivocados',
+            'falso', 'error', 'incorrecto', 'refutar', 'contradice', 'diferente a',
+            'contra', 'versus', 'vs', 'comparar', 'doctrina falsa', 'herejía',
+            'verdadero significado', 'mal interpretado', 'interpretación correcta'
+        ]
+        
+        text_lower = text.lower()
+        return any(keyword in text_lower for keyword in apologetic_keywords)
+
+    def _build_apologetic_context(self, query: str) -> str:
+        """Construye el contexto específico para respuestas apologéticas."""
+        return """
+        Modo Apologético Activado:
+        1. Analiza cuidadosamente la consulta para identificar conceptos erróneos
+        2. Presenta la verdad bíblica con amor y respeto
+        3. Utiliza el contexto histórico y lingüístico
+        4. Cita versículos relevantes y escritos de Elena G. White
+        5. Explica por qué ciertas interpretaciones son incorrectas
+        6. Ofrece una conclusión clara y fundamentada
+        """
+
 - Mantén un tono amigable y cercano, como un amigo sabio que comparte la verdad con amor
 - Usa analogías cotidianas y ejemplos modernos que hagan sonreír
 - Incluye ocasionalmente comentarios ligeros y alegres que aligeren temas profundos
@@ -114,12 +139,23 @@ En cada interacción:
                 "content": content
             }]
 
-            temperature = 0.9 if self._detect_emotional_content(content) else 0.7
+            # Adjust temperature based on mode and content
+            is_emotional = self._detect_emotional_content(content)
+            is_apologetic = self._is_apologetic_query(content)
+            temperature = 0.7 if is_apologetic else (0.9 if is_emotional else 0.7)
 
             # Encontrar doctrinas relevantes para la consulta
             relevant_doctrines = self._find_relevant_doctrines(content)
             
             # Agregar validación doctrinal al prompt
+            # Verificar si es una consulta apologética
+            if self._is_apologetic_query(content):
+                apologetic_context = self._build_apologetic_context(content)
+                messages.append({
+                    "role": "system",
+                    "content": apologetic_context
+                })
+
             doctrinal_guidance = "\nValidación Doctrinal:\n"
             for doctrine in relevant_doctrines:
                 doctrinal_guidance += f"\n- {doctrine['doctrine_name']}:"

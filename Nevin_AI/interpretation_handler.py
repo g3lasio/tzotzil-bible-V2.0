@@ -35,3 +35,22 @@ class InterpretationHandler:
         
         enhanced_response += "</ul>\n</div>"
         return enhanced_response
+
+
+    def get_apologetic_context(self, topic: str) -> Dict:
+        """Obtiene el contexto apologético basado en el tema."""
+        # Buscar principios hermenéuticos relevantes
+        principles = self.get_interpretation_context('Narrativas')
+        
+        # Buscar doctrinas relacionadas
+        doctrinal_context = []
+        for category in self.principles.get('categories', []):
+            for doctrine in category.get('doctrines', []):
+                if any(keyword in topic.lower() for keyword in doctrine['doctrine_name'].lower().split()):
+                    doctrinal_context.append(doctrine)
+        
+        return {
+            'principles': principles,
+            'doctrinal_context': doctrinal_context,
+            'interpretation_type': 'apologetic'
+        }
