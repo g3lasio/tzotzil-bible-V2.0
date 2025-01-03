@@ -1044,10 +1044,17 @@ body {
 .verse-text.tzotzil,
 .verse-text.spanish {
     font-family: 'Dubai Medium', sans-serif;
-    /* Fuente para ambas versiones */
     font-size: 1rem;
-    text-align: center;
+    text-align: center !important;
     line-height: 1.8;
+    width: 100%;
+    display: block;
+}
+
+.verse-content.spanish-only .verse-text.spanish {
+    text-align: center !important;
+    width: 100%;
+    display: block;
 }
 
 .language-header {
