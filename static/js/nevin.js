@@ -448,21 +448,31 @@ class NevinChat {
             thinkingContainer.classList.add("nevin-thinking");
             
             const steps = [
-                { id: 'thinking', text: 'Procesando consulta', time: 800 },
-                { id: 'doctrinal', text: 'Aplicando validación doctrinal', time: 1000 },
-                { id: 'biblical', text: 'Aplicando interpretación bíblica', time: 1000 },
-                { id: 'apologetic', text: 'Verificando modo apologético', time: 800 }
+                { id: 'thinking', text: 'Procesando consulta', time: 1500 },
+                { id: 'doctrinal', text: 'Aplicando validación doctrinal', time: 2000 },
+                { id: 'biblical', text: 'Aplicando interpretación bíblica', time: 2000 },
+                { id: 'apologetic', text: 'Verificando modo apologético', time: 1500 }
             ];
+
+            const randomStep = steps[Math.floor(Math.random() * steps.length)];
 
             const thinkingHTML = `
                 <div class="nevin-response-container">
                     <img src="/static/images/nevin-icon.svg" alt="Icono de Nevin" class="nevin-icon-response">
-                    <div class="thinking-steps"></div>
+                    <div class="thinking-steps">
+                        <div class="thinking-step active">
+                            <span class="step-text">${randomStep.text}</span>
+                            <div class="step-dots">
+                                <span class="dot">.</span>
+                                <span class="dot">.</span>
+                                <span class="dot">.</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             `;
             
             thinkingContainer.innerHTML = thinkingHTML;
-            const stepsContainer = thinkingContainer.querySelector('.thinking-steps');
 
             // Función para mostrar cada paso
             const showStep = async (step, index) => {
