@@ -1,5 +1,6 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify, session
+from flask_login import login_required, current_user
 from attached_assets.chat_request import get_ai_response
 
 logging.basicConfig(level=logging.INFO)
