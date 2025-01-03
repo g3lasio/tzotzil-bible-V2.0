@@ -26,9 +26,19 @@ function initializeLanguageToggle() {
         try {
             // Actualizar textos
             verseContainer.querySelectorAll('.verse-content').forEach(content => {
+                content.classList.toggle('spanish-only', !showBoth);
                 const tzotzilText = content.querySelector('.verse-text.tzotzil');
+                const spanishText = content.querySelector('.verse-text.spanish');
+                
                 if (tzotzilText) {
                     tzotzilText.style.display = showBoth ? 'block' : 'none';
+                }
+                if (spanishText && !showBoth) {
+                    spanishText.style.width = '100%';
+                    spanishText.style.gridColumn = '1 / -1';
+                } else if (spanishText) {
+                    spanishText.style.width = '';
+                    spanishText.style.gridColumn = '';
                 }
             });
 
