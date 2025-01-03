@@ -100,3 +100,6 @@ flask-wtf
 flask-login
 oauthlib
 pyjwt
+stripe
+stripe
+stripe

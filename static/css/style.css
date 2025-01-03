@@ -1654,6 +1654,68 @@ body {
     z-index: -1;
 }
 
+/* Premium Upgrade Styles */
+.premium-upgrade-container {
+    background: var(--bg-darker);
+    border: 2px solid var(--glow-primary);
+    border-radius: 15px;
+    padding: 2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.status-text {
+    color: var(--glow-primary);
+    font-size: 1.2rem;
+    text-align: center;
+}
+
+.trial-status {
+    color: #ff3366;
+    text-align: center;
+}
+
+.premium-features {
+    margin: 2rem 0;
+    padding: 1rem;
+    background: rgba(0, 243, 255, 0.05);
+    border-radius: 10px;
+}
+
+.premium-features ul {
+    list-style: none;
+    padding: 0;
+}
+
+.premium-features li {
+    padding: 0.5rem 0;
+    color: var(--text-primary);
+}
+
+.premium-features li:before {
+    content: "✓";
+    color: var(--glow-primary);
+    margin-right: 10px;
+}
+
+.btn-premium {
+    background: linear-gradient(135deg, var(--glow-primary), #1322f6);
+    color: white;
+    width: 100%;
+    padding: 1rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 20px var(--glow-primary);
+}
+
 /* Add Cyberpunk Glow */
 .text-glow {
     text-shadow: 0 0 10px var(--glow-primary);

@@ -1,0 +1,51 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="premium-upgrade-container">
+        <h2 class="text-center mb-4">Actualiza a Premium</h2>
+        <div class="subscription-status mb-4">
+            <p class="status-text">Estado actual: {% if current_user.is_premium %}Premium{% else %}Free{% endif %}</p>
+            {% if not current_user.is_premium %}
+                <p class="trial-status">Tu periodo de prueba ha finalizado</p>
+            {% endif %}
+        </div>
+        
+        <div class="premium-features">
+            <h3>Beneficios Premium:</h3>
+            <ul>
+                <li>Acceso ilimitado a Nevin</li>
+                <li>Soporte prioritario</li>
+                <li>Sin publicidad</li>
+            </ul>
+        </div>
+
+        {% if not current_user.is_premium %}
+        <button id="checkout-button" class="btn btn-premium">
+            Actualizar a Premium
+        </button>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://js.stripe.com/v3/"></script>
+<script>
+const stripe = Stripe('{{ config.STRIPE_PUBLIC_KEY }}');
+const checkoutButton = document.getElementById('checkout-button');
+
+checkoutButton.addEventListener('click', function() {
+    fetch('/create-checkout-session', {
+        method: 'POST',
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(session) {
+        return stripe.redirectToCheckout({ sessionId: session.sessionId });
+    })
+    .catch(function(error) {
+        console.error('Error:', error);
+    });
+});
+</script>
+{% endblock %}
