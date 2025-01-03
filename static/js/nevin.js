@@ -446,14 +446,28 @@ class NevinChat {
             // Mostrar indicador de "pensando"
             const thinkingContainer = document.createElement("div");
             thinkingContainer.classList.add("nevin-thinking");
+            
+            const steps = [
+                { id: 'thinking', text: 'Procesando consulta', time: 1000 },
+                { id: 'doctrinal', text: 'Aplicando validación doctrinal', time: 1500 },
+                { id: 'biblical', text: 'Aplicando interpretación bíblica', time: 1500 },
+                { id: 'apologetic', text: 'Verificando modo apologético', time: 1000 }
+            ];
+
             thinkingContainer.innerHTML = `
                 <div class="nevin-response-container">
                     <img src="/static/images/nevin-icon.svg" alt="Icono de Nevin" class="nevin-icon-response">
-                    <div class="thinking-indicator">
-                        <span class="thinking-text">Pensando</span>
-                        <span class="dot">.</span>
-                        <span class="dot">.</span>
-                        <span class="dot">.</span>
+                    <div class="thinking-steps">
+                        ${steps.map(step => `
+                            <div class="thinking-step" id="${step.id}">
+                                <span class="step-text">${step.text}</span>
+                                <span class="step-dots">
+                                    <span class="dot">.</span>
+                                    <span class="dot">.</span>
+                                    <span class="dot">.</span>
+                                </span>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
             `;
