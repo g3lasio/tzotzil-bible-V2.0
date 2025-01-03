@@ -270,6 +270,10 @@ class NevinChat {
                 chatHistory.innerHTML = "";
             }
         }
+        
+        // Ajustar número de sugerencias según el tamaño de pantalla
+        const isMobile = window.innerWidth <= 768;
+        const numSuggestions = isMobile ? 2 : 3;
         const suggestions = [
             "¿Qué relación tiene el Arca de Noé con el santuario celestial?",
             "¿Por qué el número siete tiene tanta relevancia en la Biblia?",
