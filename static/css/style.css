@@ -1049,12 +1049,24 @@ body {
     line-height: 1.8;
     width: 100%;
     display: block;
+    margin: 0;
+    padding: 0;
 }
 
 .verse-content.spanish-only .verse-text.spanish {
     text-align: center !important;
     width: 100%;
     display: block;
+    grid-column: 1 / -1;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.verse-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    width: 100%;
 }
 
 .language-header {
