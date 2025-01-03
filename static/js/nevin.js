@@ -268,6 +268,13 @@ class NevinChat {
     }
 
     displayRandomSuggestions(clearPrevious = false) {
+        const container = document.getElementById("suggestions-container");
+        if (!container) {
+            console.error("Contenedor de sugerencias no encontrado");
+            return;
+        }
+
+        container.style.display = "flex";
         if (clearPrevious) {
             const chatHistory = document.getElementById("chat-history");
             if (chatHistory) {
@@ -417,6 +424,10 @@ class NevinChat {
             if (!inputField || !message) {
                 throw new Error("Campo de mensaje inválido");
             }
+        } catch (error) {
+            console.error("Error al enviar mensaje:", error);
+            return;
+        }
         const chatHistory = document.getElementById("chat-history");
         const suggestionsContainer = document.getElementById(
             "suggestions-container",
