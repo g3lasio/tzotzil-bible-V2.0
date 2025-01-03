@@ -448,29 +448,41 @@ class NevinChat {
             thinkingContainer.classList.add("nevin-thinking");
             
             const steps = [
-                { id: 'thinking', text: 'Procesando consulta', time: 1000 },
-                { id: 'doctrinal', text: 'Aplicando validación doctrinal', time: 1500 },
-                { id: 'biblical', text: 'Aplicando interpretación bíblica', time: 1500 },
-                { id: 'apologetic', text: 'Verificando modo apologético', time: 1000 }
+                { id: 'thinking', text: 'Procesando consulta', time: 800 },
+                { id: 'doctrinal', text: 'Aplicando validación doctrinal', time: 1000 },
+                { id: 'biblical', text: 'Aplicando interpretación bíblica', time: 1000 },
+                { id: 'apologetic', text: 'Verificando modo apologético', time: 800 }
             ];
 
-            thinkingContainer.innerHTML = `
+            const thinkingHTML = `
                 <div class="nevin-response-container">
                     <img src="/static/images/nevin-icon.svg" alt="Icono de Nevin" class="nevin-icon-response">
-                    <div class="thinking-steps">
-                        ${steps.map(step => `
-                            <div class="thinking-step" id="${step.id}">
-                                <span class="step-text">${step.text}</span>
-                                <span class="step-dots">
-                                    <span class="dot">.</span>
-                                    <span class="dot">.</span>
-                                    <span class="dot">.</span>
-                                </span>
-                            </div>
-                        `).join('')}
-                    </div>
+                    <div class="thinking-steps"></div>
                 </div>
             `;
+            
+            thinkingContainer.innerHTML = thinkingHTML;
+            const stepsContainer = thinkingContainer.querySelector('.thinking-steps');
+
+            // Función para mostrar cada paso
+            const showStep = async (step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'thinking-step';
+                stepElement.id = step.id;
+                stepElement.innerHTML = `
+                    <span class="step-text">${step.text}</span>
+                    <span class="step-dots">
+                        <span class="dot">.</span>
+                        <span class="dot">.</span>
+                        <span class="dot">.</span>
+                    </span>
+                `;
+                stepsContainer.appendChild(stepElement);
+                await new Promise(resolve => setTimeout(resolve, step.time));
+                if (index < steps.length - 1) {
+                    stepElement.classList.add('completed');
+                }
+            };
             document
                 .getElementById("chat-history")
                 .appendChild(thinkingContainer);
