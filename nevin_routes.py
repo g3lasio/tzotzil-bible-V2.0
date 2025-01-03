@@ -29,14 +29,20 @@ def nevin_page():
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
 @nevin_bp.route('/query', methods=['POST'])
-@login_required
 def nevin_query():
-    if not current_user.has_nevin_access():
-        return jsonify({
-            'response': "Tu período de prueba ha terminado. Actualiza tu cuenta para seguir usando Nevin.",
-            'success': False,
-            'trial_expired': True
-        }), 403
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({
+                'response': "No se recibieron datos en la consulta.",
+                'success': False
+            }), 400
+
+        question = data.get('question', '').strip()
+        from nevin_service import NevinService
+        nevin = NevinService()
+        response = nevin.process_query(question)
+        return jsonify(response), 200
     """Procesa consultas enviadas a Nevin."""
     try:
         data = request.get_json()
