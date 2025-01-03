@@ -1133,6 +1133,39 @@ header {
     line-height: 1.6;
     margin-bottom: 0.5rem;
 }
+/* Access Restriction Styles */
+.access-restricted {
+    text-align: center;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 500px;
+    background: var(--bg-darker);
+    border: 2px solid var(--glow-primary);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.2);
+}
+
+.access-restricted p {
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+}
+
+.btn-premium {
+    background: linear-gradient(135deg, var(--glow-primary), #1322f6);
+    color: white;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Orbitron', sans-serif;
+    transition: all 0.3s ease;
+}
+
+.btn-premium:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 15px var(--glow-primary);
+}
+
 /* Nevin Chat Styles */
 .nevin-container {
     max-width: 1200px;

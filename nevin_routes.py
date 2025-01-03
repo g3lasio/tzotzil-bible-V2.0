@@ -29,8 +29,19 @@ def nevin_page():
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
+def check_nevin_access():
+    if not current_user.is_authenticated:
+        return {"error": "Por favor inicia sesión para usar Nevin."}, 401
+    if not current_user.has_nevin_access():
+        return {"error": "Tu periodo de prueba ha finalizado. Actualiza a premium para seguir usando Nevin."}, 403
+    return None
+
 @nevin_bp.route('/query', methods=['POST'])
+@login_required
 def nevin_query():
+    access_check = check_nevin_access()
+    if access_check:
+        return access_check
     """Procesa consultas enviadas a Nevin."""
     try:
         data = request.get_json()

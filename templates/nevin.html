@@ -8,6 +8,18 @@
         <title>Nevin - Tu Asistente Bíblico</title>
     </head>
     <body>
+        {% if not current_user.is_authenticated %}
+        <div class="access-restricted">
+            <p>Inicia sesión para usar Nevin</p>
+            <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar Sesión</a>
+        </div>
+        {% elif not current_user.has_nevin_access() %}
+        <div class="access-restricted">
+            <p>Tu periodo de prueba ha finalizado. Actualiza a premium para seguir usando Nevin.</p>
+            <button onclick="window.location.href='/upgrade'" class="btn btn-premium">Actualizar a Premium</button>
+        </div>
+        {% else %}>
+    <body>
         <header>
             <div id="nav-bar">
                 <a href="{{ url_for('routes.index') }}" id="home-button" class="nav-button">
