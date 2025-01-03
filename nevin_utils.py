@@ -48,16 +48,16 @@ class NevinUtils:
     def _load_faiss_indexes(self):
         """Carga los índices FAISS y sus datos asociados desde la carpeta nevin_knowledge."""
         try:
-            knowledge_dir = Path("nevin_knowledge")
-            if not knowledge_dir.exists():
-                logger.warning(f"Directorio {knowledge_dir} no encontrado")
-                return
+            knowledge_paths = ['nevin_knowledge', 'Nevin_AI/nevin_knowledge']
+            faiss_files = []
+            for path in knowledge_paths:
+                knowledge_dir = Path(path)
+                if knowledge_dir.exists():
+                    faiss_files.extend(knowledge_dir.glob("*.faiss"))
 
-            # Cargar índices FAISS
-            index_files = list(knowledge_dir.glob("*.faiss"))
-            logger.info(f"Encontrados {len(index_files)} archivos FAISS en {knowledge_dir}")
+            logger.info(f"Encontrados {len(faiss_files)} archivos FAISS en {knowledge_paths}")
 
-            for index_file in index_files:
+            for index_file in faiss_files:
                 try:
                     # Extraer nombre base del archivo
                     base_name = index_file.stem
