@@ -22,16 +22,14 @@ class DatabaseManager:
         return g.db_session
 
     def get_books(self):
-        """Obtiene la lista de libros de la base de datos"""
+        """Obtener lista de libros ordenada."""
         try:
             session = self.get_session()
-            query = text('''
-                SELECT DISTINCT book, MIN(id) as order_id
+            result = session.execute(text("""
+                SELECT DISTINCT book 
                 FROM bibleverse 
-                GROUP BY book
-                ORDER BY order_id
-            ''')
-            result = session.execute(query).fetchall()
+                ORDER BY book ASC
+            """)).fetchall()
             return {
                 'success': True,
                 'data': [book[0] for book in result],
@@ -67,13 +65,23 @@ class DatabaseManager:
             else:
                 # Consulta para obtener versículos de un capítulo específico
                 query = text("""
-                    SELECT verse, tzotzil_text, spanish_text 
+                    SELECT id, book, chapter, verse, spanish_text, tzotzil_text 
                     FROM bibleverse 
                     WHERE book = :book AND chapter = :chapter 
-                    ORDER BY CAST(verse AS INTEGER)
+                    ORDER BY CAST(chapter AS INTEGER), CAST(verse AS INTEGER)
                 """)
                 result = session.execute(query, {'book': book, 'chapter': chapter}).fetchall()
-                verses = [{'verse': int(row[0]), 'tzotzil': row[1], 'spanish': row[2]} for row in result]
+                verses = []
+                for row in result:
+                    verse_dict = {
+                        'id': row[0],
+                        'book': row[1],
+                        'chapter': row[2],
+                        'verse': row[3],
+                        'spanish_text': row[4],
+                        'tzotzil_text': row[5]
+                    }
+                    verses.append(verse_dict)
                 return {
                     'success': True,
                     'data': {'verses': verses},
