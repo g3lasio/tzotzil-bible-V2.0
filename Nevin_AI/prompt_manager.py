@@ -12,8 +12,10 @@ class PromptManager:
     def __init__(self):
         try:
             from .interpretation_handler import InterpretationHandler
+            from .emotional_memory import EnhancedMemory
             self.doctrinal_data = self._load_doctrinal_validation()
             self.interpretation_handler = InterpretationHandler()
+            self.memory = EnhancedMemory()
             
             if not self.doctrinal_data:
                 logger.error("No se pudo cargar la validación doctrinal")
@@ -82,10 +84,24 @@ En cada interacción:
 - Muestra un interés genuino por el contexto único del usuario.
 - Encuentra un equilibrio entre momentos serios y toques ligeros de humor o motivación."""
 
-    async def generate_structured_response(self, content: str) -> str:
-        """Genera una respuesta estructurada usando la base doctrinal."""
+    async def generate_structured_response(self, content: str, user_id: str = None) -> str:
+        """Genera una respuesta estructurada usando la base doctrinal y el contexto del usuario."""
         try:
             from azure_openai_config import openai_config
+            
+            # Analizar el contenido
+            is_scientific = self._is_scientific_query(content)
+            current_topic = self._identify_topic(content)
+            
+            # Obtener contexto del usuario
+            user_context = self.memory.get_user_profile(user_id) if user_id else {}
+            relevant_history = self.memory.get_relevant_context(user_id, current_topic) if user_id else []
+            
+            # Construir prompt enriquecido
+            context_prompt = self._build_context_prompt(user_context, relevant_history)
+            scientific_context = self._build_scientific_context(content) if is_scientific else ""
+            
+            enriched_prompt = f"{self.base_prompt}\n\n{context_prompt}\n{scientific_context}"
             
             relevant_doctrines = self._find_relevant_doctrines(content)
             doctrinal_context = self._create_response_context(relevant_doctrines)
