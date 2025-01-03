@@ -1060,6 +1060,7 @@ body {
     grid-column: 1 / -1;
     margin: 0 auto;
     padding: 0;
+    max-width: 800px;
 }
 
 .verse-content {
@@ -1067,6 +1068,13 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 0;
     width: 100%;
+    justify-items: center;
+}
+
+.verse-text {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem 1rem;
 }
 
 .language-header {
