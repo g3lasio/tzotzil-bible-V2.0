@@ -116,6 +116,24 @@ En cada interacción:
 
             temperature = 0.9 if self._detect_emotional_content(content) else 0.7
 
+            # Encontrar doctrinas relevantes para la consulta
+            relevant_doctrines = self._find_relevant_doctrines(content)
+            
+            # Agregar validación doctrinal al prompt
+            doctrinal_guidance = "\nValidación Doctrinal:\n"
+            for doctrine in relevant_doctrines:
+                doctrinal_guidance += f"\n- {doctrine['doctrine_name']}:"
+                doctrinal_guidance += f"\n  Descripción: {doctrine['description']}"
+                if 'errors_to_avoid' in doctrine:
+                    doctrinal_guidance += "\n  Errores a evitar:"
+                    for error in doctrine['errors_to_avoid']:
+                        doctrinal_guidance += f"\n    - {error['error']}"
+
+            messages.append({
+                "role": "system",
+                "content": f"Asegúrate que tu respuesta sea consistente con estas doctrinas:{doctrinal_guidance}"
+            })
+
             response = await openai_config.client.chat.completions.create(
                 model="gpt-4",
                 messages=messages,
@@ -125,7 +143,14 @@ En cada interacción:
                 max_tokens=1500,
                 top_p=0.98)
                 
-            return response.choices[0].message.content
+            # Validar la respuesta contra las doctrinas
+            response_content = response.choices[0].message.content
+            for doctrine in relevant_doctrines:
+                for error in doctrine.get('errors_to_avoid', []):
+                    if error['error'].lower() in response_content.lower():
+                        return f"[ADVERTENCIA: Respuesta ajustada por validación doctrinal]\n{response_content}"
+            
+            return response_content
             
         except Exception as e:
             logger.error(f"Error en generate_structured_response: {str(e)}")
