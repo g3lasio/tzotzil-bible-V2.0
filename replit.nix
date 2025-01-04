@@ -1,7 +1,7 @@
 
 { pkgs }: {
   deps = [
-    pkgs.python39Full
+    pkgs.python310Full
     pkgs.openssh
     pkgs.redis
     pkgs.postgresql
@@ -19,5 +19,16 @@
     pkgs.glibcLocales
     pkgs.openssl
     pkgs.git
+    pkgs.gcc
+    pkgs.cmake
+    pkgs.ninja
   ];
+  env = {
+    PYTHONBIN = "${pkgs.python310Full}/bin/python3";
+    LD_LIBRARY_PATH = pkgs.lib.makeLibraryPath [
+      pkgs.libjpeg_turbo
+      pkgs.openjpeg
+      pkgs.mupdf
+    ];
+  };
 }
