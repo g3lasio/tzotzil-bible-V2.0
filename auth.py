@@ -26,11 +26,17 @@ def generate_token(user_id):
             'iat': datetime.utcnow(),
             'sub': user_id
         }
-        return jwt.encode(
+        logger.debug(f"Generando token con payload: {payload}")
+        secret_key = current_app.config.get('SECRET_KEY')
+        logger.debug(f"Usando SECRET_KEY: {secret_key[:4]}...")
+        
+        token = jwt.encode(
             payload,
-            current_app.config.get('SECRET_KEY'),
+            secret_key,
             algorithm=JWT_ALGORITHM
         )
+        logger.info(f"Token generado exitosamente para usuario {user_id}")
+        return token
     except Exception as e:
         logger.error(f"Error generando token: {str(e)}")
         return None
@@ -42,18 +48,23 @@ def validate_token(token):
         return None
     
     try:
+        logger.debug(f"Validando token: {token[:10]}...")
+        secret_key = current_app.config.get('SECRET_KEY')
+        logger.debug(f"Usando SECRET_KEY para validación: {secret_key[:4]}...")
+        
         payload = jwt.decode(
             token,
-            current_app.config.get('SECRET_KEY'),
+            secret_key,
             algorithms=[JWT_ALGORITHM],
             options={"verify_exp": True}
         )
+        logger.info(f"Token validado exitosamente. User ID: {payload.get('sub')}")
         return payload
     except jwt.ExpiredSignatureError:
         logger.warning("Token expirado")
         return None
-    except jwt.InvalidTokenError:
-        logger.warning("Token inválido")
+    except jwt.InvalidTokenError as e:
+        logger.warning(f"Token inválido: {str(e)}")
         return None
     except Exception as e:
         logger.error(f"Error validando token: {str(e)}")

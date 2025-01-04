@@ -23,7 +23,12 @@ def create_app():
 
     try:
         # Configuración básica
-        app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-nevin')
+        secret_key = os.getenv('SECRET_KEY')
+        if not secret_key:
+            logger.warning("SECRET_KEY no encontrada en variables de entorno, usando clave por defecto")
+            secret_key = 'dev-key-nevin'
+        app.config['SECRET_KEY'] = secret_key
+        logger.info("SECRET_KEY configurada correctamente")
         
         @app.before_request
         def require_auth():
