@@ -587,3 +587,14 @@ window.handleVerseClick = (reference) => {
     // Abre en una nueva pestaña
     window.open(url, "_blank");
 };
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chat-form');
+    if (chatForm) {
+        chatForm.addEventListener('submit', handleChatSubmit);
+    }
+});
+
+async function handleChatSubmit(e) {
+    e.preventDefault();
+    // Chat submission logic here
+}
