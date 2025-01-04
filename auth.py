@@ -179,6 +179,8 @@ def register():
         # Crear nuevo usuario con período de prueba
         user = User(
             username=username,
+            lastname=data.get('lastname', ''),
+            phone=data.get('phone', ''),
             email=email,
             is_active=True,
             plan_type='Free',

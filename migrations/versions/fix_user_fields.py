@@ -15,21 +15,19 @@ depends_on = None
 
 def upgrade():
     # Agregar campos faltantes para el signup
-    op.execute("""
-    DO $$
-    BEGIN
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                      WHERE table_name='users' AND column_name='lastname') THEN
-            ALTER TABLE users ADD COLUMN lastname VARCHAR(50) NOT NULL DEFAULT '';
-        END IF;
-        
-        IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                      WHERE table_name='users' AND column_name='phone') THEN
-            ALTER TABLE users ADD COLUMN phone VARCHAR(15) NOT NULL DEFAULT '';
-        END IF;
-    END
-    $$;
-    """)
+    op.add_column('users', sa.Column('lastname', sa.String(50), nullable=True))
+    op.add_column('users', sa.Column('phone', sa.String(15), nullable=True))
+    
+    # Actualizar columnas a not nullable después de migrar datos existentes
+    op.execute("UPDATE users SET lastname = '' WHERE lastname IS NULL")
+    op.execute("UPDATE users SET phone = '' WHERE phone IS NULL")
+    
+    op.alter_column('users', 'lastname',
+                    existing_type=sa.String(50),
+                    nullable=False)
+    op.alter_column('users', 'phone',
+                    existing_type=sa.String(15),
+                    nullable=False)
 
 def downgrade():
     op.drop_column('users', 'lastname')
