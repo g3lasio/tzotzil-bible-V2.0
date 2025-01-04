@@ -228,14 +228,14 @@ def get_user(current_user):
 def logout():
     """Cierra la sesión del usuario actual"""
     try:
-        response = redirect(url_for('index'))
+        response = redirect(url_for('routes.index'))
         response.delete_cookie('token')
         flash('Sesión cerrada exitosamente', 'success')
         return response
     except Exception as e:
         logger.error(f"Error en logout: {str(e)}")
         flash('Error al cerrar sesión', 'error')
-        return redirect(url_for('index'))
+        return redirect(url_for('routes.index'))
 
 def init_login_manager(app):
     """Initialize the login manager for backward compatibility"""
