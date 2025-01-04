@@ -333,7 +333,7 @@ def chapter(book=None, chapter=None):
         logger.info(f"Buscando versículos para {book} capítulo {chapter}")
 
         # Usar el gestor de base de datos con caché para obtener versículos
-        verses_result = db_manager.get_verses(book, chapter)
+        verses_result = db_manager.get_verses(book, str(chapter))
 
         if not verses_result['success']:
             logger.error(f"Error al obtener versículos: {verses_result['error']}")
