@@ -151,10 +151,10 @@ def login():
                 'token', 
                 token,
                 httponly=True,
-                secure=False,
-                samesite='Lax',
+                secure=True,  # Cambiar a True para HTTPS
+                samesite='Strict',
                 max_age=86400 * JWT_EXPIRATION_DAYS,
-                domain=None  # Permitir cualquier dominio
+                path='/'  # Asegurar que la cookie esté disponible en toda la app
             )
             
             # Actualizar última conexión
