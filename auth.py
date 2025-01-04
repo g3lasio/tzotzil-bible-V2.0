@@ -92,10 +92,6 @@ def token_required(f):
                     flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
                     return redirect(url_for('routes.index'))
 
-        payload = validate_token(token)
-        if not payload:
-            return jsonify({'message': 'Token inválido o expirado'}), 401
-
         try:
             current_user = User.query.get(payload['sub'])
             if not current_user:
