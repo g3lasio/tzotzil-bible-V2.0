@@ -15,11 +15,12 @@ depends_on = None
 def upgrade():
     # Crear tabla temporal con todos los campos necesarios
     op.execute("""
-    CREATE TABLE IF NOT EXISTS users_new (
+    DROP TABLE IF EXISTS users CASCADE;
+    CREATE TABLE users (
         id SERIAL PRIMARY KEY,
         username VARCHAR(80) UNIQUE NOT NULL,
-        lastname VARCHAR(50) NOT NULL DEFAULT '',
-        phone VARCHAR(15) NOT NULL DEFAULT '',
+        lastname VARCHAR(50) NOT NULL,
+        phone VARCHAR(15) NOT NULL,
         email VARCHAR(120) UNIQUE NOT NULL,
         password_hash VARCHAR(256),
         is_active BOOLEAN DEFAULT TRUE,
@@ -29,30 +30,18 @@ def upgrade():
         trial_started_at TIMESTAMP,
         plan_type VARCHAR(20) DEFAULT 'Free' NOT NULL,
         subscription_start TIMESTAMP,
-        subscription_status VARCHAR(20) DEFAULT 'inactive' NOT NULL
+        subscription_status VARCHAR(20) DEFAULT 'inactive' NOT NULL,
+        reset_code VARCHAR(6),
+        reset_code_expires TIMESTAMP
     );
     
-    -- Copiar datos existentes si la tabla users existe
-    INSERT INTO users_new (
-        id, username, email, password_hash, is_active, 
-        created_at, nevin_access, trial_ends_at, trial_started_at,
-        plan_type, subscription_start, subscription_status
-    )
-    SELECT 
-        id, username, email, password_hash, is_active,
-        created_at, nevin_access, trial_ends_at, trial_started_at,
-        plan_type, subscription_start, subscription_status
-    FROM users
-    ON CONFLICT DO NOTHING;
-    
-    -- Eliminar tabla antigua y renombrar la nueva
-    DROP TABLE IF EXISTS users CASCADE;
-    ALTER TABLE users_new RENAME TO users;
-    
     -- Recrear índices
-    CREATE INDEX IF NOT EXISTS ix_users_email ON users(email);
-    CREATE INDEX IF NOT EXISTS ix_users_username ON users(username);
+    CREATE INDEX ix_users_email ON users(email);
+    CREATE INDEX ix_users_username ON users(username);
+    
+    -- Reiniciar la secuencia
+    SELECT setval('users_id_seq', COALESCE((SELECT MAX(id) FROM users), 0) + 1, false);
     """)
 
 def downgrade():
-    pass
+    op.drop_table('users')
