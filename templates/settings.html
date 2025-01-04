@@ -186,6 +186,46 @@
             </div>
         </div>
 
+        <!-- Subscription Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-star me-2 settings-icon"></i>
+                    <h5 class="mb-0">Suscripción</h5>
+                </div>
+                <div class="card-body">
+                    {% if current_user.is_in_trial() %}
+                        <div class="alert alert-info">
+                            <h6>Período de Prueba Activo</h6>
+                            <p>Te quedan {{ (current_user.trial_ends_at - current_user.trial_started_at).days }} días de prueba</p>
+                        </div>
+                    {% elif current_user.is_premium() %}
+                        <div class="alert alert-success">
+                            <h6>Plan Premium Activo</h6>
+                            <p>¡Gracias por ser usuario premium!</p>
+                        </div>
+                    {% else %}
+                        <h6>Plan Free</h6>
+                    {% endif %}
+
+                    {% if not current_user.is_premium() %}
+                        <div class="premium-benefits mt-3">
+                            <h6>Beneficios Premium:</h6>
+                            <ul class="list-unstyled">
+                                <li><i class="bi bi-check-circle text-success"></i> Acceso ilimitado a Nevin AI</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Soporte prioritario</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Contenido exclusivo</li>
+                                <li><i class="bi bi-check-circle text-success"></i> Sin publicidad</li>
+                            </ul>
+                            <a href="{{ url_for('routes.subscription_portal') }}" class="btn btn-primary w-100 mt-3">
+                                Actualizar a Premium
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
         <!-- Support Section -->
         <div class="col-12 col-md-6">
             <div class="card settings-card">
