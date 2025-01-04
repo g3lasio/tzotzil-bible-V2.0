@@ -5,11 +5,17 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 import logging
 from flask import g
-from sqlalchemy import text
+from sqlalchemy import text, Column, DateTime
 from extensions import db
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Assumed User model -  needs to be adapted to your actual model
+class User(db.Model):
+    id = Column(db.Integer, primary_key=True)
+    # ... other columns ...
+    registered_at = Column(DateTime, default=datetime.utcnow)
 
 class DatabaseManager:
     def __init__(self):
