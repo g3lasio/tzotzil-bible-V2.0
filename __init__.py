@@ -24,6 +24,15 @@ def create_app():
     try:
         # Configuración básica
         app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-key-nevin')
+        
+        @app.before_request
+        def require_auth():
+            public_endpoints = ['auth.login', 'auth.register', 'auth.forgot_password', 'static']
+            if request.endpoint and not any(endpoint in request.endpoint for endpoint in public_endpoints):
+                if 'nevin' not in request.endpoint:
+                    token = get_token_from_request()
+                    if not token:
+                        return redirect(url_for('auth.login'))
         app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {

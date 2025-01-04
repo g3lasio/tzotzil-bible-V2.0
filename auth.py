@@ -71,11 +71,14 @@ def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
+        if request.endpoint and 'nevin' in request.endpoint:
+            return f(*args, **kwargs)
+            
         token = get_token_from_request()
-
         if not token:
-            flash('Por favor inicia sesión para acceder a esta función', 'warning')
-            return redirect(url_for('auth.login'))
+            if request.endpoint != 'auth.login' and request.endpoint != 'auth.register':
+                flash('Por favor inicia sesión para acceder', 'warning')
+                return redirect(url_for('auth.login'))
 
         payload = validate_token(token)
         if not payload:
@@ -130,7 +133,7 @@ def login():
             )
 
             flash('Inicio de sesión exitoso', 'success')
-            return response
+            return redirect(url_for('routes.index'))
 
         flash('Credenciales inválidas', 'error')
         return redirect(url_for('auth.login'))
