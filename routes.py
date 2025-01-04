@@ -729,3 +729,25 @@ def download_seminar(filename):
             'success': False,
             'error': 'Error generando enlace de descarga'
         }), 500
+@routes.route('/subscription')
+@token_required
+def subscription_portal(current_user):
+    return render_template('subscription.html', user=current_user)
+
+@routes.route('/check_subscription')
+@token_required
+def check_subscription(current_user):
+    """Verifica y actualiza el estado de la suscripción"""
+    try:
+        if current_user.subscription_status == 'active':
+            # Verificar pagos aquí
+            if payment_overdue:  # Implementar lógica de verificación
+                current_user.plan_type = 'Free'
+                current_user.subscription_status = 'inactive'
+                current_user.nevin_access = False
+                db.session.commit()
+                
+        return jsonify(current_user.to_dict())
+    except Exception as e:
+        logger.error(f"Error checking subscription: {str(e)}")
+        return jsonify({'error': 'Error checking subscription'}), 500
