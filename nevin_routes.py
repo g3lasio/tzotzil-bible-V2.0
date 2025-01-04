@@ -35,18 +35,22 @@ def nevin_query():
     try:
         data = request.get_json()
         if not data:
+            logger.error("No se recibieron datos en la consulta")
             return jsonify({
                 'response': "No se recibieron datos en la consulta.",
-                'success': False
+                'success': False,
+                'error': 'missing_data'
             }), 400
 
         question = data.get('question', '').strip()
         user_id = session.get('user_id')
         
         if not question:
+            logger.warning("Se recibió una pregunta vacía")
             return jsonify({
                 'response': "Por favor, escribe tu pregunta.",
-                'success': False
+                'success': False,
+                'error': 'empty_question'
             }), 400
 
         context = data.get('context', '')

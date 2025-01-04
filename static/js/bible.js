@@ -1,17 +1,37 @@
 document.addEventListener("DOMContentLoaded", function () {
     try {
         console.log("Starting initialization...");
-        initializeVerseActions();
-        initializeChapterNavigation();
-        setupVerseHighlighting();
-        setupErrorHandling();
-        setupClickOutsideHandler();
-        initializeLanguageToggle(); // Inicializar el botón de cambio de idioma
+        
+        // Inicializar componentes principales
+        const components = [
+            { name: 'Verse Actions', fn: initializeVerseActions },
+            { name: 'Chapter Navigation', fn: initializeChapterNavigation },
+            { name: 'Verse Highlighting', fn: setupVerseHighlighting },
+            { name: 'Error Handling', fn: setupErrorHandling },
+            { name: 'Click Outside Handler', fn: setupClickOutsideHandler },
+            { name: 'Language Toggle', fn: initializeLanguageToggle }
+        ];
+
+        components.forEach(component => {
+            try {
+                component.fn();
+                console.log(`${component.name} initialized successfully`);
+            } catch (err) {
+                console.error(`Error initializing ${component.name}:`, err);
+            }
+        });
+
         console.log("All initializers have been called successfully");
     } catch (error) {
-        console.error("Error during initialization:", error);
+        console.error("Critical error during initialization:", error);
+        // Mostrar mensaje de error al usuario
+        const errorDiv = document.getElementById('error-message') || document.createElement('div');
+        errorDiv.id = 'error-message';
+        errorDiv.className = 'alert alert-danger';
+        errorDiv.textContent = 'Error al cargar la página. Por favor, recarga la página.';
+        document.body.insertBefore(errorDiv, document.body.firstChild);
     }
-});
+});;
 
 function initializeLanguageToggle() {
     const toggle = document.getElementById('languageToggle');

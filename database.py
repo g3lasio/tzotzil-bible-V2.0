@@ -28,18 +28,34 @@ class DatabaseManager:
         return g.db_session
 
     def get_books(self):
-        """Obtener lista de libros ordenada."""
+        """Obtener lista de libros ordenada con caché."""
+        cache_key = 'bible_books_list'
         try:
+            # Intentar obtener de la caché primero
+            if hasattr(g, cache_key):
+                return {
+                    'success': True,
+                    'data': getattr(g, cache_key),
+                    'error': None,
+                    'cached': True
+                }
+
             session = self.get_session()
             result = session.execute(text("""
                 SELECT DISTINCT book 
                 FROM bibleverse 
                 ORDER BY book ASC
             """)).fetchall()
+            
+            books = [book[0] for book in result]
+            # Guardar en caché
+            setattr(g, cache_key, books)
+            
             return {
                 'success': True,
-                'data': [book[0] for book in result],
-                'error': None
+                'data': books,
+                'error': None,
+                'cached': False
             }
         except Exception as e:
             logger.error(f"Error obteniendo libros: {str(e)}")
