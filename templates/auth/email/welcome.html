@@ -1,10 +1,74 @@
 
 <!DOCTYPE html>
 <html>
+<head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e9f2 100%);
+        }
+        .welcome-container {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 120px;
+            margin-bottom: 20px;
+        }
+        h2 {
+            color: #00a8cc;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .features {
+            margin: 20px 0;
+        }
+        .feature-item {
+            margin: 10px 0;
+            padding-left: 20px;
+            border-left: 3px solid #00a8cc;
+        }
+    </style>
+</head>
 <body>
-    <h2>¡Bienvenido a la Biblia Tzotzil!</h2>
-    <p>Hola {{username}},</p>
-    <p>Gracias por registrarte. Tu cuenta ha sido creada exitosamente.</p>
-    <p>Ya puedes acceder a todas las funcionalidades de la aplicación.</p>
+    <div class="welcome-container">
+        <div class="header">
+            <img src="{{ url_for('static', filename='images/Designer.png', _external=True) }}" alt="Tzotzil Bible Logo">
+            <h2>¡Bienvenido a la Biblia Tzotzil, {{username}}!</h2>
+        </div>
+        
+        <div class="message">
+            <p>Nos alegra mucho que te hayas unido a nuestra comunidad. Has dado un paso importante en tu jornada espiritual.</p>
+        </div>
+
+        <div class="features">
+            <p>Como miembro, ahora tienes acceso a:</p>
+            <div class="feature-item">Textos bíblicos en español y tzotzil</div>
+            <div class="feature-item">Nevin, tu asistente personal de estudio bíblico</div>
+            <div class="feature-item">21 días de acceso premium gratuito</div>
+            <div class="feature-item">Recursos exclusivos de estudio</div>
+        </div>
+
+        <p style="text-align: center; margin-top: 30px;">
+            <em>"Porque la palabra de Dios es viva y eficaz" - Hebreos 4:12</em>
+        </p>
+    </div>
 </body>
 </html>

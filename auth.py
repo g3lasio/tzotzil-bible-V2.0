@@ -208,8 +208,8 @@ def register():
             max_age=86400 * JWT_EXPIRATION_DAYS
         )
 
-        flash('Cuenta creada exitosamente. ¡Bienvenido a tu período de prueba!', 'success')
-        return response
+        flash('¡Bienvenido! Tu cuenta ha sido creada exitosamente. Disfruta de tu período de prueba de 21 días con acceso completo a todas las funcionalidades.', 'success')
+        return render_template('auth/email/welcome.html', username=username)
 
     except Exception as e:
         logger.error(f"Error en registro: {str(e)}")
