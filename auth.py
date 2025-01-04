@@ -119,7 +119,7 @@ def login():
                 flash('Error generando token de sesión', 'error')
                 return redirect(url_for('auth.login'))
 
-            response = redirect(url_for('index'))
+            response = redirect(url_for('routes.index'))
             response.set_cookie(
                 'token',
                 token,
@@ -198,7 +198,7 @@ def register():
             flash('Error generando token de sesión', 'error')
             return redirect(url_for('auth.login'))
 
-        response = redirect(url_for('index'))
+        response = redirect(url_for('routes.index'))
         response.set_cookie(
             'token',
             token,
@@ -280,3 +280,5 @@ def init_login_manager(app):
     except Exception as e:
         logger.error(f"Error inicializando login manager: {str(e)}")
         raise
+
+import random
