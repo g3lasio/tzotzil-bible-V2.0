@@ -74,7 +74,8 @@ def token_required(f):
         token = get_token_from_request()
 
         if not token:
-            return jsonify({'message': 'Token no proporcionado'}), 401
+            flash('Por favor inicia sesión para acceder a esta función', 'warning')
+            return redirect(url_for('auth.login'))
 
         payload = validate_token(token)
         if not payload:
