@@ -12,7 +12,6 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
     registered_at = db.Column(db.DateTime, default=db.func.now())
-    registered_at = db.Column(db.DateTime, default=db.func.now())
     nevin_access = db.Column(db.Boolean, default=True)
     
     def has_nevin_access(self):
