@@ -67,6 +67,15 @@ class User(UserMixin, db.Model):
         """Obtiene el ID del usuario"""
         return str(self.id)
 
+    def upgrade_to_premium(self):
+        """Actualiza el usuario a plan premium"""
+        self.plan_type = 'Premium'
+        self.subscription_status = 'active'
+        self.subscription_start = datetime.utcnow()
+        self.nevin_access = True
+        db.session.commit()
+        return True
+
     def to_dict(self):
         """Convierte el usuario a un diccionario"""
         return {
