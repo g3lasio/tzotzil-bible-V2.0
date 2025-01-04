@@ -27,12 +27,27 @@ def create_app():
         
         @app.before_request
         def require_auth():
+            from flask import request, redirect, url_for, flash
+            from auth import get_token_from_request, validate_token
+            from models import User
+
             public_endpoints = ['auth.login', 'auth.register', 'auth.forgot_password', 'static']
-            if request.endpoint and not any(endpoint in request.endpoint for endpoint in public_endpoints):
-                if 'nevin' not in request.endpoint:
-                    token = get_token_from_request()
-                    if not token:
-                        return redirect(url_for('auth.login'))
+            if request.endpoint and request.endpoint not in public_endpoints:
+                token = get_token_from_request()
+                if not token:
+                    return redirect(url_for('auth.login'))
+
+                payload = validate_token(token)
+                if not payload:
+                    return redirect(url_for('auth.login'))
+
+                current_user = User.query.get(payload['sub'])
+                if not current_user or not current_user.is_active:
+                    return redirect(url_for('auth.login'))
+
+                if 'nevin' in request.endpoint and not current_user.has_nevin_access():
+                    flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
+                    return redirect(url_for('routes.index'))
         app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
         app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
         app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {

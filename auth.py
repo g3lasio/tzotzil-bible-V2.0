@@ -71,14 +71,26 @@ def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        if request.endpoint and 'nevin' in request.endpoint:
-            return f(*args, **kwargs)
-            
         token = get_token_from_request()
         if not token:
-            if request.endpoint != 'auth.login' and request.endpoint != 'auth.register':
+            if request.endpoint not in ['auth.login', 'auth.register', 'auth.forgot_password', 'static']:
                 flash('Por favor inicia sesión para acceder', 'warning')
                 return redirect(url_for('auth.login'))
+
+        payload = validate_token(token)
+        if not payload:
+            return redirect(url_for('auth.login'))
+
+        try:
+            current_user = User.query.get(payload['sub'])
+            if not current_user or not current_user.is_active:
+                return redirect(url_for('auth.login'))
+
+            # Verificar acceso a Nevin
+            if request.endpoint and 'nevin' in request.endpoint:
+                if not current_user.has_nevin_access():
+                    flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
+                    return redirect(url_for('routes.index'))
 
         payload = validate_token(token)
         if not payload:
