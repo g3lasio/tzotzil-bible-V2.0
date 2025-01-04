@@ -114,3 +114,9 @@ flask-login
 flask-wtf
 flask-login
 oauthlib
+flask-migrate
+flask-sqlalchemy
+flask-migrate
+flask-sqlalchemy
+flask-migrate
+flask-sqlalchemy
