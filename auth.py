@@ -42,7 +42,8 @@ def validate_token(token):
         payload = jwt.decode(
             token,
             current_app.config.get('SECRET_KEY'),
-            algorithms=[JWT_ALGORITHM]
+            algorithms=[JWT_ALGORITHM],
+            options={"verify_exp": True}
         )
         return payload
     except jwt.ExpiredSignatureError:
@@ -137,10 +138,15 @@ def login():
                 'token',
                 token,
                 httponly=True,
-                secure=True,
+                secure=False,  # Cambiado para desarrollo
                 samesite='Lax',
                 max_age=86400 * JWT_EXPIRATION_DAYS
             )
+            
+            # Actualizar última conexión
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+            
             flash('Inicio de sesión exitoso', 'success')
             return response
 
