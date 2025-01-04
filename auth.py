@@ -24,7 +24,7 @@ def generate_token(user_id):
         payload = {
             'exp': datetime.utcnow() + timedelta(days=JWT_EXPIRATION_DAYS),
             'iat': datetime.utcnow(),
-            'sub': user_id
+            'sub': str(user_id)
         }
         logger.debug(f"Generando token con payload: {payload}")
         secret_key = current_app.config.get('SECRET_KEY')
