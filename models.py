@@ -1,4 +1,3 @@
-
 from flask_login import UserMixin
 from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,15 +11,14 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=db.func.now())
-    registered_at = db.Column(db.DateTime, default=db.func.now())
     nevin_access = db.Column(db.Boolean, default=True)
     trial_ends_at = db.Column(db.DateTime)
     
     def has_nevin_access(self):
-        if not self.registered_at:
+        if not self.created_at:
             return False
         trial_period = timedelta(days=30)
-        return (datetime.utcnow() - self.registered_at) <= trial_period or self.nevin_access
+        return (datetime.utcnow() - self.created_at) <= trial_period or self.nevin_access
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
