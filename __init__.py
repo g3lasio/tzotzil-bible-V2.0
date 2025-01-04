@@ -39,7 +39,8 @@ def create_app():
         # Inicializar CORS
         CORS(app)
 
-        # Inicializar extensiones
+        # Inicializar la base de datos y las extensiones
+        db.init_app(app)
         if not init_extensions(app):
             logger.error("Error inicializando extensiones")
             return None
@@ -49,9 +50,9 @@ def create_app():
         migrate = Migrate(app, db)
 
         # Registrar blueprints
-        app.register_blueprint(auth, url_prefix='/api')
+        app.register_blueprint(auth, url_prefix='/api/auth')
         init_routes(app)
-        init_nevin_routes(app)  # Inicializar rutas de Nevin
+        init_nevin_routes(app)
         logger.info("Blueprints registrados correctamente")
 
         # Inicializar login manager
@@ -72,7 +73,7 @@ def create_app():
 def main():
     app = create_app()
     if app:
-        port = int(os.environ.get('PORT', 8080)) # Changed default port to 8080
+        port = int(os.environ.get('PORT', 5000))
         app.run(host='0.0.0.0', port=port, debug=True)
     else:
         logger.error("No se pudo iniciar la aplicación")

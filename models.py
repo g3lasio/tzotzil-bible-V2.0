@@ -1,8 +1,10 @@
+from datetime import datetime, timedelta
 from flask_login import UserMixin
-from extensions import db
 from werkzeug.security import generate_password_hash, check_password_hash
+from extensions import db
 
 class User(UserMixin, db.Model):
+    """Modelo de usuario mejorado"""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -14,31 +16,41 @@ class User(UserMixin, db.Model):
     nevin_access = db.Column(db.Boolean, default=True)
     trial_ends_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=30))
     trial_started_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
+
     def has_nevin_access(self):
+        """Verifica si el usuario tiene acceso a Nevin"""
         if not self.trial_ends_at or not self.trial_started_at:
             return False
         if self.nevin_access:
             return True
-        return datetime.utcnow() <= self.trial_ends_at or self.nevin_access
+        return datetime.utcnow() <= self.trial_ends_at
 
     def set_password(self, password):
+        """Establece la contraseña del usuario"""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Verifica la contraseña del usuario"""
+        if not self.password_hash:
+            return False
         return check_password_hash(self.password_hash, password)
 
     def get_id(self):
+        """Obtiene el ID del usuario"""
         return str(self.id)
 
     def to_dict(self):
+        """Convierte el usuario a un diccionario"""
         return {
             'id': self.id,
             'username': self.username,
             'email': self.email,
-            'is_active': self.is_active
+            'is_active': self.is_active,
+            'created_at': self.created_at.isoformat() if self.created_at else None,
+            'nevin_access': self.has_nevin_access()
         }
 
+# Mantener las otras clases sin cambios
 class BibleVerse(db.Model):
     __tablename__ = 'bibleverse'
     id = db.Column(db.Integer, primary_key=True)

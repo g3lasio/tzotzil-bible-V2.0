@@ -3,7 +3,7 @@ Sistema de autenticación simplificado usando JWT
 """
 from datetime import datetime, timedelta
 import jwt
-from flask import Blueprint, request, jsonify, current_app, render_template
+from flask import Blueprint, request, jsonify, current_app, render_template, redirect, url_for
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
 import logging
@@ -34,6 +34,9 @@ def generate_token(user_id):
 
 def validate_token(token):
     """Valida y decodifica un token JWT"""
+    if not token:
+        return None
+
     try:
         payload = jwt.decode(
             token,
@@ -42,9 +45,24 @@ def validate_token(token):
         )
         return payload
     except jwt.ExpiredSignatureError:
+        logger.warning("Token expirado")
         return None
     except jwt.InvalidTokenError:
+        logger.warning("Token inválido")
         return None
+    except Exception as e:
+        logger.error(f"Error validando token: {str(e)}")
+        return None
+
+def get_token_from_request():
+    """Extrae el token JWT de la solicitud"""
+    auth_header = request.headers.get('Authorization')
+    if auth_header:
+        try:
+            return auth_header.split(" ")[1]
+        except IndexError:
+            return None
+    return request.cookies.get('token')
 
 def token_required(f):
     """Decorador para proteger rutas"""
@@ -52,16 +70,10 @@ def token_required(f):
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = None
-        auth_header = request.headers.get('Authorization')
+        token = get_token_from_request()
 
-        if not auth_header:
-            return jsonify({'message': 'No se proporcionó token de autorización'}), 401
-
-        try:
-            token = auth_header.split(" ")[1]
-        except IndexError:
-            return jsonify({'message': 'Token mal formado'}), 401
+        if not token:
+            return jsonify({'message': 'Token no proporcionado'}), 401
 
         payload = validate_token(token)
         if not payload:
@@ -91,58 +103,62 @@ def validate_credentials(data):
         errors.append('El email es requerido')
     if not password:
         errors.append('La contraseña es requerida')
+    if len(password) < 6:
+        errors.append('La contraseña debe tener al menos 6 caracteres')
 
     return errors, email, password
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """Maneja el login de usuarios"""
     if request.method == 'GET':
-        next_page = request.args.get('next')
-        return render_template('auth/login.html', next=next_page)
-    
-    try:
-        from flask_login import login_user
-        data = request.get_json() if request.is_json else request.form
-        email = data.get('email', '').strip()
-        password = data.get('password', '').strip()
+        return render_template('auth/login.html')
 
-        if not email or not password:
-            return jsonify({'message': 'Email y contraseña son requeridos'}), 400
+    try:
+        data = request.get_json() if request.is_json else request.form
+        errors, email, password = validate_credentials(data)
+
+        if errors:
+            return jsonify({'message': 'Error de validación', 'errors': errors}), 400
 
         user = User.query.filter(User.email == email).first()
-        
+
         if user and user.check_password(password):
-            login_user(user, remember=True)
-            next_page = request.args.get('next')
-            return jsonify({
+            token = generate_token(user.id)
+            if not token:
+                return jsonify({'message': 'Error generando token'}), 500
+
+            response = jsonify({
                 'message': 'Login exitoso',
-                'redirect': next_page if next_page else '/'
-            }), 200
-        
+                'token': token,
+                'user': user.to_dict()
+            })
+
+            # Establecer cookie segura con el token
+            response.set_cookie(
+                'token',
+                token,
+                httponly=True,
+                secure=True,
+                samesite='Lax',
+                max_age=86400 * JWT_EXPIRATION_DAYS
+            )
+
+            return response
+
         return jsonify({'message': 'Credenciales inválidas'}), 401
 
     except Exception as e:
         logger.error(f"Error en login: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
-    except Exception as e:
-        logger.error(f"Error en login: {str(e)}")
-        db.session.rollback()
-        return jsonify({'message': 'Error en el servidor'}), 500
-
-    except Exception as e:
-        logger.error(f"Error en login: {str(e)}")
-        return jsonify({'message': 'Error en el servidor'}), 500
-
-@auth.route('/auth/register', methods=['POST'])
+@auth.route('/register', methods=['POST'])
 def register():
     """Registro de nuevo usuario"""
     try:
-        data = request.get_json()
-        if not data:
-            return jsonify({'message': 'No se proporcionaron datos'}), 400
-
+        data = request.get_json() if request.is_json else request.form
         errors, email, password = validate_credentials(data)
+
         if errors:
             return jsonify({'message': 'Error de validación', 'errors': errors}), 400
 
@@ -157,9 +173,9 @@ def register():
         user = User(
             username=username,
             email=email,
-            password_hash=generate_password_hash(password),
             is_active=True
         )
+        user.set_password(password)
 
         db.session.add(user)
         db.session.commit()
@@ -168,56 +184,58 @@ def register():
         if not token:
             return jsonify({'message': 'Error generando token'}), 500
 
-        return jsonify({
+        response = jsonify({
             'message': 'Usuario registrado exitosamente',
             'token': token,
-            'user': {
-                'id': user.id,
-                'email': user.email,
-                'username': user.username
-            }
-        }), 201
+            'user': user.to_dict()
+        })
+
+        # Establecer cookie segura con el token
+        response.set_cookie(
+            'token',
+            token,
+            httponly=True,
+            secure=True,
+            samesite='Lax',
+            max_age=86400 * JWT_EXPIRATION_DAYS
+        )
+
+        return response
 
     except Exception as e:
         logger.error(f"Error en registro: {str(e)}")
         db.session.rollback()
         return jsonify({'message': 'Error en el servidor'}), 500
 
-@auth.route('/auth/me', methods=['GET'])
+@auth.route('/me')
 @token_required
 def get_user(current_user):
     """Obtiene información del usuario actual"""
     try:
-        return jsonify({
-            'id': current_user.id,
-            'email': current_user.email,
-            'username': current_user.username
-        }), 200
+        return jsonify(current_user.to_dict()), 200
     except Exception as e:
         logger.error(f"Error obteniendo usuario: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
-@auth.route('/auth/logout', methods=['POST'])
+@auth.route('/logout', methods=['POST'])
 @token_required
 def logout(current_user):
     """Cierra la sesión del usuario actual"""
     try:
-        # Aquí podríamos implementar una lista negra de tokens si fuera necesario
-        return jsonify({
-            'message': 'Sesión cerrada exitosamente'
-        }), 200
+        response = jsonify({'message': 'Sesión cerrada exitosamente'})
+        response.delete_cookie('token')
+        return response, 200
     except Exception as e:
         logger.error(f"Error en logout: {str(e)}")
         return jsonify({'message': 'Error al cerrar sesión'}), 500
 
 def init_login_manager(app):
-    """Initialize the login manager"""
+    """Initialize the login manager for backward compatibility"""
     from flask_login import LoginManager
     try:
         login_manager = LoginManager()
         login_manager.init_app(app)
         login_manager.login_view = 'auth.login'
-        login_manager.login_message = 'Por favor inicie sesión para acceder a esta página'
 
         @login_manager.user_loader
         def load_user(user_id):
