@@ -110,3 +110,5 @@ python-dotenv
 werkzeug
 pyjwt
 python-jose
+flask-login
+flask-wtf
