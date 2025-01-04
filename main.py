@@ -160,6 +160,9 @@ if __name__ == "__main__":
         if not app:
             raise Exception("No se pudo crear la aplicación Flask")
         
+        port = int(os.environ.get('PORT', 5000))
+        app.run(host='0.0.0.0', port=port, debug=False)
+        
         services_ok, service_msg = verify_critical_services(app)
         if not services_ok:
             raise Exception(f"Error en servicios críticos: {service_msg}")
