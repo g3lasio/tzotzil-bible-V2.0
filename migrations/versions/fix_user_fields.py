@@ -15,23 +15,20 @@ branch_labels = None
 depends_on = None
 
 def upgrade():
-    # Agregar nuevas columnas de manera segura
+    # Eliminar las columnas si existen para evitar conflictos
     op.execute("""
     DO $$ 
-    BEGIN 
-        BEGIN
-            ALTER TABLE users ADD COLUMN lastname VARCHAR(50) NOT NULL DEFAULT '';
-        EXCEPTION 
-            WHEN duplicate_column THEN NULL;
-        END;
-        
-        BEGIN
-            ALTER TABLE users ADD COLUMN phone VARCHAR(15) NOT NULL DEFAULT '';
-        EXCEPTION 
-            WHEN duplicate_column THEN NULL;
-        END;
+    BEGIN
+        ALTER TABLE users DROP COLUMN IF EXISTS lastname;
+        ALTER TABLE users DROP COLUMN IF EXISTS phone;
+    EXCEPTION WHEN undefined_column THEN
+        NULL;
     END $$;
     """)
+    
+    # Agregar las columnas nuevamente
+    op.add_column('users', sa.Column('lastname', sa.String(50), nullable=False, server_default=''))
+    op.add_column('users', sa.Column('phone', sa.String(15), nullable=False, server_default=''))
 
 def downgrade():
     op.drop_column('users', 'lastname')
