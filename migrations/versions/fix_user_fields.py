@@ -1,33 +1,37 @@
 
-"""fix user fields
+"""Add missing user fields
 
-Revision ID: fix_user_fields
-Revises: add_subscription_fields
-Create Date: 2024-01-04 12:00:00.000000
+Revision ID: fix_user_fields_v5
+Revises: fix_users_table_v4
+Create Date: 2024-01-04 08:10:00.000000
+
 """
 from alembic import op
 import sqlalchemy as sa
 
-revision = 'fix_user_fields'
-down_revision = 'add_subscription_fields'
+revision = 'fix_user_fields_v5'
+down_revision = 'fix_users_table_v4'
 branch_labels = None
 depends_on = None
 
 def upgrade():
-    # Agregar campos faltantes para el signup
-    op.add_column('users', sa.Column('lastname', sa.String(50), nullable=True))
-    op.add_column('users', sa.Column('phone', sa.String(15), nullable=True))
-    
-    # Actualizar columnas a not nullable después de migrar datos existentes
-    op.execute("UPDATE users SET lastname = '' WHERE lastname IS NULL")
-    op.execute("UPDATE users SET phone = '' WHERE phone IS NULL")
-    
-    op.alter_column('users', 'lastname',
-                    existing_type=sa.String(50),
-                    nullable=False)
-    op.alter_column('users', 'phone',
-                    existing_type=sa.String(15),
-                    nullable=False)
+    # Agregar nuevas columnas de manera segura
+    op.execute("""
+    DO $$ 
+    BEGIN 
+        BEGIN
+            ALTER TABLE users ADD COLUMN lastname VARCHAR(50) NOT NULL DEFAULT '';
+        EXCEPTION 
+            WHEN duplicate_column THEN NULL;
+        END;
+        
+        BEGIN
+            ALTER TABLE users ADD COLUMN phone VARCHAR(15) NOT NULL DEFAULT '';
+        EXCEPTION 
+            WHEN duplicate_column THEN NULL;
+        END;
+    END $$;
+    """)
 
 def downgrade():
     op.drop_column('users', 'lastname')
