@@ -91,9 +91,11 @@ def token_required(f):
                 if not current_user.has_nevin_access():
                     flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
                     return redirect(url_for('routes.index'))
-
-        try:
-            current_user = User.query.get(payload['sub'])
+                    
+            return f(current_user, *args, **kwargs)
+        except Exception as e:
+            logger.error(f"Error en autenticación: {str(e)}")
+            return redirect(url_for('auth.login'))
             if not current_user:
                 return jsonify({'message': 'Usuario no encontrado'}), 401
             if not current_user.is_active:
