@@ -73,7 +73,7 @@
     </head>
     <body class="{% block body_class %}{% endblock %}">
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark {% if request.endpoint in ['auth.login', 'auth.register'] %}d-none{% endif %}">
             <div class="container">
                 <a class="navbar-brand" href="{{ url_for('routes.index') }}">
                     <img
@@ -154,7 +154,7 @@
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav">
+        <nav class="bottom-nav {% if request.endpoint in ['auth.login', 'auth.register'] %}d-none{% endif %}">
             <div class="nav-grid">
                 <a
                     href="{{ url_for('routes.search') }}"
