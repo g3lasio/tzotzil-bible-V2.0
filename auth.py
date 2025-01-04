@@ -1,3 +1,4 @@
+
 """
 Sistema de autenticación simplificado usando JWT
 """
@@ -8,6 +9,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
 import logging
 from validation import DataValidator
+import random
 
 logger = logging.getLogger(__name__)
 auth = Blueprint('auth', __name__)
@@ -38,8 +40,7 @@ def validate_token(token):
     if not token:
         logger.warning("Intento de validación con token vacío")
         return None
-    logger.info("Iniciando validación de token")
-
+    
     try:
         payload = jwt.decode(
             token,
@@ -75,6 +76,7 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = get_token_from_request()
+        
         if not token:
             if request.endpoint not in ['auth.login', 'auth.register', 'auth.forgot_password', 'static']:
                 flash('Por favor inicia sesión para acceder', 'warning')
@@ -87,27 +89,19 @@ def token_required(f):
         try:
             current_user = User.query.get(payload['sub'])
             if not current_user or not current_user.is_active:
+                flash('Usuario inactivo o no encontrado', 'error')
                 return redirect(url_for('auth.login'))
 
-            # Verificar acceso a Nevin
             if request.endpoint and 'nevin' in request.endpoint:
                 if not current_user.has_nevin_access():
                     flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
                     return redirect(url_for('routes.index'))
-                    
-            return f(current_user, *args, **kwargs)
-        except Exception as e:
-            logger.error(f"Error en autenticación: {str(e)}")
-            return redirect(url_for('auth.login'))
-            if not current_user:
-                return jsonify({'message': 'Usuario no encontrado'}), 401
-            if not current_user.is_active:
-                return jsonify({'message': 'Usuario inactivo'}), 401
 
             return f(current_user, *args, **kwargs)
         except Exception as e:
             logger.error(f"Error en autenticación: {str(e)}")
-            return jsonify({'message': 'Error de autenticación'}), 500
+            flash('Error de autenticación', 'error')
+            return redirect(url_for('auth.login'))
 
     return decorated
 
@@ -123,10 +117,11 @@ def login():
         data = request.form
         email = data.get('email', '').strip()
         password = data.get('password', '').strip()
+        remember_me = data.get('remember_me', False)
+        
         logger.info(f"Intento de login para usuario: {email}")
-        logger.info(f"Remember me activado: {data.get('remember_me', False)}")
+        logger.info(f"Remember me activado: {remember_me}")
 
-        # Validar campos
         if not email or not password:
             flash('Todos los campos son requeridos', 'error')
             return redirect(url_for('auth.login'))
@@ -140,9 +135,7 @@ def login():
                 logger.error("Fallo en generación de token")
                 flash('Error generando token de sesión', 'error')
                 return redirect(url_for('auth.login'))
-            logger.info("Token generado exitosamente")
 
-            # Actualizar última conexión antes de generar respuesta
             user.last_login = datetime.utcnow()
             db.session.commit()
 
@@ -151,16 +144,11 @@ def login():
                 'token', 
                 token,
                 httponly=True,
-                secure=False,  # Cambiar a False para desarrollo
+                secure=False,
                 samesite='Lax',
-                max_age=86400 * JWT_EXPIRATION_DAYS,
-                path='/',
-                domain=None
+                max_age=86400 * JWT_EXPIRATION_DAYS if remember_me else None,
+                path='/'
             )
-            
-            # Actualizar última conexión
-            user.last_login = datetime.utcnow()
-            db.session.commit()
             
             flash('Inicio de sesión exitoso', 'success')
             return response
@@ -186,7 +174,6 @@ def register():
         password = data.get('password', '').strip()
         confirm_password = data.get('confirm_password', '').strip()
 
-        # Validar datos del usuario
         validator = DataValidator()
         errors = validator.validate_user_data(email=email, username=username, password=password)
 
@@ -209,7 +196,6 @@ def register():
             flash('El nombre de usuario ya está registrado', 'error')
             return redirect(url_for('auth.register'))
 
-        # Crear nuevo usuario con período de prueba
         user = User(
             username=username,
             lastname=data.get('lastname', ''),
@@ -236,13 +222,14 @@ def register():
             'token',
             token,
             httponly=True,
-            secure=True,
+            secure=False,
             samesite='Lax',
-            max_age=86400 * JWT_EXPIRATION_DAYS
+            max_age=86400 * JWT_EXPIRATION_DAYS,
+            path='/'
         )
 
-        flash('¡Bienvenido! Tu cuenta ha sido creada exitosamente. Disfruta de tu período de prueba de 21 días con acceso completo a todas las funcionalidades.', 'success')
-        return render_template('auth/email/welcome.html', username=username)
+        flash('¡Bienvenido! Tu cuenta ha sido creada exitosamente. Disfruta de tu período de prueba de 21 días.', 'success')
+        return response
 
     except Exception as e:
         logger.error(f"Error en registro: {str(e)}")
@@ -260,32 +247,12 @@ def get_user(current_user):
         logger.error(f"Error obteniendo usuario: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
-@auth.route('/forgot-password', methods=['GET', 'POST'])
-def forgot_password():
-    """Maneja la recuperación de contraseña"""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        user = User.query.filter_by(email=email).first()
-        
-        if user:
-            # Generar código de recuperación
-            reset_code = ''.join(random.choices('0123456789', k=6))
-            user.reset_code = reset_code
-            user.reset_code_expires = datetime.utcnow() + timedelta(hours=1)
-            db.session.commit()
-            
-            flash('Se ha enviado un código de recuperación a tu email', 'success')
-            return redirect(url_for('auth.reset_password'))
-            
-        flash('Email no encontrado', 'error')
-    return render_template('auth/forgot_password.html')
-
-@auth.route('/logout', methods=['GET', 'POST'])
+@auth.route('/logout')
 def logout():
     """Cierra la sesión del usuario actual"""
     try:
         response = redirect(url_for('auth.login'))
-        response.delete_cookie('token')
+        response.delete_cookie('token', path='/')
         flash('Sesión cerrada exitosamente', 'success')
         return response
     except Exception as e:
@@ -313,5 +280,3 @@ def init_login_manager(app):
     except Exception as e:
         logger.error(f"Error inicializando login manager: {str(e)}")
         raise
-
-import random
