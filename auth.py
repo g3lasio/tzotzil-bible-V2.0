@@ -280,3 +280,74 @@ def init_login_manager(app):
     except Exception as e:
         logger.error(f"Error inicializando login manager: {str(e)}")
         raise
+
+
+@auth.route('/forgot_password', methods=['GET', 'POST'])
+def forgot_password():
+    """Maneja el proceso de recuperación de contraseña"""
+    if request.method == 'GET':
+        return render_template('auth/forgot_password.html')
+        
+    try:
+        email = request.form.get('email')
+        if not email:
+            flash('Por favor ingresa tu correo electrónico', 'error')
+            return redirect(url_for('auth.forgot_password'))
+            
+        user = User.query.filter_by(email=email).first()
+        if not user:
+            flash('No existe una cuenta con ese correo electrónico', 'error')
+            return redirect(url_for('auth.forgot_password'))
+
+        # Generar código de recuperación
+        reset_code = ''.join(random.choices('0123456789', k=6))
+        user.reset_code = reset_code
+        user.reset_code_expires = datetime.utcnow() + timedelta(hours=1)
+        db.session.commit()
+        
+        # Aquí se enviaría el email con el código
+        flash('Se ha enviado un código de recuperación a tu correo electrónico', 'success')
+        return redirect(url_for('auth.reset_password'))
+        
+    except Exception as e:
+        logger.error(f"Error en recuperación de contraseña: {str(e)}")
+        flash('Error en el servidor', 'error')
+        return redirect(url_for('auth.forgot_password'))
+
+
+@auth.route('/reset_password', methods=['GET', 'POST'])
+def reset_password():
+    """Maneja el reseteo de contraseña con código de verificación"""
+    if request.method == 'GET':
+        return render_template('auth/reset_password.html')
+        
+    try:
+        code = request.form.get('code')
+        password = request.form.get('password')
+        confirm_password = request.form.get('confirm_password')
+        
+        if not code or not password or not confirm_password:
+            flash('Todos los campos son requeridos', 'error')
+            return redirect(url_for('auth.reset_password'))
+            
+        if password != confirm_password:
+            flash('Las contraseñas no coinciden', 'error')
+            return redirect(url_for('auth.reset_password'))
+            
+        user = User.query.filter_by(reset_code=code).first()
+        if not user or not user.reset_code_expires or user.reset_code_expires < datetime.utcnow():
+            flash('Código inválido o expirado', 'error')
+            return redirect(url_for('auth.reset_password'))
+            
+        user.set_password(password)
+        user.reset_code = None
+        user.reset_code_expires = None
+        db.session.commit()
+        
+        flash('Tu contraseña ha sido actualizada exitosamente', 'success')
+        return redirect(url_for('auth.login'))
+        
+    except Exception as e:
+        logger.error(f"Error en reseteo de contraseña: {str(e)}")
+        flash('Error en el servidor', 'error')
+        return redirect(url_for('auth.reset_password'))
