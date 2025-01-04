@@ -24,7 +24,7 @@ def generate_token(user_id):
         payload = {
             'exp': datetime.utcnow() + timedelta(days=JWT_EXPIRATION_DAYS),
             'iat': datetime.utcnow(),
-            'sub': str(user_id)
+            'sub': str(user_id) if isinstance(user_id, uuid.UUID) else user_id
         }
         logger.debug(f"Generando token con payload: {payload}")
         secret_key = current_app.config.get('SECRET_KEY')
@@ -99,10 +99,14 @@ def token_required(f):
 
         try:
             try:
-                current_user = User.query.filter_by(id=str(payload['sub'])).first()
+                user_id = uuid.UUID(payload['sub'])
+                current_user = User.query.filter_by(id=user_id).first()
                 if not current_user or not current_user.is_active:
                     flash('Usuario inactivo o no encontrado', 'error')
                     return redirect(url_for('auth.login'))
+            except (ValueError, AttributeError) as e:
+                logger.error(f"Error con UUID: {str(e)}")
+                return redirect(url_for('auth.login'))
             except Exception as e:
                 logger.error(f"Error cargando usuario: {str(e)}")
                 return redirect(url_for('auth.login'))
