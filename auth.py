@@ -225,6 +225,26 @@ def get_user(current_user):
         logger.error(f"Error obteniendo usuario: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
+@auth.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    """Maneja la recuperación de contraseña"""
+    if request.method == 'POST':
+        email = request.form.get('email')
+        user = User.query.filter_by(email=email).first()
+        
+        if user:
+            # Generar código de recuperación
+            reset_code = ''.join(random.choices('0123456789', k=6))
+            user.reset_code = reset_code
+            user.reset_code_expires = datetime.utcnow() + timedelta(hours=1)
+            db.session.commit()
+            
+            flash('Se ha enviado un código de recuperación a tu email', 'success')
+            return redirect(url_for('auth.reset_password'))
+            
+        flash('Email no encontrado', 'error')
+    return render_template('auth/forgot_password.html')
+
 @auth.route('/logout', methods=['GET', 'POST'])
 def logout():
     """Cierra la sesión del usuario actual"""
