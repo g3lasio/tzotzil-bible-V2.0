@@ -12,26 +12,6 @@
     overflow: hidden;
 }
 
-.logo-container {
-    margin-bottom: 2rem;
-    text-align: center;
-}
-
-.logo-container img {
-    width: 150px;
-    height: auto;
-}
-
-/* Ocultar elementos solo en páginas de auth */
-.login-container .navbar-toggler,
-.login-container .navbar-nav,
-.login-container .static-buttons,
-.signup-container .navbar-toggler,
-.signup-container .navbar-nav,
-.signup-container .static-buttons {
-    display: none !important;
-}
-
 .login-container::before {
     content: '';
     position: absolute;
