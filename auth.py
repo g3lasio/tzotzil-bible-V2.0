@@ -98,9 +98,13 @@ def token_required(f):
             return redirect(url_for('auth.login'))
 
         try:
-            current_user = User.query.filter_by(id=payload['sub']).first()
-            if not current_user or not current_user.is_active:
-                flash('Usuario inactivo o no encontrado', 'error')
+            try:
+                current_user = User.query.filter_by(id=str(payload['sub'])).first()
+                if not current_user or not current_user.is_active:
+                    flash('Usuario inactivo o no encontrado', 'error')
+                    return redirect(url_for('auth.login'))
+            except Exception as e:
+                logger.error(f"Error cargando usuario: {str(e)}")
                 return redirect(url_for('auth.login'))
 
             if request.endpoint and 'nevin' in request.endpoint:

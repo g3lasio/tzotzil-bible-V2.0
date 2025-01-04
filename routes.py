@@ -467,6 +467,8 @@ def search():
 @token_required
 def settings(current_user):
     """Maneja las configuraciones del usuario"""
+    if not current_user or not hasattr(current_user, 'is_authenticated'):
+        return redirect(url_for('auth.login'))
     if request.method == 'POST':
         try:
             data = request.get_json()
