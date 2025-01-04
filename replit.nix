@@ -1,8 +1,10 @@
+
 { pkgs }: {
   deps = [
+    pkgs.python311Full
     pkgs.openssh
     pkgs.redis
-    pkgs.postgresql
+    pkgs.postgresql 
     pkgs.xcbuild
     pkgs.swig
     pkgs.openjpeg
@@ -13,7 +15,6 @@
     pkgs.gumbo
     pkgs.freetype
     pkgs.mailutils
-    pkgs.python39Full
     pkgs.sqlite-interactive
     pkgs.glibcLocales
     pkgs.openssl
