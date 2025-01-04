@@ -7,7 +7,7 @@ class User(UserMixin, db.Model):
     """Modelo de usuario mejorado con sistema de suscripciones"""
     __tablename__ = 'users'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
     lastname = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(15), nullable=False)

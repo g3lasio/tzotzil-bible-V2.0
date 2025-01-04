@@ -209,8 +209,8 @@ def register():
 
         user = User(
             username=username,
-            lastname=data.get('lastname', ''),
-            phone=data.get('phone', ''),
+            lastname=data.get('lastname', '').strip(),
+            phone=data.get('phone', '').strip(),
             email=email,
             is_active=True,
             plan_type='Free',
