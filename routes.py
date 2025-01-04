@@ -472,6 +472,10 @@ def settings():
                 logger.error("No se proporcionaron datos en la solicitud POST")
                 return jsonify({'status': 'error', 'message': 'No data provided'}), 400
 
+            if not isinstance(data, dict):
+                logger.error("Datos proporcionados en formato inválido")
+                return jsonify({'status': 'error', 'message': 'Invalid data format'}), 400
+
             # Validar sesión
             if not session:
                 logger.error("No hay sesión activa")

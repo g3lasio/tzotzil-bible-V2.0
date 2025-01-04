@@ -13,10 +13,13 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=db.func.now())
     nevin_access = db.Column(db.Boolean, default=True)
     trial_ends_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=30))
+    trial_started_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     def has_nevin_access(self):
-        if not self.trial_ends_at:
+        if not self.trial_ends_at or not self.trial_started_at:
             return False
+        if self.nevin_access:
+            return True
         return datetime.utcnow() <= self.trial_ends_at or self.nevin_access
 
     def set_password(self, password):
