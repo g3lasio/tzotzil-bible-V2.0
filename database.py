@@ -95,15 +95,10 @@ class DatabaseManager:
                 result = session.execute(query, {'book': book, 'chapter': chapter}).fetchall()
                 verses = []
                 for row in result:
-                    verse_dict = {
-                        'id': row[0],
-                        'book': row[1],
-                        'chapter': row[2],
-                        'verse': row[3],
-                        'spanish_text': row[4],
-                        'tzotzil_text': row[5]
-                    }
-                    verses.append(verse_dict)
+                    if hasattr(row, '_mapping'):
+                        verses.append(dict(row._mapping))
+                    else:
+                        verses.append(dict(zip(row.keys(), row)))
                 return {
                     'success': True,
                     'data': {'verses': verses},

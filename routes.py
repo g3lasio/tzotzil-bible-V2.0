@@ -583,16 +583,17 @@ def get_chapters(book):
         logger.info(f"Solicitando capítulos para el libro: {book}")
         
         # Usar el gestor de base de datos con caché
-        chapters_result = db_manager.get_verses(book)
+        verses_result = db_manager.get_verses(book)
         
-        if not chapters_result['success']:
-            logger.error(f"Error obteniendo capítulos: {chapters_result['error']}")
+        if not verses_result['success']:
+            logger.error(f"Error obteniendo capítulos: {verses_result['error']}")
             return jsonify({
                 'error': 'Error obteniendo capítulos',
-                'message': chapters_result['error']
+                'message': verses_result['error']
             }), 500
             
-        chapters = chapters_result['data']['chapters']
+        verses = verses_result['data']
+        chapters = sorted(list(set(int(verse['chapter']) for verse in verses)))
         if not chapters:
             logger.warning(f"No se encontraron capítulos para el libro {book}")
             return jsonify({
