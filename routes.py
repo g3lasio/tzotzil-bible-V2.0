@@ -464,7 +464,8 @@ def search():
 
 
 @routes.route('/settings', methods=['GET', 'POST'])
-def settings():
+@token_required
+def settings(current_user):
     """Maneja las configuraciones del usuario"""
     if request.method == 'POST':
         try:
@@ -476,11 +477,16 @@ def settings():
             if not isinstance(data, dict):
                 logger.error("Datos proporcionados en formato inválido")
                 return jsonify({'status': 'error', 'message': 'Invalid data format'}), 400
-
-            # Validar sesión
-            if not session:
-                logger.error("No hay sesión activa")
-                return jsonify({'status': 'error', 'message': 'No active session'}), 401
+            
+            setting_type = data.get('type')
+            if setting_type == 'profile':
+                current_user.first_name = data.get('first_name', current_user.first_name)
+                current_user.phone = data.get('phone', current_user.phone)
+                db.session.commit()
+                return jsonify({
+                    'status': 'success',
+                    'message': 'Profile updated successfully'
+                })
                 
             setting_type = data.get('type')
             if not setting_type:
