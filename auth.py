@@ -98,7 +98,7 @@ def token_required(f):
             return redirect(url_for('auth.login'))
 
         try:
-            current_user = User.query.get(payload['sub'])
+            current_user = User.query.filter_by(id=payload['sub']).first()
             if not current_user or not current_user.is_active:
                 flash('Usuario inactivo o no encontrado', 'error')
                 return redirect(url_for('auth.login'))
