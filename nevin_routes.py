@@ -20,9 +20,14 @@ def init_nevin_routes(app):
         return False
 
 @nevin_bp.route('/')
-def nevin_page():
+@token_required
+def nevin_page(current_user):
     """Renderiza la página principal de Nevin."""
     try:
+        if not current_user.has_nevin_access():
+            flash('Tu período de prueba ha terminado. Actualiza a Premium para continuar usando Nevin.', 'warning')
+            return redirect(url_for('routes.index'))
+            
         return render_template('nevin.html', 
                            welcome_message="¡Hola! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?")
     except Exception as e:

@@ -24,11 +24,21 @@ class User(UserMixin, db.Model):
 
     def has_nevin_access(self):
         """Verifica si el usuario tiene acceso a Nevin basado en su plan y prueba"""
+        now = datetime.utcnow()
+        
+        # Si es usuario premium activo
         if self.plan_type == 'Premium' and self.subscription_status == 'active':
             return True
-        if not self.trial_ends_at or not self.trial_started_at:
-            return False
-        return datetime.utcnow() <= self.trial_ends_at
+            
+        # Verifica período de prueba
+        if self.trial_started_at and self.trial_ends_at:
+            in_trial = now <= self.trial_ends_at
+            if not in_trial and self.nevin_access:
+                self.nevin_access = False
+                db.session.commit()
+            return in_trial
+            
+        return False
 
     def is_premium(self):
         """Verifica si el usuario tiene plan Premium activo"""
