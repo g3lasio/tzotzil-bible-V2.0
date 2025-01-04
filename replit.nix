@@ -1,7 +1,7 @@
 
 { pkgs }: {
   deps = [
-    pkgs.python311Full
+    pkgs.python310Full
     pkgs.openssh
     pkgs.redis
     pkgs.postgresql 
