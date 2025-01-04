@@ -22,10 +22,13 @@
     height: auto;
 }
 
-/* Ocultar elementos innecesarios */
-.navbar-toggler,
-.navbar-nav,
-.static-buttons {
+/* Ocultar elementos solo en páginas de auth */
+.login-container .navbar-toggler,
+.login-container .navbar-nav,
+.login-container .static-buttons,
+.signup-container .navbar-toggler,
+.signup-container .navbar-nav,
+.signup-container .static-buttons {
     display: none !important;
 }
 
