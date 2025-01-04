@@ -1,5 +1,6 @@
 from flask import Blueprint, request, Flask, jsonify, render_template, redirect, url_for, g, session, flash
 from flask_login import login_required, current_user
+from auth import token_required
 from database import db_manager, get_db
 from extensions import db
 from datetime import datetime, timedelta
