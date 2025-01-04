@@ -4,7 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from extensions import db
 
 class User(UserMixin, db.Model):
-    """Modelo de usuario mejorado"""
+    """Modelo de usuario mejorado con sistema de suscripciones"""
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -14,15 +14,30 @@ class User(UserMixin, db.Model):
     is_active = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=db.func.now())
     nevin_access = db.Column(db.Boolean, default=True)
-    trial_ends_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=30))
+    trial_ends_at = db.Column(db.DateTime, default=lambda: datetime.utcnow() + timedelta(days=21))
     trial_started_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Nuevos campos para suscripciones
+    plan_type = db.Column(db.String(20), default='Free', nullable=False)
+    subscription_start = db.Column(db.DateTime, nullable=True)
+    subscription_status = db.Column(db.String(20), default='inactive', nullable=False)
+
     def has_nevin_access(self):
-        """Verifica si el usuario tiene acceso a Nevin"""
+        """Verifica si el usuario tiene acceso a Nevin basado en su plan y prueba"""
+        if self.plan_type == 'Premium' and self.subscription_status == 'active':
+            return True
         if not self.trial_ends_at or not self.trial_started_at:
             return False
-        if self.nevin_access:
-            return True
+        return datetime.utcnow() <= self.trial_ends_at
+
+    def is_premium(self):
+        """Verifica si el usuario tiene plan Premium activo"""
+        return self.plan_type == 'Premium' and self.subscription_status == 'active'
+
+    def is_in_trial(self):
+        """Verifica si el usuario está en período de prueba"""
+        if not self.trial_ends_at or not self.trial_started_at:
+            return False
         return datetime.utcnow() <= self.trial_ends_at
 
     def set_password(self, password):
@@ -47,6 +62,10 @@ class User(UserMixin, db.Model):
             'email': self.email,
             'is_active': self.is_active,
             'created_at': self.created_at.isoformat() if self.created_at else None,
+            'plan_type': self.plan_type,
+            'subscription_status': self.subscription_status,
+            'is_in_trial': self.is_in_trial(),
+            'trial_ends_at': self.trial_ends_at.isoformat() if self.trial_ends_at else None,
             'nevin_access': self.has_nevin_access()
         }
 

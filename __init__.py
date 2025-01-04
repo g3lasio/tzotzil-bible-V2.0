@@ -1,15 +1,12 @@
+"""
+Módulo principal para inicialización y gestión de la aplicación
+"""
 import os
 import logging
 from flask import Flask
-from flask_cors import CORS
-from flask_migrate import Migrate
-from models import db
-from auth import auth, init_login_manager
-from routes import init_routes
-from extensions import init_extensions
-from nevin_routes import init_nevin_routes
+from extensions import db, init_extensions
 
-# Configuración mejorada de logging
+# Configuración de logging
 logging.basicConfig(
     level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -36,21 +33,22 @@ def create_app():
 
         logger.info(f"Usando base de datos: {app.config['SQLALCHEMY_DATABASE_URI']}")
 
-        # Inicializar CORS
-        CORS(app)
-
-        # Inicializar la base de datos y las extensiones
-        db.init_app(app)
+        # Inicializar extensiones
         if not init_extensions(app):
             logger.error("Error inicializando extensiones")
             return None
-        logger.info("Extensiones inicializadas correctamente")
 
-        # Inicializar migración después de las extensiones
-        migrate = Migrate(app, db)
+        # Importar modelos después de inicializar db
+        from models import User, BibleVerse, Promise
 
         # Registrar blueprints
+        from auth import auth, init_login_manager
         app.register_blueprint(auth, url_prefix='/api/auth')
+
+        # Importar e inicializar rutas después de los modelos
+        from routes import init_routes
+        from nevin_routes import init_nevin_routes
+
         init_routes(app)
         init_nevin_routes(app)
         logger.info("Blueprints registrados correctamente")
