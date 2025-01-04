@@ -36,7 +36,9 @@ def generate_token(user_id):
 def validate_token(token):
     """Valida y decodifica un token JWT"""
     if not token:
+        logger.warning("Intento de validación con token vacío")
         return None
+    logger.info("Iniciando validación de token")
 
     try:
         payload = jwt.decode(
@@ -112,6 +114,8 @@ def token_required(f):
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """Maneja el login de usuarios"""
+    logger.info(f"Método de solicitud: {request.method}")
+    
     if request.method == 'GET':
         return render_template('auth/login.html')
 
@@ -119,6 +123,8 @@ def login():
         data = request.form
         email = data.get('email', '').strip()
         password = data.get('password', '').strip()
+        logger.info(f"Intento de login para usuario: {email}")
+        logger.info(f"Remember me activado: {data.get('remember_me', False)}")
 
         # Validar campos
         if not email or not password:
@@ -128,10 +134,13 @@ def login():
         user = User.query.filter(User.email == email).first()
 
         if user and user.check_password(password):
+            logger.info(f"Generando token para usuario ID: {user.id}")
             token = generate_token(user.id)
             if not token:
+                logger.error("Fallo en generación de token")
                 flash('Error generando token de sesión', 'error')
                 return redirect(url_for('auth.login'))
+            logger.info("Token generado exitosamente")
 
             # Actualizar última conexión antes de generar respuesta
             user.last_login = datetime.utcnow()
