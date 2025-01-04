@@ -1,0 +1,24 @@
+                                             Table "public.users"
+       Column        |            Type             | Collation | Nullable |              Default              
+---------------------+-----------------------------+-----------+----------+-----------------------------------
+ id                  | integer                     |           | not null | nextval('users_id_seq'::regclass)
+ username            | character varying(80)       |           | not null | 
+ email               | character varying(120)      |           | not null | 
+ password_hash       | character varying(256)      |           | not null | 
+ created_at          | timestamp without time zone |           |          | 
+ is_active           | boolean                     |           |          | 
+ nevin_access        | boolean                     |           | not null | true
+ trial_ends_at       | timestamp without time zone |           |          | 
+ trial_started_at    | timestamp without time zone |           |          | 
+ plan_type           | character varying(20)       |           | not null | 'Free'::character varying
+ subscription_start  | timestamp without time zone |           |          | 
+ subscription_status | character varying(20)       |           | not null | 'inactive'::character varying
+ lastname            | character varying(50)       |           |          | 
+ phone               | character varying(15)       |           |          | 
+Indexes:
+    "users_pkey" PRIMARY KEY, btree (id)
+    "users_email_key" UNIQUE CONSTRAINT, btree (email)
+    "users_username_key" UNIQUE CONSTRAINT, btree (username)
+Referenced by:
+    TABLE "conversations" CONSTRAINT "conversations_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(id)
+
