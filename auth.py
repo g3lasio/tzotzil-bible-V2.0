@@ -3,10 +3,11 @@ Sistema de autenticación simplificado usando JWT
 """
 from datetime import datetime, timedelta
 import jwt
-from flask import Blueprint, request, jsonify, current_app, render_template, redirect, url_for
+from flask import Blueprint, request, jsonify, current_app, render_template, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
 import logging
+from validation import DataValidator
 
 logger = logging.getLogger(__name__)
 auth = Blueprint('auth', __name__)
@@ -93,21 +94,6 @@ def token_required(f):
 
     return decorated
 
-def validate_credentials(data):
-    """Valida las credenciales proporcionadas"""
-    errors = []
-    email = data.get('email', '').strip()
-    password = data.get('password', '').strip()
-
-    if not email:
-        errors.append('El email es requerido')
-    if not password:
-        errors.append('La contraseña es requerida')
-    if len(password) < 6:
-        errors.append('La contraseña debe tener al menos 6 caracteres')
-
-    return errors, email, password
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     """Maneja el login de usuarios"""
@@ -115,26 +101,24 @@ def login():
         return render_template('auth/login.html')
 
     try:
-        data = request.get_json() if request.is_json else request.form
-        errors, email, password = validate_credentials(data)
+        data = request.form
+        email = data.get('email', '').strip()
+        password = data.get('password', '').strip()
 
-        if errors:
-            return jsonify({'message': 'Error de validación', 'errors': errors}), 400
+        # Validar campos
+        if not email or not password:
+            flash('Todos los campos son requeridos', 'error')
+            return redirect(url_for('auth.login'))
 
         user = User.query.filter(User.email == email).first()
 
         if user and user.check_password(password):
             token = generate_token(user.id)
             if not token:
-                return jsonify({'message': 'Error generando token'}), 500
+                flash('Error generando token de sesión', 'error')
+                return redirect(url_for('auth.login'))
 
-            response = jsonify({
-                'message': 'Login exitoso',
-                'token': token,
-                'user': user.to_dict()
-            })
-
-            # Establecer cookie segura con el token
+            response = redirect(url_for('index'))
             response.set_cookie(
                 'token',
                 token,
@@ -144,36 +128,62 @@ def login():
                 max_age=86400 * JWT_EXPIRATION_DAYS
             )
 
+            flash('Inicio de sesión exitoso', 'success')
             return response
 
-        return jsonify({'message': 'Credenciales inválidas'}), 401
+        flash('Credenciales inválidas', 'error')
+        return redirect(url_for('auth.login'))
 
     except Exception as e:
         logger.error(f"Error en login: {str(e)}")
-        return jsonify({'message': 'Error en el servidor'}), 500
+        flash('Error en el servidor', 'error')
+        return redirect(url_for('auth.login'))
 
-@auth.route('/register', methods=['POST'])
+@auth.route('/register', methods=['GET', 'POST'])
 def register():
     """Registro de nuevo usuario"""
+    if request.method == 'GET':
+        return render_template('auth/signup.html')
+
     try:
-        data = request.get_json() if request.is_json else request.form
-        errors, email, password = validate_credentials(data)
+        data = request.form
+        username = data.get('username', '').strip()
+        email = data.get('email', '').strip()
+        password = data.get('password', '').strip()
+        confirm_password = data.get('confirm_password', '').strip()
+
+        # Validar datos del usuario
+        validator = DataValidator()
+        errors = validator.validate_user_data(email=email, username=username, password=password)
+
+        if password != confirm_password:
+            errors.append("Las contraseñas no coinciden")
+
+        if not data.get('terms'):
+            errors.append("Debes aceptar los términos y condiciones")
 
         if errors:
-            return jsonify({'message': 'Error de validación', 'errors': errors}), 400
-
-        username = data.get('username', email.split('@')[0])
+            for error in errors:
+                flash(error, 'error')
+            return redirect(url_for('auth.register'))
 
         if User.query.filter_by(email=email).first():
-            return jsonify({'message': 'El email ya está registrado'}), 400
+            flash('El email ya está registrado', 'error')
+            return redirect(url_for('auth.register'))
 
         if User.query.filter_by(username=username).first():
-            return jsonify({'message': 'El nombre de usuario ya está registrado'}), 400
+            flash('El nombre de usuario ya está registrado', 'error')
+            return redirect(url_for('auth.register'))
 
+        # Crear nuevo usuario con período de prueba
         user = User(
             username=username,
             email=email,
-            is_active=True
+            is_active=True,
+            plan_type='Free',
+            trial_started_at=datetime.utcnow(),
+            trial_ends_at=datetime.utcnow() + timedelta(days=21),
+            nevin_access=True
         )
         user.set_password(password)
 
@@ -182,15 +192,10 @@ def register():
 
         token = generate_token(user.id)
         if not token:
-            return jsonify({'message': 'Error generando token'}), 500
+            flash('Error generando token de sesión', 'error')
+            return redirect(url_for('auth.login'))
 
-        response = jsonify({
-            'message': 'Usuario registrado exitosamente',
-            'token': token,
-            'user': user.to_dict()
-        })
-
-        # Establecer cookie segura con el token
+        response = redirect(url_for('index'))
         response.set_cookie(
             'token',
             token,
@@ -200,12 +205,14 @@ def register():
             max_age=86400 * JWT_EXPIRATION_DAYS
         )
 
+        flash('Cuenta creada exitosamente. ¡Bienvenido a tu período de prueba!', 'success')
         return response
 
     except Exception as e:
         logger.error(f"Error en registro: {str(e)}")
         db.session.rollback()
-        return jsonify({'message': 'Error en el servidor'}), 500
+        flash('Error en el servidor', 'error')
+        return redirect(url_for('auth.register'))
 
 @auth.route('/me')
 @token_required
@@ -217,17 +224,18 @@ def get_user(current_user):
         logger.error(f"Error obteniendo usuario: {str(e)}")
         return jsonify({'message': 'Error en el servidor'}), 500
 
-@auth.route('/logout', methods=['POST'])
-@token_required
-def logout(current_user):
+@auth.route('/logout', methods=['GET', 'POST'])
+def logout():
     """Cierra la sesión del usuario actual"""
     try:
-        response = jsonify({'message': 'Sesión cerrada exitosamente'})
+        response = redirect(url_for('index'))
         response.delete_cookie('token')
-        return response, 200
+        flash('Sesión cerrada exitosamente', 'success')
+        return response
     except Exception as e:
         logger.error(f"Error en logout: {str(e)}")
-        return jsonify({'message': 'Error al cerrar sesión'}), 500
+        flash('Error al cerrar sesión', 'error')
+        return redirect(url_for('index'))
 
 def init_login_manager(app):
     """Initialize the login manager for backward compatibility"""

@@ -112,3 +112,5 @@ pyjwt
 python-jose
 flask-login
 flask-wtf
+flask-login
+oauthlib

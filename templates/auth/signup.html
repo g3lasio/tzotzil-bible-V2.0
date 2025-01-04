@@ -1,38 +1,125 @@
-
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Sign Up - Bible Reader</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="cyberpunk">
-    <div class="signup-container">
-        <form method="POST" class="signup-form" action="{{ url_for('auth.signup') }}">
-            <h2>Crear Cuenta</h2>
-            {% if error %}
-                <div class="alert">{{ error }}</div>
-            {% endif %}
-            
-            <div class="form-group">
-                <input type="text" name="username" placeholder="Nombre de Usuario" required>
-            </div>
-            <div class="form-group">
-                <input type="email" name="email" placeholder="Email" required>
-            </div>
-            <div class="form-group">
-                <input type="password" name="password" placeholder="Contraseña" required>
-            </div>
-            <div class="form-group">
-                <input type="password" name="confirm_password" placeholder="Confirmar Contraseña" required>
-            </div>
-            
-            <button type="submit" class="signup-btn">Crear Cuenta</button>
-            
-            <div class="register-link">
-                <p>¿Ya tienes una cuenta? <a href="{{ url_for('auth.login') }}" class="auth-link">Inicia Sesión</a></p>
-            </div>
-        </form>
+{% extends "base.html" %}
+{% block content %}
+<div class="min-h-screen bg-gray-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div class="sm:mx-auto sm:w-full sm:max-w-md">
+        <h2 class="text-center text-3xl font-extrabold text-gray-900">
+            Crear tu cuenta en Nevin
+        </h2>
+        <p class="mt-2 text-center text-sm text-gray-600">
+            ¿Ya tienes una cuenta?
+            <a href="{{ url_for('auth.login') }}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                Inicia sesión aquí
+            </a>
+        </p>
     </div>
-</body>
-</html>
+
+    <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+        <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <!-- Banner de prueba gratuita -->
+            <div class="mb-6 p-4 bg-green-50 rounded-md">
+                <div class="flex">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-green-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h3 class="text-sm font-medium text-green-800">
+                            Prueba Premium Gratis por 21 días
+                        </h3>
+                        <div class="mt-2 text-sm text-green-700">
+                            <p>Al registrarte, obtienes acceso completo a todas las funciones premium de Nevin por 21 días.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="mb-4 p-4 rounded-md {% if category == 'error' %}bg-red-50 text-red-700{% else %}bg-green-50 text-green-700{% endif %}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form class="space-y-6" method="POST" action="{{ url_for('auth.register') }}">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">
+                        Nombre de usuario
+                    </label>
+                    <div class="mt-1">
+                        <input id="username" name="username" type="text" required
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            pattern="[a-zA-Z0-9_-]{3,30}"
+                            title="El nombre de usuario debe tener entre 3 y 30 caracteres, y solo puede contener letras, números, guiones y guiones bajos">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">
+                        Email
+                    </label>
+                    <div class="mt-1">
+                        <input id="email" name="email" type="email" autocomplete="email" required
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-700">
+                        Contraseña
+                    </label>
+                    <div class="mt-1">
+                        <input id="password" name="password" type="password" required
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                            pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*]).{8,}"
+                            title="La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-gray-700">
+                        Confirmar contraseña
+                    </label>
+                    <div class="mt-1">
+                        <input id="confirm_password" name="confirm_password" type="password" required
+                            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <div class="flex items-center">
+                    <input id="terms" name="terms" type="checkbox" required
+                        class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded">
+                    <label for="terms" class="ml-2 block text-sm text-gray-900">
+                        Acepto los <a href="#" class="text-indigo-600 hover:text-indigo-500">términos y condiciones</a>
+                    </label>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Crear cuenta
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+
+    form.addEventListener('submit', function(event) {
+        if (password.value !== confirmPassword.value) {
+            event.preventDefault();
+            alert('Las contraseñas no coinciden');
+        }
+    });
+});
+</script>
+{% endblock %}
