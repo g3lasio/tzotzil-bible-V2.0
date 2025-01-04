@@ -567,6 +567,8 @@ def settings():
 
     # GET request
     try:
+        if not current_user.is_authenticated:
+            return redirect(url_for('auth.login'))
         return render_template('settings.html',
                              books=get_sorted_books(),
                              user=current_user)
