@@ -141,9 +141,8 @@ def login():
                 samesite='Lax',
                 max_age=86400 * JWT_EXPIRATION_DAYS
             )
-
             flash('Inicio de sesión exitoso', 'success')
-            return redirect(url_for('routes.index'))
+            return response
 
         flash('Credenciales inválidas', 'error')
         return redirect(url_for('auth.login'))
