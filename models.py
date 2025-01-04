@@ -12,16 +12,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256))
     is_active = db.Column(db.Boolean, default=True)
     registered_at = db.Column(db.DateTime, default=db.func.now())
-    trial_end_date = db.Column(db.DateTime)
-    is_premium = db.Column(db.Boolean, default=False)
-    
-    def has_nevin_access(self):
-        if not self.registered_at:
-            return False
-        if self.is_premium:
-            return True
-        trial_period = timedelta(days=30)
-        return (datetime.utcnow() - self.registered_at) <= trial_period
+    nevin_access = db.Column(db.Boolean, default=True)
     
     def has_nevin_access(self):
         if not self.registered_at:

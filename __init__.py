@@ -52,14 +52,6 @@ def create_app():
         app.register_blueprint(auth, url_prefix='/api')
         init_routes(app)
         init_nevin_routes(app)  # Inicializar rutas de Nevin
-        from payment_routes import payment
-        app.register_blueprint(payment)
-    
-        # Stripe configuration
-        app.config['STRIPE_PUBLIC_KEY'] = 'your_stripe_public_key'
-        app.config['STRIPE_SECRET_KEY'] = 'your_stripe_secret_key'
-        app.config['STRIPE_PRICE_ID'] = 'your_stripe_price_id'
-
         logger.info("Blueprints registrados correctamente")
 
         # Inicializar login manager
