@@ -133,14 +133,19 @@ def login():
                 flash('Error generando token de sesión', 'error')
                 return redirect(url_for('auth.login'))
 
+            # Actualizar última conexión antes de generar respuesta
+            user.last_login = datetime.utcnow()
+            db.session.commit()
+
             response = redirect(url_for('routes.index'))
             response.set_cookie(
-                'token',
+                'token', 
                 token,
                 httponly=True,
-                secure=False,  # Cambiado para desarrollo
+                secure=False,
                 samesite='Lax',
-                max_age=86400 * JWT_EXPIRATION_DAYS
+                max_age=86400 * JWT_EXPIRATION_DAYS,
+                domain=None  # Permitir cualquier dominio
             )
             
             # Actualizar última conexión
