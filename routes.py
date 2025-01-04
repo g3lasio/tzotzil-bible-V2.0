@@ -480,8 +480,8 @@ def settings(current_user):
             
             setting_type = data.get('type')
             if setting_type == 'profile':
-                current_user.first_name = data.get('first_name', current_user.first_name)
-                current_user.phone = data.get('phone', current_user.phone)
+                current_user.name = data.get('name')
+                current_user.phone = data.get('phone')
                 db.session.commit()
                 return jsonify({
                     'status': 'success',
