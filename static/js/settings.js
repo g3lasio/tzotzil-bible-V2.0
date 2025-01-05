@@ -288,15 +288,24 @@ function processCustomDonation() {
     });
 }
 
-// Mejorar el manejo de los botones de donación fijos
-document.addEventListener('DOMContentLoaded', function() {
-    const donationButtons = document.querySelectorAll('a[href*="paypal.com"]');
-    donationButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const paypalUrl = this.getAttribute('href');
-            console.log('Abriendo PayPal en nueva ventana...');
-            window.open(paypalUrl, '_blank');
-        });
-    });
-});
+function handleDonation(amount) {
+    const baseUrl = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY";
+    const donationUrl = `${baseUrl}?amount=${amount}`;
+    console.log('Redirigiendo a PayPal con monto:', amount);
+    window.open(donationUrl, '_blank');
+}
+
+function showCustomDonation() {
+    const modal = new bootstrap.Modal(document.getElementById('customDonationModal'));
+    modal.show();
+}
+
+function processCustomDonation() {
+    const amount = document.getElementById('customAmount').value;
+    if (!amount || amount <= 0) {
+        window.createToast('Por favor ingrese un monto válido', 'error');
+        return;
+    }
+    handleDonation(amount);
+    bootstrap.Modal.getInstance(document.getElementById('customDonationModal')).hide();
+}
