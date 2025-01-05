@@ -92,10 +92,10 @@ class DatabaseManager:
                            CAST(verse AS INTEGER) as verse, 
                            spanish_text, tzotzil_text 
                     FROM bibleverse 
-                    WHERE book = :book AND chapter = :chapter::text
+                    WHERE book = :book AND CAST(chapter AS TEXT) = :chapter
                     ORDER BY verse
                 """)
-                result = session.execute(query, {'book': book, 'chapter': str(chapter)}).fetchall()
+                result = session.execute(query, {'book': book, 'chapter': str(chapter), 'bind_parameters': {'decimal_return_scale': None}}).fetchall()
                 verses = []
                 for row in result:
                     verses.append({
