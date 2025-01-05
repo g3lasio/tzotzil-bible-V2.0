@@ -878,3 +878,22 @@ def validate():
             'status': 'error',
             'message': 'Internal server error'
         }), 500
+@routes.route('/download_bible')
+def download_bible():
+    """Descarga la base de datos bíblica para uso offline"""
+    try:
+        from database_export import export_bible_data
+        db_path = export_bible_data()
+        
+        return send_file(
+            db_path,
+            as_attachment=True,
+            download_name=f"biblia_tzotzil_{datetime.now().strftime('%Y%m%d')}.db",
+            mimetype='application/x-sqlite3'
+        )
+        
+    except Exception as e:
+        logger.error(f"Error en descarga: {str(e)}")
+        return jsonify({
+            'error': 'Error generando archivo de descarga'
+        }), 500
