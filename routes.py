@@ -735,16 +735,16 @@ def subscription_portal(current_user):
 
 @routes.route('/donate/<amount>')
 def donate(amount):
-    """Maneja las donaciones y redirecciona a Stripe"""
+    """Maneja las donaciones y redirecciona a PayPal"""
     try:
         amount = float(amount)
         if amount <= 0:
             flash('Por favor ingrese un monto válido', 'error')
             return redirect(url_for('routes.settings'))
 
-        # Aquí debes reemplazar con tu link de Stripe real
-        stripe_payment_link = f"https://buy.stripe.com/test_yourlink?amount={int(amount*100)}"
-        return redirect(stripe_payment_link)
+        # Redirigir al enlace fijo de PayPal
+        paypal_link = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY"
+        return redirect(paypal_link)
     except ValueError:
         flash('Monto inválido', 'error')
         return redirect(url_for('routes.settings'))
