@@ -592,8 +592,7 @@ def get_chapters(book):
                 'message': verses_result['error']
             }), 500
             
-        verses = verses_result['data']
-        chapters = sorted(list(set(int(verse['chapter']) for verse in verses)))
+        chapters = verses_result['data'].get('chapters', [])
         if not chapters:
             logger.warning(f"No se encontraron capítulos para el libro {book}")
             return jsonify({
