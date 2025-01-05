@@ -752,8 +752,8 @@ def donate(amount):
             flash('Por favor ingrese un monto válido', 'error')
             return jsonify({'error': 'Monto debe ser mayor a 0'}), 400
 
-        # Construir el enlace de PayPal con el monto
-        paypal_link = f"https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY?quantity=1&amount={amount:.2f}"
+        # Usar el enlace de donación de PayPal
+        paypal_link = "https://www.paypal.com/donate/?hosted_button_id=ZZT98YTR4YCXE"
         logger.info(f"URL de PayPal generada: {paypal_link}")
         
         # Registrar detalles adicionales

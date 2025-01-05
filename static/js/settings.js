@@ -291,8 +291,7 @@ function processCustomDonation() {
 function handleDonation(amount) {
     try {
         console.log('Iniciando proceso de donación...');
-        const baseUrl = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY";
-        const donationUrl = `${baseUrl}?quantity=1&amount=${amount}.00`;
+        const donationUrl = "https://www.paypal.com/donate/?hosted_button_id=ZZT98YTR4YCXE";
         console.log('URL de PayPal generada:', donationUrl);
         
         // Validar monto antes de abrir la URL
