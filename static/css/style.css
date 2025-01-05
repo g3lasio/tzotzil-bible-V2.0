@@ -232,7 +232,7 @@ button,
 
 /* Base Styles */
 body {
-    font-family: 'Orbitron', 'Segoe UI', sans-serif;
+    font-family: 'Poppins', sans-serif;
     line-height: 1.6;
     color: var(--text-primary);
     background: var(--bg-dark);
@@ -581,7 +581,7 @@ body {
 }
 
 .language-header {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: rgba(0, 243, 255, 0.6);
@@ -1587,7 +1587,7 @@ body {
 }
 
 .title-section h1.chapter-title {
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Poppins', sans-serif;
     color: var(--glow-primary);
     margin: 0;
     font-size: clamp(1.2rem, 4vw, 1.5rem);
