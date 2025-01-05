@@ -28,8 +28,12 @@ def nevin_page(current_user):
             flash('Tu período de prueba ha terminado. Actualiza a Premium para continuar usando Nevin.', 'warning')
             return redirect(url_for('routes.index'))
             
+        user_name = current_user.username.split('@')[0] if '@' in current_user.username else current_user.username
+        welcome_message = f"¡Hola {user_name}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?"
+        
         return render_template('nevin.html', 
-                           welcome_message="¡Hola! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?")
+                           welcome_message=welcome_message,
+                           user_name=user_name)
     except Exception as e:
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
