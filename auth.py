@@ -179,15 +179,19 @@ def login():
             db.session.commit()
 
             response = redirect(url_for('routes.index'))
+            max_age = 86400 * 30 if remember_me else 86400  # 30 días o 1 día
             response.set_cookie(
                 'token', 
                 token,
                 httponly=True,
                 secure=False,
                 samesite='Lax',
-                max_age=86400 * JWT_EXPIRATION_DAYS if remember_me else None,
+                max_age=max_age,
                 path='/'
             )
+            
+            # Agregar header para el frontend
+            response.headers['X-Auth-Token'] = token
             
             flash('Inicio de sesión exitoso', 'success')
             return response

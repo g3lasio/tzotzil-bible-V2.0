@@ -3,7 +3,26 @@ document.addEventListener("DOMContentLoaded", function () {
     initializePasswordToggles();
     initializeFormValidation();
     initializePasswordStrength();
+    checkStoredToken();
 });
+
+function checkStoredToken() {
+    const token = localStorage.getItem('auth_token');
+    const tokenExpiry = localStorage.getItem('token_expiry');
+    
+    if (token && tokenExpiry && new Date().getTime() < parseInt(tokenExpiry)) {
+        document.cookie = `token=${token};path=/;max-age=${60*60*24*30}`;
+    } else {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('token_expiry');
+    }
+}
+
+function storeToken(token) {
+    const expiryTime = new Date().getTime() + (30 * 24 * 60 * 60 * 1000); // 30 días
+    localStorage.setItem('auth_token', token);
+    localStorage.setItem('token_expiry', expiryTime.toString());
+}
 
 function initializePasswordToggles() {
     const toggleConfigs = [
