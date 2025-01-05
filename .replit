@@ -1,7 +1,7 @@
 
 language = "python3"
 run = "python3 app.py"
-modules = ["python-3.11", "postgresql-16"]
+modules = ["python-3.11", "postgresql-16", "nodejs-20"]
 
 [deployment]
 run = ["python3", "app.py"]
@@ -14,6 +14,10 @@ externalPort = 80
 [[ports]]
 localPort = 8080
 externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081
 
 [nix]
 channel = "stable-24_05"
@@ -30,6 +34,10 @@ author = "agent"
 task = "workflow.run"
 args = "Flask Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Expo Server"
+
 [[workflows.workflow]]
 name = "Flask Server"
 author = "agent"
@@ -44,3 +52,18 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "python __init__.py"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Expo Server"
+author = "agent"
+
+[workflows.workflow.metadata]
+agentRequireRestartOnSave = false
+
+[[workflows.workflow.tasks]]
+task = "packager.installForAll"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx expo start --web --no-dev --minify"
+waitForPort = 19000
