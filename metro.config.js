@@ -1,20 +1,21 @@
-const { getDefaultConfig } = require('@expo/metro-config');
+// Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
 
-module.exports = (() => {
-  const config = getDefaultConfig(__dirname);
+/** @type {import('expo/metro-config').MetroConfig} */
+const defaultConfig = getDefaultConfig(__dirname);
 
-  const { transformer, resolver } = config;
+const config = {
+  ...defaultConfig,
+  resolver: {
+    ...defaultConfig.resolver,
+    assetExts: [...defaultConfig.resolver.assetExts.filter(ext => ext !== 'svg'), 'db', 'sqlite'],
+    sourceExts: [...defaultConfig.resolver.sourceExts, 'svg']
+  },
+  transformer: {
+    ...defaultConfig.transformer,
+    babelTransformerPath: require.resolve("react-native-svg-transformer"),
+    assetPlugins: ['expo-asset/tools/hashAssetFiles']
+  }
+};
 
-  config.transformer = {
-    ...transformer,
-    babelTransformerPath: require.resolve('react-native-svg-transformer')
-  };
-
-  config.resolver = {
-    ...resolver,
-    assetExts: resolver.assetExts.filter((ext) => ext !== 'svg'),
-    sourceExts: [...resolver.sourceExts, 'svg']
-  };
-
-  return config;
-})();
+module.exports = config;

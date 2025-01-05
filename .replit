@@ -19,6 +19,10 @@ externalPort = 8080
 localPort = 8081
 externalPort = 8081
 
+[[ports]]
+localPort = 19006
+externalPort = 3000
+
 [nix]
 channel = "stable-24_05"
 
@@ -65,5 +69,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx expo start --web --no-dev --minify"
-waitForPort = 19000
+args = "npx expo start --web"
+waitForPort = 19006
