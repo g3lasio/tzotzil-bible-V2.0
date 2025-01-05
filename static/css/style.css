@@ -1075,6 +1075,19 @@ body {
     width: 100%;
     text-align: center;
     padding: 0.5rem 1rem;
+    font-family: 'Dubai Medium', sans-serif;
+}
+
+/* Estilos específicos para la página de búsqueda */
+.search-bar-large input,
+.search-results .verse-container {
+    font-family: 'Dubai Medium', sans-serif;
+}
+
+.search-results .verse-text p {
+    font-family: 'Dubai Medium', sans-serif;
+    font-size: 1.1rem;
+    line-height: 1.6;
 }
 
 .language-header {
