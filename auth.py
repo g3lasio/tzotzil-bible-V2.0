@@ -1,4 +1,3 @@
-
 """
 Sistema de autenticación simplificado usando JWT
 """
