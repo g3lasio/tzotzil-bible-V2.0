@@ -261,9 +261,42 @@ function showCustomDonation() {
 
 function processCustomDonation() {
     const amount = document.getElementById('customAmount').value;
-    if (amount && amount > 0) {
-        window.location.href = `/donate/${amount}`;
-    } else {
+    if (!amount || amount <= 0) {
         window.createToast('Por favor ingrese un monto válido', 'error');
+        return;
     }
+
+    // Usar fetch para manejar la redirección de manera más controlada
+    fetch(`/donate/${amount}`, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.redirect_url) {
+            console.log('Redirigiendo a PayPal...');
+            window.open(data.redirect_url, '_blank');
+        } else {
+            throw new Error('No se recibió URL de redirección');
+        }
+    })
+    .catch(error => {
+        console.error('Error procesando donación:', error);
+        window.createToast('Error procesando la donación. Por favor intente nuevamente.', 'error');
+    });
 }
+
+// Mejorar el manejo de los botones de donación fijos
+document.addEventListener('DOMContentLoaded', function() {
+    const donationButtons = document.querySelectorAll('a[href*="paypal.com"]');
+    donationButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const paypalUrl = this.getAttribute('href');
+            console.log('Abriendo PayPal en nueva ventana...');
+            window.open(paypalUrl, '_blank');
+        });
+    });
+});

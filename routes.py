@@ -737,16 +737,29 @@ def subscription_portal(current_user):
 def donate(amount):
     """Maneja las donaciones y redirecciona a PayPal"""
     try:
+        logger.info(f"Intento de donación recibido por monto: {amount}")
         amount = float(amount)
         if amount <= 0:
+            logger.warning(f"Intento de donación con monto inválido: {amount}")
             flash('Por favor ingrese un monto válido', 'error')
             return redirect(url_for('routes.settings'))
 
         # Redirigir al enlace fijo de PayPal
         paypal_link = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY"
+        logger.info(f"Redirigiendo a PayPal para donación de ${amount}")
+        
+        # Retornar JSON para solicitudes AJAX o redirección para solicitudes normales
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return jsonify({'redirect_url': paypal_link})
         return redirect(paypal_link)
-    except ValueError:
+        
+    except ValueError as e:
+        logger.error(f"Error procesando donación: {str(e)}")
         flash('Monto inválido', 'error')
+        return redirect(url_for('routes.settings'))
+    except Exception as e:
+        logger.error(f"Error inesperado procesando donación: {str(e)}")
+        flash('Error procesando la donación', 'error')
         return redirect(url_for('routes.settings'))
 
 @routes.route('/donation/success')
