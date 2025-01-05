@@ -115,9 +115,38 @@ def token_required(f):
 
     return decorated
 
+# Authentication API Documentation
+"""
+Base URL: /api/auth
+Available endpoints:
+- POST /api/auth/login: User login
+- POST /api/auth/register: New user registration 
+- GET /api/auth/me: Get current user info
+- POST /api/auth/logout: User logout
+- POST /api/auth/forgot-password: Password recovery
+"""
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
-    """Maneja el login de usuarios"""
+    """
+    User authentication endpoint
+    
+    Methods:
+        GET: Returns login page
+        POST: Authenticates user
+        
+    POST body:
+    {
+        "email": string,
+        "password": string,
+        "remember_me": boolean
+    }
+    
+    Returns:
+        200: Login successful + JWT token
+        401: Invalid credentials
+        400: Missing/invalid fields
+    """
     logger.info(f"Método de solicitud: {request.method}")
     
     if request.method == 'GET':

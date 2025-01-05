@@ -799,3 +799,82 @@ def check_subscription(current_user):
     except Exception as e:
         logger.error(f"Error checking subscription: {str(e)}")
         return jsonify({'error': 'Error checking subscription'}), 500
+
+# API Endpoints Documentation
+"""
+Base URL: /api
+Authentication: JWT token required for most endpoints
+
+Available endpoints:
+- POST /api/validate: Validates input data
+- GET /api/books: Returns list of available books
+- GET /api/chapters/{book}: Returns chapters for a specific book
+- GET /api/verses/{book}/{chapter}: Returns verses for a specific chapter
+- POST /api/settings: Updates user settings
+"""
+
+@routes.route('/api/validate', methods=['POST'])
+@login_required
+def validate():
+    """
+    Validates input data
+    
+    Request body:
+    {
+        "type": "bible_verse|user_data",
+        "data": {
+            // Data fields depending on type
+        }
+    }
+    
+    Returns:
+        200: Validation successful
+        400: Invalid data with error details
+        401: Unauthorized
+    """
+    try:
+        data = request.get_json()
+        if not data:
+            logger.warning("Validation attempt with empty request body")
+            return jsonify({'error': 'Missing request body'}), 400
+
+        validation_type = data.get('type')
+        if not validation_type:
+            return jsonify({'error': 'Missing validation type'}), 400
+
+        if validation_type == 'bible_verse':
+            book = data.get('book')
+            chapter = data.get('chapter')
+            verse = data.get('verse')
+            tzotzil_text = data.get('tzotzil_text')
+            spanish_text = data.get('spanish_text')
+
+            errors = validator.validate_bible_verse(book, chapter, verse,
+                                                    tzotzil_text, spanish_text)
+
+            if errors:
+                return jsonify({'status': 'error', 'errors': errors}), 400
+            else:
+                return jsonify({'status': 'success'}), 200
+
+        elif validation_type == 'user_data':
+            email = data.get('email')
+            username = data.get('username')
+            password = data.get('password')
+
+            errors = validator.validate_user_data(email, username, password)
+
+            if errors:
+                return jsonify({'status': 'error', 'errors': errors}), 400
+            else:
+                return jsonify({'status': 'success'}), 200
+
+        else:
+            return jsonify({'error': 'Invalid validation type'}), 400
+
+    except Exception as e:
+        logger.error(f"Error during validation: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Internal server error'
+        }), 500

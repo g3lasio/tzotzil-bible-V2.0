@@ -34,9 +34,34 @@ def nevin_page(current_user):
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
+# Nevin AI API Documentation
+"""
+Base URL: /nevin
+Authentication: Premium access required
+
+Available endpoints:
+- GET /nevin: Main Nevin interface
+- POST /nevin/query: Process AI queries
+"""
+
 @nevin_bp.route('/query', methods=['POST'])
 def nevin_query():
-    """Procesa consultas enviadas a Nevin."""
+    """
+    Process AI queries endpoint
+    
+    Request body:
+    {
+        "question": string,
+        "context": string (optional),
+        "language": string (default: Spanish),
+        "preferences": object (optional)
+    }
+    
+    Returns:
+        200: AI response
+        400: Invalid request
+        401: Unauthorized/No premium access
+    """
     try:
         data = request.get_json()
         if not data:
