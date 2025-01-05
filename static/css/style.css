@@ -1668,11 +1668,12 @@ body {
     margin-left: auto;
     word-wrap: break-word;
     border: 1px solid var(--transformer-primary);
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important; /* Agrega !important */
     font-size: 1.1rem;
     letter-spacing: 0.02em;
     line-height: 1.5;
 }
+
 
 .download-options {
     position: fixed;
