@@ -290,7 +290,7 @@ function processCustomDonation() {
 
 function handleDonation(amount) {
     const baseUrl = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY";
-    const donationUrl = `${baseUrl}?amount=${amount}`;
+    const donationUrl = `${baseUrl}?quantity=1&amount=${amount}.00`;
     console.log('Redirigiendo a PayPal con monto:', amount);
     window.open(donationUrl, '_blank');
 }

@@ -744,8 +744,8 @@ def donate(amount):
             flash('Por favor ingrese un monto válido', 'error')
             return redirect(url_for('routes.settings'))
 
-        # Redirigir al enlace fijo de PayPal
-        paypal_link = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY"
+        # Construir el enlace de PayPal con el monto
+        paypal_link = f"https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY?quantity=1&amount={amount:.2f}"
         logger.info(f"Redirigiendo a PayPal para donación de ${amount}")
         
         # Retornar JSON para solicitudes AJAX o redirección para solicitudes normales
