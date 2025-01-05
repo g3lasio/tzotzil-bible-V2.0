@@ -29,6 +29,12 @@ class DatabaseManager:
             g.db_session.execute(text('SELECT 1'))
             return g.db_session
         except Exception as e:
+            logger.error(f"Error de conexión a base de datos: {str(e)}")
+            if hasattr(g, 'db_session'):
+                g.db_session.rollback()
+            g.db_session = db.session()
+            return g.db_session
+        except Exception as e:
             logger.error(f"Error de sesión de base de datos: {str(e)}")
             g.db_session.rollback()
             g.db_session = db.session

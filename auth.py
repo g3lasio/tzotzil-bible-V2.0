@@ -72,12 +72,12 @@ def validate_token(token):
 def get_token_from_request():
     """Extrae el token JWT de la solicitud"""
     auth_header = request.headers.get('Authorization')
-    if auth_header:
-        try:
-            return auth_header.split(" ")[1]
-        except IndexError:
-            return None
-    return request.cookies.get('token')
+    if auth_header and auth_header.startswith('Bearer '):
+        return auth_header.split(" ")[1]
+    token = request.cookies.get('token')
+    if token:
+        return token
+    return None
 
 def token_required(f):
     """Decorador para proteger rutas"""
