@@ -25,8 +25,8 @@ def create_app():
         # Configuración básica
         secret_key = os.getenv('SECRET_KEY')
         if not secret_key:
-            logger.warning("SECRET_KEY no encontrada en variables de entorno, usando clave por defecto")
-            secret_key = 'dev-key-nevin'
+            logger.critical("SECRET_KEY no encontrada en variables de entorno")
+            raise RuntimeError("SECRET_KEY must be set in environment variables")
         app.config['SECRET_KEY'] = secret_key
         logger.info("SECRET_KEY configurada correctamente")
         
