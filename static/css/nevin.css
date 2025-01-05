@@ -351,6 +351,7 @@ body::before {
     box-shadow: 0 0 15px rgba(0, 168, 255, 0.1);
     transform-origin: right bottom;
     animation: messageAppear 0.3s ease-out;
+    font-family: 'Poppins', sans-serif !important;
 }
 
 .user-message::before {
