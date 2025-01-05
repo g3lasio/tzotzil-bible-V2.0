@@ -199,9 +199,52 @@
                     </p>
                     <a
                         href="mailto:info@chyrris.com?subject=Soporte%20Tzotzil%20Bible"
-                        class="btn btn-primary w-100"
+                        class="btn btn-primary w-100 mb-3"
                         >Contactar Soporte</a
                     >
+                </div>
+            </div>
+        </div>
+
+        <!-- Donation Section -->
+        <div class="col-12 col-md-6">
+            <div class="card settings-card">
+                <div class="card-header d-flex align-items-center">
+                    <i class="bi bi-heart-fill me-2 settings-icon text-danger"></i>
+                    <h5 class="mb-0">Apoyar el Proyecto</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Tu generosidad nos ayuda a seguir compartiendo la Palabra de Dios.
+                    </p>
+                    <div class="d-grid gap-2">
+                        <button onclick="window.location.href='/donate/5'" class="btn btn-outline-primary">Donar $5</button>
+                        <button onclick="window.location.href='/donate/10'" class="btn btn-outline-primary">Donar $10</button>
+                        <button onclick="window.location.href='/donate/20'" class="btn btn-outline-primary">Donar $20</button>
+                        <button onclick="showCustomDonation()" class="btn btn-primary">Donación Personalizada</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Donation Modal -->
+    <div class="modal fade" id="customDonationModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content bg-dark">
+                <div class="modal-header">
+                    <h5 class="modal-title">Donación Personalizada</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="customAmount">Monto ($)</label>
+                        <input type="number" class="form-control" id="customAmount" min="1" step="1">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="processCustomDonation()">Donar</button>
                 </div>
             </div>
         </div>

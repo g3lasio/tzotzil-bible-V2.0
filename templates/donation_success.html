@@ -1,0 +1,20 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card settings-card">
+                <div class="card-body text-center">
+                    <i class="bi bi-heart-fill text-danger display-1 mb-4"></i>
+                    <h2 class="mb-4">¡Gracias por tu generosidad!</h2>
+                    <p class="lead">Tu apoyo nos ayuda a seguir compartiendo la Palabra de Dios.</p>
+                    <a href="{{ url_for('routes.index') }}" class="btn btn-primary mt-3">
+                        Volver al Inicio
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

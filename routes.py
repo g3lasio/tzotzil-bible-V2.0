@@ -733,6 +733,27 @@ def download_seminar(filename):
 def subscription_portal(current_user):
     return render_template('subscription.html', user=current_user)
 
+@routes.route('/donate/<amount>')
+def donate(amount):
+    """Maneja las donaciones y redirecciona a Stripe"""
+    try:
+        amount = float(amount)
+        if amount <= 0:
+            flash('Por favor ingrese un monto válido', 'error')
+            return redirect(url_for('routes.settings'))
+
+        # Aquí debes reemplazar con tu link de Stripe real
+        stripe_payment_link = f"https://buy.stripe.com/test_yourlink?amount={int(amount*100)}"
+        return redirect(stripe_payment_link)
+    except ValueError:
+        flash('Monto inválido', 'error')
+        return redirect(url_for('routes.settings'))
+
+@routes.route('/donation/success')
+def donation_success():
+    """Página de agradecimiento por la donación"""
+    return render_template('donation_success.html')
+
 @routes.route('/check_subscription')
 @token_required
 def check_subscription(current_user):

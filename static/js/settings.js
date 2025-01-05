@@ -253,3 +253,17 @@ function setupBackupAndSync() {
         });
     }
 }
+
+function showCustomDonation() {
+    const modal = new bootstrap.Modal(document.getElementById('customDonationModal'));
+    modal.show();
+}
+
+function processCustomDonation() {
+    const amount = document.getElementById('customAmount').value;
+    if (amount && amount > 0) {
+        window.location.href = `/donate/${amount}`;
+    } else {
+        window.createToast('Por favor ingrese un monto válido', 'error');
+    }
+}
