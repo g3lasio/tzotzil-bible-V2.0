@@ -46,7 +46,7 @@ def create_app():
                 if not payload:
                     return redirect(url_for('auth.login'))
 
-                current_user = User.query.filter_by(id=payload['sub']).first()
+                current_user = User.query.get(payload['sub'])
                 if not current_user or not current_user.is_active:
                     return redirect(url_for('auth.login'))
 

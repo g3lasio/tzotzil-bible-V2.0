@@ -8,9 +8,9 @@ class User(UserMixin, db.Model):
     """Modelo de usuario mejorado con sistema de suscripciones"""
     __tablename__ = 'users'
 
-    id = db.Column(db.UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    id = db.Column(db.String(36), primary_key=True, default=lambda: str(uuid.uuid4()))
     username = db.Column(db.String(80), unique=True, nullable=False, index=True)
-    lastname = db.Column(db.String(50), nullable=True)
+    lastname = db.Column(db.String(50), nullable=False)
     phone = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     password_hash = db.Column(db.String(256))

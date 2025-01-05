@@ -464,11 +464,8 @@ def search():
 
 
 @routes.route('/settings', methods=['GET', 'POST'])
-@token_required
-def settings(current_user):
+def settings():
     """Maneja las configuraciones del usuario"""
-    if not current_user or not hasattr(current_user, 'is_authenticated'):
-        return redirect(url_for('auth.login'))
     if request.method == 'POST':
         try:
             data = request.get_json()
@@ -479,16 +476,11 @@ def settings(current_user):
             if not isinstance(data, dict):
                 logger.error("Datos proporcionados en formato inválido")
                 return jsonify({'status': 'error', 'message': 'Invalid data format'}), 400
-            
-            setting_type = data.get('type')
-            if setting_type == 'profile':
-                current_user.name = data.get('name')
-                current_user.phone = data.get('phone')
-                db.session.commit()
-                return jsonify({
-                    'status': 'success',
-                    'message': 'Profile updated successfully'
-                })
+
+            # Validar sesión
+            if not session:
+                logger.error("No hay sesión activa")
+                return jsonify({'status': 'error', 'message': 'No active session'}), 401
                 
             setting_type = data.get('type')
             if not setting_type:
@@ -575,8 +567,6 @@ def settings(current_user):
 
     # GET request
     try:
-        if not current_user.is_authenticated:
-            return redirect(url_for('auth.login'))
         return render_template('settings.html',
                              books=get_sorted_books(),
                              user=current_user)
