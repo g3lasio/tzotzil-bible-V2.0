@@ -1587,7 +1587,7 @@ body {
 }
 
 .title-section h1.chapter-title {
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Orbitron', sans-serif;
     color: var(--glow-primary);
     margin: 0;
     font-size: clamp(1.2rem, 4vw, 1.5rem);
