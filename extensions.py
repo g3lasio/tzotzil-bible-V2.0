@@ -13,7 +13,13 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 babel = Babel()
-cors = CORS()
+cors = CORS(resources={
+    r"/*": {
+        "origins": "*",
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 def init_extensions(app):
     try:
