@@ -208,20 +208,34 @@
 
         <!-- Donation Section -->
         <div class="col-12 col-md-6">
-            <div class="card settings-card">
-                <div class="card-header d-flex align-items-center">
-                    <i class="bi bi-heart-fill me-2 settings-icon text-danger"></i>
+            <div class="card settings-card donation-card">
+                <div class="card-header d-flex align-items-center donation-header">
+                    <div class="donation-icon-wrapper">
+                        <i class="bi bi-heart-fill settings-icon"></i>
+                    </div>
                     <h5 class="mb-0">Apoyar el Proyecto</h5>
                 </div>
-                <div class="card-body">
-                    <p class="text-muted">
+                <div class="card-body donation-body">
+                    <p class="donation-message">
                         Tu generosidad nos ayuda a seguir compartiendo la Palabra de Dios.
                     </p>
-                    <div class="d-grid gap-2">
-                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="btn btn-outline-primary">Donar $5</button>
-                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="btn btn-outline-primary">Donar $10</button>
-                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="btn btn-outline-primary">Donar $20</button>
-                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="btn btn-primary">Donación Personalizada</button>
+                    <div class="donation-grid">
+                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="donation-btn">
+                            <span class="donation-amount">$5</span>
+                            <span class="donation-text">Donación</span>
+                        </button>
+                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="donation-btn">
+                            <span class="donation-amount">$10</span>
+                            <span class="donation-text">Donación</span>
+                        </button>
+                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="donation-btn">
+                            <span class="donation-amount">$20</span>
+                            <span class="donation-text">Donación</span>
+                        </button>
+                        <button onclick="window.location.href='https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY'" class="donation-btn donation-btn-custom">
+                            <span class="donation-amount"><i class="bi bi-plus-circle"></i></span>
+                            <span class="donation-text">Personalizada</span>
+                        </button>
                     </div>
                 </div>
             </div>
