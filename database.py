@@ -72,13 +72,13 @@ class DatabaseManager:
             if chapter is None:
                 # Solo obtenemos los números de capítulo distintos
                 query = text("""
-                    SELECT DISTINCT chapter 
+                    SELECT DISTINCT CAST(chapter AS INTEGER) as chapter
                     FROM bibleverse 
                     WHERE book = :book 
-                    ORDER BY CAST(chapter AS INTEGER)
+                    ORDER BY chapter
                 """)
                 result = session.execute(query, {'book': book}).fetchall()
-                chapters = [int(row[0]) for row in result]
+                chapters = [row[0] for row in result]
                 return {
                     'success': True,
                     'data': {'chapters': chapters},
@@ -87,18 +87,25 @@ class DatabaseManager:
             else:
                 # Consulta para obtener versículos de un capítulo específico
                 query = text("""
-                    SELECT id, book, chapter, verse, spanish_text, tzotzil_text 
+                    SELECT id, book, 
+                           CAST(chapter AS INTEGER) as chapter, 
+                           CAST(verse AS INTEGER) as verse, 
+                           spanish_text, tzotzil_text 
                     FROM bibleverse 
-                    WHERE book = :book AND chapter = :chapter 
-                    ORDER BY CAST(chapter AS INTEGER), CAST(verse AS INTEGER)
+                    WHERE book = :book AND chapter = :chapter::text
+                    ORDER BY verse
                 """)
-                result = session.execute(query, {'book': book, 'chapter': chapter}).fetchall()
+                result = session.execute(query, {'book': book, 'chapter': str(chapter)}).fetchall()
                 verses = []
                 for row in result:
-                    if hasattr(row, '_mapping'):
-                        verses.append(dict(row._mapping))
-                    else:
-                        verses.append(dict(zip(row.keys(), row)))
+                    verses.append({
+                        'id': row.id,
+                        'book': row.book,
+                        'chapter': row.chapter,
+                        'verse': row.verse,
+                        'spanish_text': row.spanish_text,
+                        'tzotzil_text': row.tzotzil_text
+                    })
                 return {
                     'success': True,
                     'data': {'verses': verses},
