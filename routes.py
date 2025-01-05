@@ -737,20 +737,35 @@ def subscription_portal(current_user):
 def donate(amount):
     """Maneja las donaciones y redirecciona a PayPal"""
     try:
-        logger.info(f"Intento de donación recibido por monto: {amount}")
-        amount = float(amount)
+        logger.info(f"Iniciando proceso de donación - IP: {request.remote_addr}")
+        logger.info(f"Monto solicitado: ${amount}")
+        
+        try:
+            amount = float(amount)
+        except ValueError:
+            logger.error(f"Error de conversión - monto inválido: {amount}")
+            flash('Monto inválido', 'error')
+            return jsonify({'error': 'Monto inválido'}), 400
+
         if amount <= 0:
-            logger.warning(f"Intento de donación con monto inválido: {amount}")
+            logger.warning(f"Monto inválido detectado: ${amount}")
             flash('Por favor ingrese un monto válido', 'error')
-            return redirect(url_for('routes.settings'))
+            return jsonify({'error': 'Monto debe ser mayor a 0'}), 400
 
         # Construir el enlace de PayPal con el monto
         paypal_link = f"https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY?quantity=1&amount={amount:.2f}"
-        logger.info(f"Redirigiendo a PayPal para donación de ${amount}")
+        logger.info(f"URL de PayPal generada: {paypal_link}")
+        
+        # Registrar detalles adicionales
+        logger.info(f"User Agent: {request.user_agent}")
+        logger.info(f"Tipo de solicitud: {'AJAX' if request.headers.get('X-Requested-With') else 'Normal'}")
         
         # Retornar JSON para solicitudes AJAX o redirección para solicitudes normales
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return jsonify({'redirect_url': paypal_link})
+            logger.info("Respondiendo con JSON para solicitud AJAX")
+            return jsonify({'redirect_url': paypal_link, 'amount': amount})
+        
+        logger.info("Redirigiendo directamente a PayPal")
         return redirect(paypal_link)
         
     except ValueError as e:

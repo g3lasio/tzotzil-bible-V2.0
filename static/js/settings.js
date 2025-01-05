@@ -289,10 +289,32 @@ function processCustomDonation() {
 }
 
 function handleDonation(amount) {
-    const baseUrl = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY";
-    const donationUrl = `${baseUrl}?quantity=1&amount=${amount}.00`;
-    console.log('Redirigiendo a PayPal con monto:', amount);
-    window.open(donationUrl, '_blank');
+    try {
+        console.log('Iniciando proceso de donación...');
+        const baseUrl = "https://www.paypal.com/ncp/payment/ZEBD28R5BE8WY";
+        const donationUrl = `${baseUrl}?quantity=1&amount=${amount}.00`;
+        console.log('URL de PayPal generada:', donationUrl);
+        
+        // Validar monto antes de abrir la URL
+        if (!amount || amount <= 0) {
+            console.error('Monto inválido:', amount);
+            window.createToast('Por favor ingrese un monto válido', 'error');
+            return;
+        }
+
+        console.log('Redirigiendo a PayPal con monto:', amount);
+        const paypalWindow = window.open(donationUrl, '_blank');
+        
+        if (paypalWindow) {
+            console.log('Ventana de PayPal abierta exitosamente');
+        } else {
+            console.error('Bloqueador de popups detectado');
+            window.createToast('Por favor permita las ventanas emergentes para continuar', 'warning');
+        }
+    } catch (error) {
+        console.error('Error procesando donación:', error);
+        window.createToast('Error procesando la donación', 'error');
+    }
 }
 
 function showCustomDonation() {
