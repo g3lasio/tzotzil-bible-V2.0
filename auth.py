@@ -213,9 +213,6 @@ def register():
             phone=data.get('phone', '').strip(),
             email=email,
             is_active=True,
-            plan_type='Free',
-            trial_started_at=datetime.utcnow(),
-            trial_ends_at=datetime.utcnow() + timedelta(days=21),
             nevin_access=True
         )
         user.set_password(password)
