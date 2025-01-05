@@ -25,8 +25,8 @@ def create_app():
         # Configuración básica
         secret_key = os.getenv('SECRET_KEY')
         if not secret_key:
-            logger.warning("SECRET_KEY no encontrada, usando clave por defecto")
-            secret_key = 'default-dev-key-not-for-production'
+            logger.critical("SECRET_KEY no encontrada. Generando una aleatoria...")
+            secret_key = os.urandom(24).hex()
         app.config['SECRET_KEY'] = secret_key
         app.config['SECRET_KEY'] = secret_key
         logger.info("SECRET_KEY configurada correctamente")

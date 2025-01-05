@@ -1,4 +1,39 @@
 
+import os
+import logging
+import psutil
+from database import DatabaseManager
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+def check_system_health():
+    status = {
+        'memory_usage': psutil.virtual_memory().percent,
+        'cpu_usage': psutil.cpu_percent(),
+        'disk_usage': psutil.disk_usage('/').percent,
+        'database': False,
+        'faiss_indices': False
+    }
+    
+    try:
+        db = DatabaseManager()
+        status['database'] = db.check_health()
+        
+        faiss_path = 'nevin_knowledge'
+        if os.path.exists(faiss_path) and len(os.listdir(faiss_path)) > 0:
+            status['faiss_indices'] = True
+            
+        return status
+        
+    except Exception as e:
+        logger.error(f"Error en health check: {str(e)}")
+        return status
+
+if __name__ == "__main__":
+    print(check_system_health())
+
+
 import logging
 from database import DatabaseManager
 from Nevin_AI.knowledge_base_manager import KnowledgeBaseManager

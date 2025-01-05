@@ -91,7 +91,7 @@ class DatabaseManager:
                     ORDER BY chapter
                 """)
                 result = session.execute(query, {'book': book}).fetchall()
-                chapters = [row[0] for row in result]
+                chapters = [row.chapter for row in result] # Corrected line
                 return {
                     'success': True,
                     'data': {'chapters': chapters},
@@ -108,7 +108,7 @@ class DatabaseManager:
                     WHERE book = :book AND CAST(chapter AS TEXT) = :chapter
                     ORDER BY verse
                 """)
-                result = session.execute(query, {'book': book, 'chapter': str(chapter), 'bind_parameters': {'decimal_return_scale': None}}).fetchall()
+                result = session.execute(query, {'book': book, 'chapter': str(chapter)}).fetchall()
                 verses = []
                 for row in result:
                     verses.append({
