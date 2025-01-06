@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { List, Switch, Button, Divider, Title } from 'react-native-paper';
+import { List, Switch, Button, Divider, Title, Text } from 'react-native-paper';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import DonationModal from '../components/DonationModal';
 
 type SettingsScreenProps = {
   navigation: NativeStackNavigationProp<any, 'Settings'>;
@@ -11,6 +12,12 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
   const [darkMode, setDarkMode] = useState(false);
   const [offlineMode, setOfflineMode] = useState(false);
   const [bilingualMode, setBilingualMode] = useState(true);
+  const [showDonationModal, setShowDonationModal] = useState(false);
+
+  const handleDonationComplete = () => {
+    setShowDonationModal(false);
+    // Mostrar mensaje de agradecimiento
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -56,14 +63,24 @@ export default function SettingsScreen({ navigation }: SettingsScreenProps) {
       </List.Section>
 
       <View style={styles.donateContainer}>
+        <Text style={styles.donateText}>
+          Ayúdanos a mantener y mejorar esta aplicación para seguir compartiendo la Palabra de Dios
+        </Text>
         <Button 
           mode="contained"
-          onPress={() => {/* Implementar lógica de donación */}}
+          onPress={() => setShowDonationModal(true)}
           style={styles.donateButton}
+          icon="heart"
         >
           Realizar Donación
         </Button>
       </View>
+
+      <DonationModal
+        visible={showDonationModal}
+        onDismiss={() => setShowDonationModal(false)}
+        onDonationComplete={handleDonationComplete}
+      />
     </ScrollView>
   );
 }
@@ -81,6 +98,11 @@ const styles = StyleSheet.create({
   donateContainer: {
     padding: 16,
     alignItems: 'center',
+  },
+  donateText: {
+    textAlign: 'center',
+    marginBottom: 16,
+    color: '#666',
   },
   donateButton: {
     width: '80%',

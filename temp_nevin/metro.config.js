@@ -8,11 +8,8 @@ module.exports = {
   resolver: {
     ...config.resolver,
     assetExts: [...config.resolver.assetExts, 'db', 'sqlite'],
-    sourceExts: [...config.resolver.sourceExts, 'jsx', 'js', 'ts', 'tsx'],
+    sourceExts: [...config.resolver.sourceExts],
     platforms: ['ios', 'android', 'web']
-  },
-  server: {
-    port: 8083
   },
   transformer: {
     ...config.transformer,
