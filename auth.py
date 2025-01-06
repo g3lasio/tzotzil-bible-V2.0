@@ -17,13 +17,15 @@ auth = Blueprint('auth', __name__)
 JWT_EXPIRATION_DAYS = 1
 JWT_ALGORITHM = 'HS256'
 
-def generate_token(user_id):
+def generate_token(user_id, is_refresh_token=False):
     """Genera un token JWT para el usuario"""
     try:
+        expiration = timedelta(days=30 if is_refresh_token else JWT_EXPIRATION_DAYS)
         payload = {
-            'exp': datetime.utcnow() + timedelta(days=JWT_EXPIRATION_DAYS),
+            'exp': datetime.utcnow() + expiration,
             'iat': datetime.utcnow(),
-            'sub': str(user_id)
+            'sub': str(user_id),
+            'type': 'refresh' if is_refresh_token else 'access'
         }
         logger.debug(f"Generando token con payload: {payload}")
         secret_key = current_app.config.get('SECRET_KEY')
