@@ -272,5 +272,48 @@ class BibleDataAccess:
                 'data': None
             }
 
+    def get_verses(self, book, chapter=None):
+        """Get verses with improved caching and error handling"""
+        try:
+            db = get_db() #Requires implementation of get_db() function
+            if chapter:
+                verses = db.execute(
+                    'SELECT * FROM bibleverse WHERE book = ? AND chapter = ? ORDER BY verse',
+                    (book, chapter)
+                ).fetchall()
+                return {
+                    'success': True,
+                    'data': {
+                        'verses': [dict(verse) for verse in verses],
+                        'total': len(verses)
+                    }
+                }
+            else:
+                chapters = db.execute(
+                    'SELECT DISTINCT chapter FROM bibleverse WHERE book = ? ORDER BY chapter',
+                    (book,)
+                ).fetchall()
+                return {
+                    'success': True,
+                    'data': {
+                        'chapters': [dict(chapter)['chapter'] for chapter in chapters],
+                        'total': len(chapters)
+                    }
+                }
+        except Exception as e:
+            logger.error(f"Database error in get_verses: {str(e)}")
+            return {'success': False, 'error': str(e)}
+
+
+def get_db():
+    """Placeholder for database connection retrieval.  Replace with your actual DB connection."""
+    # Implement your database connection logic here.  This is a placeholder.
+    # Example using SQLAlchemy:
+    # from sqlalchemy import create_engine
+    # engine = create_engine('your_database_connection_string')
+    # return engine.connect()
+    raise NotImplementedError("get_db() function needs to be implemented")
+
+
 # Instancia global del gestor de acceso a datos bíblicos
 bible_data_access = BibleDataAccess()

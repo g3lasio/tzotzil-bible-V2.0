@@ -860,6 +860,40 @@ Available endpoints:
 - POST /api/settings: Updates user settings
 """
 
+@routes.route('/api/bible/books', methods=['GET'])
+@cross_origin()
+def get_books_api():
+    try:
+        books = get_sorted_books()
+        return jsonify(books), 200
+    except Exception as e:
+        logger.error(f"Error getting books: {str(e)}")
+        return jsonify({'error': 'Error retrieving books'}), 500
+
+@routes.route('/api/bible/chapters/<book>', methods=['GET'])
+@cross_origin()
+def get_chapters_api(book):
+    try:
+        verses_result = db_manager.get_verses(book)
+        if not verses_result['success']:
+            return jsonify({'error': verses_result['error']}), 500
+        return jsonify(verses_result['data']), 200
+    except Exception as e:
+        logger.error(f"Error getting chapters: {str(e)}")
+        return jsonify({'error': 'Error retrieving chapters'}), 500
+
+@routes.route('/api/bible/verses/<book>/<int:chapter>', methods=['GET'])
+@cross_origin()
+def get_verses_api(book, chapter):
+    try:
+        verses_result = db_manager.get_verses(book, str(chapter))
+        if not verses_result['success']:
+            return jsonify({'error': verses_result['error']}), 500
+        return jsonify(verses_result['data']), 200
+    except Exception as e:
+        logger.error(f"Error getting verses: {str(e)}")
+        return jsonify({'error': 'Error retrieving verses'}), 500
+
 @routes.route('/api/validate', methods=['POST'])
 @login_required
 def validate():
