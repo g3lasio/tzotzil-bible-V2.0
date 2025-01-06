@@ -14,10 +14,13 @@ migrate = Migrate()
 mail = Mail()
 babel = Babel()
 cors = CORS(resources={
-    r"/*": {
-        "origins": "*",
+    r"/api/*": {
+        "origins": ["https://sistema-nevin.replit.app", "https://tzotzil-bible-reader.replit.app"],
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
+        "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
+        "expose_headers": ["Content-Range", "X-Total-Count"],
+        "supports_credentials": True,
+        "max_age": 600
     }
 })
 

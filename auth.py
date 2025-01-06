@@ -42,9 +42,55 @@ def generate_token(user_id, is_refresh_token=False):
         return None
 
 def validate_token(token):
-    """Valida y decodifica un token JWT"""
+    """Valida y decodifica un token JWT con verificaciones mejoradas"""
     if not token:
         logger.warning("Intento de validación con token vacío")
+        return None
+
+    try:
+        # Verificar formato del token
+        if not isinstance(token, str) or not token.count('.') == 2:
+            logger.warning("Formato de token inválido")
+            return None
+
+        # Obtener configuración
+        secret_key = current_app.config.get('JWT_SECRET_KEY', current_app.config.get('SECRET_KEY'))
+        algorithm = current_app.config.get('JWT_ALGORITHM', 'HS256')
+        leeway = current_app.config.get('JWT_LEEWAY', 10)  # 10 segundos de margen
+
+        # Decodificar y validar token
+        payload = jwt.decode(
+            token,
+            secret_key,
+            algorithms=[algorithm],
+            options={
+                "verify_exp": True,
+                "verify_iat": True,
+                "verify_nbf": True,
+                "leeway": leeway
+            }
+        )
+
+        # Validaciones adicionales
+        if 'type' not in payload or payload['type'] not in ['access', 'refresh']:
+            logger.warning("Token sin tipo válido")
+            return None
+
+        if 'sub' not in payload:
+            logger.warning("Token sin subject")
+            return None
+
+        logger.info(f"Token validado exitosamente para usuario {payload.get('sub')}")
+        return payload
+
+    except jwt.ExpiredSignatureError:
+        logger.warning("Token expirado")
+        return None
+    except jwt.InvalidTokenError as e:
+        logger.warning(f"Token inválido: {str(e)}")
+        return None
+    except Exception as e:
+        logger.error(f"Error validando token: {str(e)}")
         return None
     
     try:

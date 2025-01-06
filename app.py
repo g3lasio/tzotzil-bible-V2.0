@@ -8,6 +8,10 @@ import logging
 app = Flask(__name__)
 CORS(app)
 
+# Import error handlers
+from error_handlers import register_error_handlers
+register_error_handlers(app)
+
 # Configurar logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
