@@ -20,8 +20,20 @@ localPort = 8081
 externalPort = 8081
 
 [[ports]]
+localPort = 8082
+externalPort = 3001
+
+[[ports]]
+localPort = 8083
+externalPort = 3003
+
+[[ports]]
 localPort = 19006
 externalPort = 3000
+
+[[ports]]
+localPort = 19007
+externalPort = 3002
 
 [nix]
 channel = "stable-24_05"
@@ -69,5 +81,5 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx expo start --web"
-waitForPort = 19006
+args = "cd temp_nevin && EXPO_PORT=8083 npx expo start --web --port=8083"
+waitForPort = 8083
