@@ -1,35 +1,69 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { Title, Card, Text } from 'react-native-paper';
+import { Text, Card, ActivityIndicator, useTheme } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { databaseService } from '../services/DatabaseService';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 type ChapterScreenProps = NativeStackScreenProps<any, 'Chapter'>;
 
-export default function ChapterScreen({ route, navigation }: ChapterScreenProps) {
-  const { book, totalChapters } = route.params;
+type Verse = {
+  verse: number;
+  tzotzil_text: string;
+  spanish_text: string;
+};
 
-  const handleChapterSelect = (chapter: number) => {
-    navigation.navigate('Verses', { book, chapter });
-  };
+export default function ChapterScreen({ route, navigation }: ChapterScreenProps) {
+  const [verses, setVerses] = useState<Verse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { book, chapter = 1 } = route.params;
+  const theme = useTheme();
+
+  useEffect(() => {
+    const loadVerses = async () => {
+      try {
+        const verseData = await databaseService.getVerses(book, chapter);
+        setVerses(verseData);
+      } catch (error) {
+        console.error('Error loading verses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadVerses();
+  }, [book, chapter]);
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={theme.colors.primary} />
+      </View>
+    );
+  }
 
   return (
-    <ScrollView style={styles.container}>
-      <Title style={styles.title}>{book}</Title>
-      <View style={styles.chaptersGrid}>
-        {[...Array(totalChapters)].map((_, index) => (
-          <Card
-            key={index}
-            style={styles.chapterCard}
-            onPress={() => handleChapterSelect(index + 1)}
-          >
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text style={styles.header}>{book} {chapter}</Text>
+        {verses.map((verse) => (
+          <Card key={verse.verse} style={styles.verseCard}>
             <Card.Content>
-              <Text style={styles.chapterNumber}>{index + 1}</Text>
+              <Text variant="bodyLarge" style={styles.verseNumber}>
+                {verse.verse}
+              </Text>
+              <Text variant="bodyMedium" style={styles.tzotzilText}>
+                {verse.tzotzil_text}
+              </Text>
+              <Text variant="bodyMedium" style={styles.spanishText}>
+                {verse.spanish_text}
+              </Text>
             </Card.Content>
           </Card>
         ))}
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -38,24 +72,32 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
-  title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginVertical: 20,
-  },
-  chaptersGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    padding: 8,
+  loadingContainer: {
+    flex: 1,
     justifyContent: 'center',
+    alignItems: 'center',
   },
-  chapterCard: {
-    width: 70,
-    height: 70,
-    margin: 8,
+  scrollContent: {
+    padding: 16,
   },
-  chapterNumber: {
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
     textAlign: 'center',
-    fontSize: 20,
+    marginBottom: 16,
+  },
+  verseCard: {
+    marginBottom: 12,
+    elevation: 2,
+  },
+  verseNumber: {
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  tzotzilText: {
+    marginBottom: 8,
+  },
+  spanishText: {
+    fontStyle: 'italic',
   },
 });
