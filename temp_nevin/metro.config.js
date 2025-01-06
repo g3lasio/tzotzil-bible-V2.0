@@ -1,3 +1,4 @@
+
 const { getDefaultConfig } = require('@expo/metro-config');
 
 /** @type {import('expo/metro-config').MetroConfig} */
@@ -10,9 +11,5 @@ module.exports = {
     assetExts: [...config.resolver.assetExts, 'db', 'sqlite'],
     sourceExts: [...config.resolver.sourceExts],
     platforms: ['ios', 'android', 'web']
-  },
-  transformer: {
-    ...config.transformer,
-    assetPlugins: ['expo-asset/tools/hashAssetFiles']
   }
 };
