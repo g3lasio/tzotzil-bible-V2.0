@@ -1,26 +1,23 @@
 
 [run]
 source = .
-omit = 
-    tests/*
-    temp_nevin/*
-    migrations/*
-    instance/*
-    .expo/*
-    other_authors/*
-    Nevin_AI/*
-    static/*
-    templates/*
-    translations/*
-    venv/*
-    __pycache__/*
-    *.pyc
+omit =
+    */tests/*
+    */__pycache__/*
+    */migrations/*
+    */venv/*
+    */.local/*
+    setup.py
+    */site-packages/*
+    */temp_nevin/*
+    */static/*
+    */templates/*
+    */translations/*
 
 [report]
 exclude_lines =
     pragma: no cover
     def __repr__
-    if self.debug:
     raise NotImplementedError
     if __name__ == .__main__.:
     pass
