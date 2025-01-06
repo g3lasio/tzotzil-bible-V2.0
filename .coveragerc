@@ -1,0 +1,27 @@
+
+[run]
+source = .
+omit = 
+    tests/*
+    temp_nevin/*
+    migrations/*
+    instance/*
+    .expo/*
+    other_authors/*
+    Nevin_AI/*
+    static/*
+    templates/*
+    translations/*
+    venv/*
+    __pycache__/*
+    *.pyc
+
+[report]
+exclude_lines =
+    pragma: no cover
+    def __repr__
+    if self.debug:
+    raise NotImplementedError
+    if __name__ == .__main__.:
+    pass
+    raise ImportError
