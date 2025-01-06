@@ -1,90 +1,78 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import axios from 'axios';
 import { API_URL } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Assumed CacheService implementation (needs to be defined elsewhere)
-class CacheService {
-  static async getCachedVerses(book: string, chapter: number): Promise<any[]> {
-    try {
-      const cachedData = await AsyncStorage.getItem(`verses_${book}_${chapter}`);
-      return cachedData ? JSON.parse(cachedData) : [];
-    } catch (error) {
-      console.error('Error getting cached verses:', error);
-      return [];
-    }
-  }
-
-  static async updateCache(verses: any[]): Promise<void> {
-    try {
-      const book = verses[0].book; // Assuming verses array is not empty and has book property
-      const chapter = verses[0].chapter; // Assuming verses array is not empty and has chapter property
-      await AsyncStorage.setItem(`verses_${book}_${chapter}`, JSON.stringify(verses));
-    } catch (error) {
-      console.error('Error updating cache:', error);
-    }
-  }
+interface BibleVerse {
+  book: string;
+  chapter: number;
+  verse: number;
+  tzotzil_text: string;
+  spanish_text: string;
 }
 
-
 export class BibleService {
-  static async getBooks() {
+  static async getBooks(): Promise<string[]> {
     try {
-      const response = await axios.get(`${API_URL}/api/bible/books`);
-      return response.data;
-    } catch (error) {
-      console.error('Error obteniendo libros:', error);
-      throw error;
-    }
-  }
-
-  static async getChapters(book: string) {
-    try {
-      const response = await axios.get(`${API_URL}/api/bible/chapters/${book}`);
-      return response.data;
-    } catch (error) {
-      console.error('Error obteniendo capítulos:', error);
-      throw error;
-    }
-  }
-
-  static async getVerses(book: string, chapter: number): Promise<any[]> {
-    try {
-      // Intentar obtener del caché primero
-      const cachedVerses = await CacheService.getCachedVerses(book, chapter);
-      if (cachedVerses.length > 0) {
-        return cachedVerses;
+      const cachedBooks = await AsyncStorage.getItem('bible_books');
+      if (cachedBooks) {
+        return JSON.parse(cachedBooks);
       }
 
-      // Si no está en caché, obtener de la API
-      const response = await axios.get(`${API_URL}/chapter/${book}/${chapter}`);
-      const verses = response.data;
+      const response = await axios.get(`${API_URL}/api/bible/books`);
+      await AsyncStorage.setItem('bible_books', JSON.stringify(response.data));
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching books:', error);
+      throw new Error('Error obteniendo libros');
+    }
+  }
 
-      // Actualizar caché
-      await CacheService.updateCache(verses);
-      return verses;
+  static async getChapters(book: string): Promise<number[]> {
+    try {
+      const cacheKey = `chapters_${book}`;
+      const cachedChapters = await AsyncStorage.getItem(cacheKey);
+      if (cachedChapters) {
+        return JSON.parse(cachedChapters);
+      }
+
+      const response = await axios.get(`${API_URL}/api/bible/chapters/${book}`);
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(response.data.chapters));
+      return response.data.chapters;
+    } catch (error) {
+      console.error('Error fetching chapters:', error);
+      throw new Error('Error obteniendo capítulos');
+    }
+  }
+
+  static async getVerses(book: string, chapter: number): Promise<BibleVerse[]> {
+    try {
+      const cacheKey = `verses_${book}_${chapter}`;
+      const cachedVerses = await AsyncStorage.getItem(cacheKey);
+      if (cachedVerses) {
+        return JSON.parse(cachedVerses);
+      }
+
+      const response = await axios.get(`${API_URL}/api/bible/verses/${book}/${chapter}`);
+      await AsyncStorage.setItem(cacheKey, JSON.stringify(response.data.verses));
+      return response.data.verses;
     } catch (error) {
       console.error('Error fetching verses:', error);
-      return [];
+      throw new Error('Error obteniendo versículos');
     }
   }
 
-  static async getFavoriteVerses() {
+  static async clearCache(): Promise<void> {
     try {
-      const favorites = await AsyncStorage.getItem('favorite_verses');
-      return favorites ? JSON.parse(favorites) : [];
+      const keys = await AsyncStorage.getAllKeys();
+      const bibleKeys = keys.filter(key => 
+        key.startsWith('bible_') || 
+        key.startsWith('chapters_') || 
+        key.startsWith('verses_')
+      );
+      await AsyncStorage.multiRemove(bibleKeys);
     } catch (error) {
-      console.error('Error obteniendo versículos favoritos:', error);
-      return [];
-    }
-  }
-
-  static async addFavoriteVerse(verse: any) {
-    try {
-      const favorites = await this.getFavoriteVerses();
-      const updatedFavorites = [...favorites, verse];
-      await AsyncStorage.setItem('favorite_verses', JSON.stringify(updatedFavorites));
-    } catch (error) {
-      console.error('Error guardando versículo favorito:', error);
+      console.error('Error clearing cache:', error);
     }
   }
 }
