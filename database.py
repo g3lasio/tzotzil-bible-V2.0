@@ -59,11 +59,13 @@ class DatabaseManager:
             result = session.execute(text("""
                 SELECT DISTINCT book 
                 FROM bibleverse 
-                ORDER BY CASE 
-                    WHEN book = ANY(ARRAY['Génesis','Éxodo','Levítico']) 
-                    THEN 1 
-                    ELSE 2 
-                END, book
+                ORDER BY CASE book
+                    WHEN 'Génesis' THEN 1
+                    WHEN 'Éxodo' THEN 2
+                    WHEN 'Levítico' THEN 3
+                    -- Add remaining books in biblical order
+                    ELSE 999
+                END
             """)).fetchall()
             
             books = [book[0] for book in result]
