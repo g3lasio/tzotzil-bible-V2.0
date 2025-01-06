@@ -49,9 +49,8 @@ export class DatabaseService {
     const fileInfo = await FileSystem.getInfoAsync(dbPath);
     
     if (!fileInfo.exists) {
-      const dbAsset = require('../../assets/bible_app.db');
-      const asset = Asset.fromModule(dbAsset);
-      await asset.downloadAsync();
+      // Use API instead of local database
+      return await BibleService.getVerses(book, chapter);
       
       const dbFolder = `${FileSystem.documentDirectory}SQLite`;
       await FileSystem.makeDirectoryAsync(dbFolder, { intermediates: true });

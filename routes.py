@@ -16,6 +16,7 @@ import os
 import sqlite3
 import time
 from validation import DataValidator
+from flask_cors import CORS, cross_origin
 
 logger = logging.getLogger(__name__)
 routes = Blueprint('routes', __name__)
@@ -290,6 +291,7 @@ def books():
 @routes.route('/chapter/<book>/<int:chapter>')
 @routes.route('/chapter/<book>')
 @routes.route('/chapter')
+@cross_origin()
 def chapter(book=None, chapter=None):
     try:
         book = book or request.args.get('book')

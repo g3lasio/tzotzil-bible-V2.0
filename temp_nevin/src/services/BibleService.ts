@@ -56,7 +56,7 @@ export class BibleService {
       }
 
       // Si no está en caché, obtener de la API
-      const response = await axios.get(`${API_URL}/api/bible/verses/${book}/${chapter}`);
+      const response = await axios.get(`${API_URL}/chapter/${book}/${chapter}`);
       const verses = response.data;
 
       // Actualizar caché
