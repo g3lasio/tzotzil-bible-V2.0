@@ -49,8 +49,8 @@ def validate_token(token):
     
     try:
         logger.debug(f"Validando token: {token[:10]}...")
-        secret_key = current_app.config.get('SECRET_KEY')
-        logger.debug(f"Usando SECRET_KEY para validación: {secret_key[:4]}...")
+        secret_key = current_app.config.get('JWT_SECRET_KEY', current_app.config.get('SECRET_KEY'))
+        logger.debug(f"Usando JWT_SECRET_KEY para validación")
         
         payload = jwt.decode(
             token,

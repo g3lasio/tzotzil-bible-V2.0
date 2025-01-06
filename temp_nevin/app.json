@@ -1,50 +1,32 @@
+
 {
   "expo": {
-    "name": "Sistema Nevin",
-    "slug": "sistema-nevin",
+    "name": "TzotzilBibleReader",
+    "slug": "tzotzil-bible-reader",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sistemanevin.app",
-      "buildNumber": "1.0.0"
+      "bundleIdentifier": "com.tzotzilbible.reader"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sistemanevin.app",
-      "versionCode": 1,
-      "permissions": [
-        "INTERNET",
-        "ACCESS_NETWORK_STATE"
-      ]
+      "package": "com.tzotzilbible.reader"
     },
-    "plugins": [
-      [
-        "expo-router",
-        {
-          "origin": "root"
-        }
-      ],
-      "expo-sqlite",
-      "expo-file-system",
-      "expo-secure-store",
-      "@react-native-async-storage/async-storage"
-    ],
-    "extra": {
-      "eas": {
-        "projectId": "sistema-nevin"
-      }
-    }
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": []
   }
 }
