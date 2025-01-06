@@ -1,55 +1,17 @@
-import React from 'react';
+
+import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider as PaperProvider } from 'react-native-paper';
+import AppNavigator from './src/navigation/AppNavigator';
 import { StatusBar } from 'expo-status-bar';
-
-// Screens
-import HomeScreen from './src/screens/HomeScreen';
-import BibleScreen from './src/screens/BibleScreen';
-import ChatScreen from './src/screens/ChatScreen';
-import SettingsScreen from './src/screens/SettingsScreen';
-
-const Stack = createNativeStackNavigator();
+import theme from './src/theme';
 
 export default function App() {
   return (
-    <PaperProvider>
+    <PaperProvider theme={theme}>
       <NavigationContainer>
+        <AppNavigator />
         <StatusBar style="auto" />
-        <Stack.Navigator 
-          initialRouteName="Home"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: '#f4511e',
-            },
-            headerTintColor: '#fff',
-            headerTitleStyle: {
-              fontWeight: 'bold',
-            },
-          }}
-        >
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-            options={{ title: 'Nevin' }} 
-          />
-          <Stack.Screen 
-            name="Bible" 
-            component={BibleScreen} 
-            options={{ title: 'Biblia' }} 
-          />
-          <Stack.Screen 
-            name="Chat" 
-            component={ChatScreen} 
-            options={{ title: 'Chat con Nevin' }} 
-          />
-          <Stack.Screen 
-            name="Settings" 
-            component={SettingsScreen} 
-            options={{ title: 'Configuración' }} 
-          />
-        </Stack.Navigator>
       </NavigationContainer>
     </PaperProvider>
   );
