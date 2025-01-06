@@ -10,6 +10,10 @@ export const commonStyles = StyleSheet.create({
     backgroundColor: theme.colors.background,
     padding: theme.spacing.md,
   },
+  gradientContainer: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
   card: {
     backgroundColor: theme.colors.surface,
     borderRadius: theme.borderRadius.md,
@@ -29,20 +33,30 @@ export const commonStyles = StyleSheet.create({
     color: theme.colors.primary,
     marginBottom: theme.spacing.md,
     textAlign: 'center',
+    textShadowColor: theme.colors.glow,
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 4,
   },
   text: {
     fontSize: 16,
     color: theme.colors.text,
     marginBottom: theme.spacing.sm,
   },
-  input: {
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.md,
+  verseContainer: {
     padding: theme.spacing.md,
+    borderBottomWidth: 1,
+    borderColor: `${theme.colors.primary}40`,
+    flexDirection: 'row',
+  },
+  verseNumber: {
+    color: theme.colors.primary,
+    fontSize: 16,
+    marginRight: theme.spacing.md,
+  },
+  verseText: {
     color: theme.colors.text,
-    marginBottom: theme.spacing.md,
+    fontSize: 16,
+    flex: 1,
   },
   button: {
     backgroundColor: theme.colors.primary,
@@ -57,6 +71,15 @@ export const commonStyles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  input: {
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
+    padding: theme.spacing.md,
+    color: theme.colors.text,
+    marginBottom: theme.spacing.md,
+  },
   navContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -64,21 +87,5 @@ export const commonStyles = StyleSheet.create({
     backgroundColor: theme.colors.surface,
     borderTopWidth: 1,
     borderColor: theme.colors.primary,
-  },
-  verseContainer: {
-    flexDirection: 'row',
-    padding: theme.spacing.md,
-    borderBottomWidth: 1,
-    borderColor: theme.colors.primary + '40',
-  },
-  verseNumber: {
-    color: theme.colors.primary,
-    fontSize: 16,
-    marginRight: theme.spacing.md,
-  },
-  verseText: {
-    color: theme.colors.text,
-    fontSize: 16,
-    flex: 1,
   }
 });
