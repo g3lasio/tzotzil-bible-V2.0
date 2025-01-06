@@ -1,4 +1,3 @@
-
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
@@ -18,7 +17,8 @@ cors = CORS(resources={
         "origins": [
             "https://sistema-nevin.replit.app",
             "https://tzotzil-bible-reader.replit.app",
-            "https://nevin-ai.replit.app"
+            "https://nevin-ai.replit.app",
+            "http://localhost:19006"  # Agregado para desarrollo local de React Native/Expo
         ],
         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": [
@@ -47,7 +47,7 @@ def init_extensions(app):
         mail.init_app(app)
         babel.init_app(app)
         cors.init_app(app)
-        
+
         logger.info("Extensiones inicializadas correctamente")
         return True
     except Exception as e:

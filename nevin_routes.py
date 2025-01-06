@@ -1,18 +1,18 @@
 import logging
-from flask import Blueprint, render_template, request, jsonify, session
+from flask import Blueprint, render_template, request, jsonify, session, flash, redirect, url_for
 from flask_login import login_required, current_user
+from auth import token_required
 from attached_assets.chat_request import get_ai_response
-from auth import token_required # Added import statement
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-nevin_bp = Blueprint('nevin_bp', __name__)
+nevin_bp = Blueprint('nevin', __name__, url_prefix='/nevin')
 
 def init_nevin_routes(app):
     """Inicializa las rutas de Nevin"""
     try:
-        app.register_blueprint(nevin_bp, url_prefix='/nevin')
+        app.register_blueprint(nevin_bp)
         logger.info("Nevin blueprint registrado correctamente")
         return True
     except Exception as e:
@@ -27,10 +27,10 @@ def nevin_page(current_user):
         if not current_user.has_nevin_access():
             flash('Tu período de prueba ha terminado. Actualiza a Premium para continuar usando Nevin.', 'warning')
             return redirect(url_for('routes.index'))
-            
+
         user_name = current_user.username.split('@')[0] if '@' in current_user.username else current_user.username
         welcome_message = f"¡Hola {user_name}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?"
-        
+
         return render_template('nevin.html', 
                            welcome_message=welcome_message,
                            user_name=user_name)
@@ -38,21 +38,12 @@ def nevin_page(current_user):
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
-# Nevin AI API Documentation
-"""
-Base URL: /nevin
-Authentication: Premium access required
-
-Available endpoints:
-- GET /nevin: Main Nevin interface
-- POST /nevin/query: Process AI queries
-"""
-
 @nevin_bp.route('/query', methods=['POST'])
-def nevin_query():
+@token_required
+def nevin_query(current_user):
     """
     Process AI queries endpoint
-    
+
     Request body:
     {
         "question": string,
@@ -60,13 +51,15 @@ def nevin_query():
         "language": string (default: Spanish),
         "preferences": object (optional)
     }
-    
-    Returns:
-        200: AI response
-        400: Invalid request
-        401: Unauthorized/No premium access
     """
     try:
+        if not current_user.has_nevin_access():
+            return jsonify({
+                'response': "Necesitas una suscripción premium para usar Nevin.",
+                'success': False,
+                'error': 'no_access'
+            }), 403
+
         data = request.get_json()
         if not data:
             logger.error("No se recibieron datos en la consulta")
@@ -77,8 +70,6 @@ def nevin_query():
             }), 400
 
         question = data.get('question', '').strip()
-        user_id = session.get('user_id')
-        
         if not question:
             logger.warning("Se recibió una pregunta vacía")
             return jsonify({
@@ -105,5 +96,6 @@ def nevin_query():
         logger.error(f"Error procesando consulta: {str(e)}")
         return jsonify({
             'response': "Hubo un error procesando tu pregunta. Por favor, inténtalo de nuevo.",
-            'success': False
+            'success': False,
+            'error': str(e)
         }), 500
