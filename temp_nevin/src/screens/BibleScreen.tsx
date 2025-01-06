@@ -1,68 +1,24 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, FlatList } from 'react-native';
-import { Card, Text, useTheme, ActivityIndicator, Searchbar } from 'react-native-paper';
-import { databaseService } from '../services/DatabaseService';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { View, FlatList, StyleSheet } from 'react-native';
+import { Text, Card, Searchbar, ActivityIndicator, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { commonStyles } from '../styles/common';
 
-type Book = {
-  name: string;
-  chapters: number;
-};
-
-type BibleScreenProps = {
-  navigation: NativeStackNavigationProp<any, 'Bible'>;
-};
-
-const BIBLE_BOOKS: Book[] = [
-  { name: 'Génesis', chapters: 50 },
-  { name: 'Éxodo', chapters: 40 },
-  { name: 'Levítico', chapters: 27 },
-  { name: 'Números', chapters: 36 },
-  { name: 'Deuteronomio', chapters: 34 },
-  // Add more books as needed
-];
-
-export default function BibleScreen({ navigation }: BibleScreenProps) {
-  const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [filteredBooks, setFilteredBooks] = useState(BIBLE_BOOKS);
+export default function BibleScreen({ navigation }) {
   const theme = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [books, setBooks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    const initializeBooks = async () => {
-      try {
-        await databaseService.initDatabase();
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading books:', error);
-        setLoading(false);
-      }
-    };
-
-    initializeBooks();
-  }, []);
-
-  useEffect(() => {
-    const filtered = BIBLE_BOOKS.filter(book => 
-      book.name.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-    setFilteredBooks(filtered);
-  }, [searchQuery]);
-
-  const handleBookSelect = (book: Book) => {
-    navigation.navigate('Chapter', { book: book.name, totalChapters: book.chapters });
-  };
-
-  const renderBookItem = ({ item }: { item: Book }) => (
-    <Card
+  const renderBookItem = ({ item }) => (
+    <Card 
       style={styles.bookCard}
-      onPress={() => handleBookSelect(item)}
+      onPress={() => navigation.navigate('Chapter', { bookId: item.id })}
     >
       <Card.Content>
-        <Text variant="titleMedium">{item.name}</Text>
-        <Text variant="bodyMedium">{item.chapters} capítulos</Text>
+        <Text style={styles.bookTitle}>{item.name}</Text>
+        <Text style={styles.chapterCount}>{item.chapters} capítulos</Text>
       </Card.Content>
     </Card>
   );
@@ -70,7 +26,7 @@ export default function BibleScreen({ navigation }: BibleScreenProps) {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+        <ActivityIndicator size="large" />
       </View>
     );
   }
@@ -79,14 +35,14 @@ export default function BibleScreen({ navigation }: BibleScreenProps) {
     <SafeAreaView style={styles.container}>
       <Searchbar
         placeholder="Buscar libro..."
-        onChangeText={setSearchQuery}
         value={searchQuery}
+        onChangeText={setSearchQuery}
         style={styles.searchBar}
       />
       <FlatList
-        data={filteredBooks}
+        data={books}
         renderItem={renderBookItem}
-        keyExtractor={item => item.name}
+        keyExtractor={item => item.id.toString()}
         contentContainerStyle={styles.listContainer}
       />
     </SafeAreaView>
@@ -112,5 +68,15 @@ const styles = StyleSheet.create({
   },
   bookCard: {
     ...commonStyles.card,
+    marginBottom: 12,
   },
+  bookTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  chapterCount: {
+    fontSize: 14,
+    color: '#666',
+  }
 });
