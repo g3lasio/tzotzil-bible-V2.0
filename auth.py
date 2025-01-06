@@ -1,5 +1,5 @@
 """
-Sistema de autenticación simplificado usando JWT
+Sistema de autenticación usando JWT
 """
 from datetime import datetime, timedelta
 import jwt
@@ -8,13 +8,35 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
 import logging
 from validation import DataValidator
-import random
 
 logger = logging.getLogger(__name__)
-auth = Blueprint('auth', __name__)
+
+# Crear blueprint de autenticación
+auth = Blueprint('auth', __name__, url_prefix='/auth')
 
 # Centralizar configuración de JWT
 JWT_ALGORITHM = 'HS256'
+JWT_EXPIRATION_DAYS = 30
+
+def init_auth_routes(app):
+    """Inicializar rutas de autenticación"""
+    try:
+        if not app:
+            logger.error("Se recibió una instancia de app nula")
+            return False
+
+        app.register_blueprint(auth)
+        logger.info("Blueprint de autenticación registrado correctamente")
+
+        # Configurar JWT
+        app.config['JWT_SECRET_KEY'] = app.config.get('SECRET_KEY')
+        app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+        app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=JWT_EXPIRATION_DAYS)
+
+        return True
+    except Exception as e:
+        logger.error(f"Error inicializando rutas de autenticación: {str(e)}")
+        return False
 
 def generate_token(user_id, is_refresh_token=False):
     """Genera un token JWT para el usuario"""
@@ -138,7 +160,7 @@ def token_required(f):
             if request.endpoint not in ['auth.login', 'auth.register', 'auth.forgot_password', 'static']:
                 flash('Por favor inicia sesión para acceder', 'warning')
                 return redirect(url_for('auth.login'))
-
+        
         payload = validate_token(token)
         if not payload:
             return redirect(url_for('auth.login'))
@@ -177,7 +199,7 @@ Available endpoints:
 def login():
     """
     User authentication endpoint
-    
+
     Methods:
         GET: Returns login page
         POST: Authenticates user
@@ -367,7 +389,6 @@ def init_login_manager(app):
     except Exception as e:
         logger.error(f"Error inicializando login manager: {str(e)}")
         raise
-
 
 @auth.route('/forgot_password', methods=['GET', 'POST'])
 def forgot_password():

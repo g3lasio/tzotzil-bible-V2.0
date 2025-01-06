@@ -4,7 +4,7 @@ from flask_login import login_required, current_user
 from auth import token_required
 from attached_assets.chat_request import get_ai_response
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 nevin_bp = Blueprint('nevin', __name__, url_prefix='/nevin')
@@ -12,6 +12,10 @@ nevin_bp = Blueprint('nevin', __name__, url_prefix='/nevin')
 def init_nevin_routes(app):
     """Inicializa las rutas de Nevin"""
     try:
+        if not app:
+            logger.error("Se recibió una instancia de app nula")
+            return False
+
         app.register_blueprint(nevin_bp)
         logger.info("Nevin blueprint registrado correctamente")
         return True
@@ -41,17 +45,7 @@ def nevin_page(current_user):
 @nevin_bp.route('/query', methods=['POST'])
 @token_required
 def nevin_query(current_user):
-    """
-    Process AI queries endpoint
-
-    Request body:
-    {
-        "question": string,
-        "context": string (optional),
-        "language": string (default: Spanish),
-        "preferences": object (optional)
-    }
-    """
+    """Procesa las consultas a la API de Nevin"""
     try:
         if not current_user.has_nevin_access():
             return jsonify({

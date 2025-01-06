@@ -1,36 +1,15 @@
 <!doctype html>
 <html lang="es" data-bs-theme="dark">
     <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}Tzotzil Bible{% endblock %}</title>
-        <link
-            rel="icon"
-            type="image/png"
-            href="{{ url_for('static', filename='images/Designer.png') }}"
-        />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-            rel="stylesheet"
-        />
-        <link
-            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
-            rel="stylesheet"
-        />
-        <link
-            href="{{ url_for('static', filename='css/style.css') }}"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600&display=swap"
-            rel="stylesheet"
-        />
-        <link
-            href="https://fonts.googleapis.com/css2?family=Exo+2:wght@400;500;600&display=swap"
-            rel="stylesheet"
-        />
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='images/Designer.png') }}" />
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet" />
+        <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" />
+        <!-- Fonts -->
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Poppins:wght@500&family=Fira+Sans:wght@400;500&display=swap" rel="stylesheet"/>
         <style>
             #promise-container {
@@ -74,7 +53,7 @@
     </head>
     <body class="{% block body_class %}{% endblock %}">
         <!-- Navigation -->
-        <nav class="navbar navbar-expand-lg navbar-dark {% if request.endpoint in ['auth.login', 'auth.register'] %}d-none{% endif %}">
+        <nav class="navbar navbar-expand-lg navbar-dark {% if request.endpoint in ['auth.login', 'auth.register', 'auth.forgot_password'] %}d-none{% endif %}">
             <div class="container">
                 <a class="navbar-brand" href="{{ url_for('routes.index') }}">
                     <img
@@ -123,7 +102,7 @@
                         <li class="nav-item">
                             <a
                                 class="nav-link"
-                                href="{{ url_for('nevin_bp.nevin_page') }}"
+                                href="{{ url_for('nevin.nevin_page') }}"
                             >
                                 <i class="bi bi-robot"></i> Nevin AI
                             </a>
@@ -155,7 +134,7 @@
         </main>
 
         <!-- Bottom Navigation -->
-        <nav class="bottom-nav {% if request.endpoint in ['auth.login', 'auth.register'] %}d-none{% endif %}">
+        <nav class="bottom-nav {% if request.endpoint in ['auth.login', 'auth.register', 'auth.forgot_password'] %}d-none{% endif %}">
             <div class="nav-grid">
                 <a
                     href="{{ url_for('routes.search') }}"
@@ -172,13 +151,12 @@
                     <span>Leer</span>
                 </a>
                 <a
-                    href="{{ url_for('nevin_bp.nevin_page') }}"
-                    class="nav-item {% if request.endpoint == 'nevin_bp.nevin_page' %}active{% endif %}"
+                    href="{{ url_for('nevin.nevin_page') }}"
+                    class="nav-item {% if request.endpoint == 'nevin.nevin_page' %}active{% endif %}"
                 >
                     <div class="nav-icon"><i class="bi bi-robot"></i></div>
                     <span>Nevin</span>
                 </a>
-
                 <a
                     href="{{ url_for('routes.settings') }}"
                     class="nav-item {% if request.endpoint == 'routes.settings' %}active{% endif %}"
@@ -188,9 +166,6 @@
                 </a>
             </div>
         </nav>
-
-        <!-- Particle Background Canvas -->
-        <canvas id="particle-background"></canvas>
 
         <!-- JavaScript Dependencies -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -221,17 +196,14 @@
                 toast.appendChild(content);
 
                 const container = document.createElement("div");
-                container.className =
-                    "toast-container position-fixed top-0 end-0 p-3";
+                container.className = "toast-container position-fixed top-0 end-0 p-3";
                 container.appendChild(toast);
                 document.body.appendChild(container);
 
                 const bsToast = new bootstrap.Toast(toast);
                 bsToast.show();
 
-                toast.addEventListener("hidden.bs.toast", () =>
-                    container.remove(),
-                );
+                toast.addEventListener("hidden.bs.toast", () => container.remove());
             };
 
             // Initialize any global functionality if needed
