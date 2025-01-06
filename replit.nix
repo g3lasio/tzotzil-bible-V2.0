@@ -1,6 +1,27 @@
 
 { pkgs }: {
   deps = [
+    pkgs.xcodebuild
+    pkgs.grpc
+    pkgs.which
+    pkgs.gitFull
+    pkgs.zlib
+    pkgs.tk
+    pkgs.tcl
+    pkgs.libwebp
+    pkgs.libtiff
+    pkgs.libjpeg
+    pkgs.libimagequant
+    pkgs.lcms2
+    pkgs.bash
+    pkgs.xsimd
+    pkgs.cacert
+    pkgs.libxcrypt
+    pkgs.libffi
+    pkgs.rustc
+    pkgs.pkg-config
+    pkgs.libiconv
+    pkgs.cargo
     pkgs.python310Full
     pkgs.openssh
     pkgs.redis
