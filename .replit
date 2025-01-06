@@ -1,7 +1,7 @@
 
 language = "nodejs"
 run = "cd temp_nevin && npx expo start --web --port=8083"
-modules = ["nodejs-20"]
+modules = ["nodejs-20", "python-3.11"]
 
 [deployment]
 run = ["sh", "-c", "cd temp_nevin && npm run web"]
@@ -66,7 +66,7 @@ task = "packager.installForAll"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python __init__.py"
+args = "python main.py"
 waitForPort = 5000
 
 [[workflows.workflow]]

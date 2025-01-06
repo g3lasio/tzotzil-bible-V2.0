@@ -1,10 +1,9 @@
-
 from flask import jsonify
 import logging
 from jwt.exceptions import InvalidTokenError, ExpiredSignatureError
 from sqlalchemy.exc import SQLAlchemyError, IntegrityError, DatabaseError
 from werkzeug.exceptions import HTTPException
-from flask_cors import CrossOriginResourceSharing
+from flask_cors import CORS
 
 logger = logging.getLogger(__name__)
 
@@ -47,14 +46,6 @@ def register_error_handlers(app):
             "error": "Error de conexión con la base de datos",
             "code": "DB003"
         }), 503
-
-    @app.errorhandler(CrossOriginResourceSharing.error_response)
-    def handle_cors_error(e):
-        logger.error(f"Error CORS: {str(e)}")
-        return jsonify({
-            "error": "Error de acceso cruzado",
-            "code": "CORS001"
-        }), 403
 
     @app.errorhandler(HTTPException)
     def handle_http_error(e):

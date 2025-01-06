@@ -177,3 +177,11 @@ pytest
 pytest-cov
 pytest-flask
 pytest-mock
+flask
+flask-cors
+flask-login
+flask-migrate
+flask-sqlalchemy
+psycopg2-binary
+python-dotenv
+twilio
