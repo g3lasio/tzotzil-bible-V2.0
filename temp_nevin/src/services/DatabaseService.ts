@@ -1,73 +1,42 @@
 
 import * as SQLite from 'expo-sqlite';
-import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system';
 
-class DatabaseService {
-  private db: SQLite.WebSQLDatabase;
+export class DatabaseService {
+  private db: SQLite.SQLiteDatabase;
 
   constructor() {
-    this.db = SQLite.openDatabase('bible_app.db');
+    this.db = SQLite.openDatabaseSync('bible_app.db');
   }
 
   async initDatabase() {
     try {
-      const exists = await this.checkIfDatabaseExists();
-      if (!exists) {
-        await this.copyDatabase();
-      }
       await this.setupTables();
+      await this.copyDatabaseIfNeeded();
     } catch (error) {
-      console.error('Error inicializando base de datos:', error);
-      throw error;
-    }
-  }
-
-  private async checkIfDatabaseExists() {
-    const dbPath = `${FileSystem.documentDirectory}SQLite/bible_app.db`;
-    const fileInfo = await FileSystem.getInfoAsync(dbPath);
-    return fileInfo.exists;
-  }
-
-  private async copyDatabase() {
-    try {
-      const dbAsset = require('../../assets/bible_app.db');
-      const asset = Asset.fromModule(dbAsset);
-      await asset.downloadAsync();
-      
-      const dbFolder = `${FileSystem.documentDirectory}SQLite`;
-      const folderInfo = await FileSystem.getInfoAsync(dbFolder);
-      if (!folderInfo.exists) {
-        await FileSystem.makeDirectoryAsync(dbFolder, { intermediates: true });
-      }
-      
-      await FileSystem.copyAsync({
-        from: asset.localUri || '',
-        to: `${dbFolder}/bible_app.db`
-      });
-    } catch (error) {
-      console.error('Error copiando base de datos:', error);
+      console.error('Error initializing database:', error);
       throw error;
     }
   }
 
   private async setupTables() {
     const queries = [
-      `CREATE TABLE IF NOT EXISTS user_preferences (
+      `CREATE TABLE IF NOT EXISTS bible_verses (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id TEXT,
-        font_size INTEGER,
-        theme TEXT,
-        language TEXT
-      );`,
-      `CREATE TABLE IF NOT EXISTS favorite_verses (
+        book TEXT,
+        chapter INTEGER,
+        verse INTEGER,
+        tzotzil_text TEXT,
+        spanish_text TEXT
+      )`,
+      `CREATE TABLE IF NOT EXISTS favorites (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id TEXT,
         book TEXT,
         chapter INTEGER,
         verse INTEGER,
         timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
-      );`
+      )`
     ];
 
     for (const query of queries) {
@@ -75,10 +44,29 @@ class DatabaseService {
     }
   }
 
+  private async copyDatabaseIfNeeded() {
+    const dbPath = `${FileSystem.documentDirectory}SQLite/bible_app.db`;
+    const fileInfo = await FileSystem.getInfoAsync(dbPath);
+    
+    if (!fileInfo.exists) {
+      const dbAsset = require('../../assets/bible_app.db');
+      const asset = Asset.fromModule(dbAsset);
+      await asset.downloadAsync();
+      
+      const dbFolder = `${FileSystem.documentDirectory}SQLite`;
+      await FileSystem.makeDirectoryAsync(dbFolder, { intermediates: true });
+      
+      await FileSystem.copyAsync({
+        from: asset.localUri || '',
+        to: dbPath
+      });
+    }
+  }
+
   async executeQuery(query: string, params: any[] = []): Promise<any> {
     return new Promise((resolve, reject) => {
       this.db.transaction(tx => {
-        tx.executeSql(query, params, 
+        tx.executeSql(query, params,
           (_, result) => resolve(result),
           (_, error) => {
             reject(error);
@@ -88,53 +76,15 @@ class DatabaseService {
       });
     });
   }
-}
-
-export const databaseService = new DatabaseService();
-import * as SQLite from 'expo-sqlite';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-class DatabaseService {
-  private db: SQLite.WebSQLDatabase;
-
-  constructor() {
-    this.db = SQLite.openDatabase('bible.db');
-  }
-
-  async initDatabase() {
-    return new Promise((resolve, reject) => {
-      this.db.transaction(tx => {
-        tx.executeSql(
-          `CREATE TABLE IF NOT EXISTS bible_verses (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            book TEXT,
-            chapter INTEGER,
-            verse INTEGER,
-            tzotzil_text TEXT,
-            spanish_text TEXT
-          );`
-        );
-      },
-      error => reject(error),
-      () => resolve(true)
-      );
-    });
-  }
 
   async getVerses(book: string, chapter?: number) {
-    return new Promise((resolve, reject) => {
-      this.db.transaction(tx => {
-        const query = chapter 
-          ? `SELECT * FROM bible_verses WHERE book = ? AND chapter = ?`
-          : `SELECT * FROM bible_verses WHERE book = ?`;
-        const params = chapter ? [book, chapter] : [book];
-        
-        tx.executeSql(query, params,
-          (_, { rows: { _array } }) => resolve(_array),
-          (_, error) => reject(error)
-        );
-      });
-    });
+    const query = chapter 
+      ? `SELECT * FROM bible_verses WHERE book = ? AND chapter = ?`
+      : `SELECT * FROM bible_verses WHERE book = ?`;
+    const params = chapter ? [book, chapter] : [book];
+    
+    const result = await this.executeQuery(query, params);
+    return result.rows._array;
   }
 }
 

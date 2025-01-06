@@ -7,17 +7,20 @@ import { StatusBar } from 'expo-status-bar';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from 'react';
-import * as SQLite from 'expo-sqlite';
+import { databaseService } from './src/services/DatabaseService';
 
 const queryClient = new QueryClient();
 
 export default function App() {
   useEffect(() => {
-    const initializeDatabase = async () => {
-      const db = SQLite.openDatabase('bible.db');
-      // Inicializar tablas locales aquí
+    const initializeApp = async () => {
+      try {
+        await databaseService.initDatabase();
+      } catch (error) {
+        console.error('Error initializing app:', error);
+      }
     };
-    initializeDatabase();
+    initializeApp();
   }, []);
 
   return (
