@@ -15,12 +15,28 @@ mail = Mail()
 babel = Babel()
 cors = CORS(resources={
     r"/api/*": {
-        "origins": ["https://sistema-nevin.replit.app", "https://tzotzil-bible-reader.replit.app"],
-        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization", "X-Requested-With"],
-        "expose_headers": ["Content-Range", "X-Total-Count"],
+        "origins": [
+            "https://sistema-nevin.replit.app",
+            "https://tzotzil-bible-reader.replit.app",
+            "https://nevin-ai.replit.app"
+        ],
+        "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+        "allow_headers": [
+            "Content-Type",
+            "Authorization",
+            "X-Requested-With",
+            "Accept",
+            "Origin",
+            "Cache-Control"
+        ],
+        "expose_headers": [
+            "Content-Range",
+            "X-Total-Count",
+            "X-Rate-Limit-Remaining"
+        ],
         "supports_credentials": True,
-        "max_age": 600
+        "max_age": 3600,
+        "send_wildcard": False
     }
 })
 
