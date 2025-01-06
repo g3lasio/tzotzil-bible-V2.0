@@ -14,13 +14,12 @@ logger = logging.getLogger(__name__)
 auth = Blueprint('auth', __name__)
 
 # Centralizar configuración de JWT
-JWT_EXPIRATION_DAYS = 1
 JWT_ALGORITHM = 'HS256'
 
 def generate_token(user_id, is_refresh_token=False):
     """Genera un token JWT para el usuario"""
     try:
-        expiration = timedelta(days=30 if is_refresh_token else JWT_EXPIRATION_DAYS)
+        expiration = current_app.config['JWT_REFRESH_TOKEN_EXPIRES'] if is_refresh_token else current_app.config['JWT_ACCESS_TOKEN_EXPIRES']
         payload = {
             'exp': datetime.utcnow() + expiration,
             'iat': datetime.utcnow(),

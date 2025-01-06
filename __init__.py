@@ -5,6 +5,7 @@ import os
 import logging
 from flask import Flask
 from extensions import db, init_extensions
+from datetime import timedelta
 
 # Configuración de logging
 logging.basicConfig(
@@ -23,12 +24,10 @@ def create_app():
 
     try:
         # Configuración básica
-        secret_key = os.getenv('SECRET_KEY')
-        if not secret_key:
-            logger.critical("SECRET_KEY no encontrada. Generando una aleatoria...")
-            secret_key = os.urandom(24).hex()
-        app.config['SECRET_KEY'] = secret_key
-        app.config['SECRET_KEY'] = secret_key
+        app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-static-secret-key-here')
+        app.config['JWT_SECRET_KEY'] = app.config['SECRET_KEY']
+        app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(days=1)
+        app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
         logger.info("SECRET_KEY configurada correctamente")
         
         @app.before_request
