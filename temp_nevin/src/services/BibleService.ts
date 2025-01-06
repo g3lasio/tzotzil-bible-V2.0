@@ -1,7 +1,30 @@
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { API_URL } from '../config';
+
+// Assumed CacheService implementation (needs to be defined elsewhere)
+class CacheService {
+  static async getCachedVerses(book: string, chapter: number): Promise<any[]> {
+    try {
+      const cachedData = await AsyncStorage.getItem(`verses_${book}_${chapter}`);
+      return cachedData ? JSON.parse(cachedData) : [];
+    } catch (error) {
+      console.error('Error getting cached verses:', error);
+      return [];
+    }
+  }
+
+  static async updateCache(verses: any[]): Promise<void> {
+    try {
+      const book = verses[0].book; // Assuming verses array is not empty and has book property
+      const chapter = verses[0].chapter; // Assuming verses array is not empty and has chapter property
+      await AsyncStorage.setItem(`verses_${book}_${chapter}`, JSON.stringify(verses));
+    } catch (error) {
+      console.error('Error updating cache:', error);
+    }
+  }
+}
+
 
 export class BibleService {
   static async getBooks() {
@@ -24,13 +47,24 @@ export class BibleService {
     }
   }
 
-  static async getVerses(book: string, chapter: number) {
+  static async getVerses(book: string, chapter: number): Promise<any[]> {
     try {
+      // Intentar obtener del caché primero
+      const cachedVerses = await CacheService.getCachedVerses(book, chapter);
+      if (cachedVerses.length > 0) {
+        return cachedVerses;
+      }
+
+      // Si no está en caché, obtener de la API
       const response = await axios.get(`${API_URL}/api/bible/verses/${book}/${chapter}`);
-      return response.data;
+      const verses = response.data;
+
+      // Actualizar caché
+      await CacheService.updateCache(verses);
+      return verses;
     } catch (error) {
-      console.error('Error obteniendo versículos:', error);
-      throw error;
+      console.error('Error fetching verses:', error);
+      return [];
     }
   }
 
