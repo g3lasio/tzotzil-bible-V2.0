@@ -1,4 +1,3 @@
-
 """
 Módulo principal para inicialización y gestión de la aplicación
 """
@@ -43,16 +42,6 @@ def verify_port_availability(port: int, retries: int = 3, wait_time: int = 2) ->
             logger.error(f"Error verificando puerto {port}: {e}")
     return False
 
-def force_kill_process(pid):
-    """Fuerza el cierre de un proceso"""
-    try:
-        os.kill(pid, signal.SIGTERM)
-        time.sleep(0.5)
-        if psutil.pid_exists(pid):
-            os.kill(pid, signal.SIGKILL)
-    except Exception as e:
-        logger.error(f"Error matando proceso {pid}: {e}")
-
 def cleanup_resources(app=None):
     """Limpia recursos y conexiones antes de iniciar el servidor."""
     try:
@@ -65,29 +54,33 @@ def cleanup_resources(app=None):
                 logger.info("Conexiones de base de datos limpiadas")
 
         port = int(os.environ.get('PORT', 5000))
-        try:
-            for proc in psutil.process_iter(['pid', 'name', 'connections']):
-                try:
-                    for conn in proc.connections():
-                        if hasattr(conn, 'laddr') and conn.laddr.port == port:
-                            logger.warning(f"Forzando cierre de proceso {proc.pid} en puerto {port}")
-                            force_kill_process(proc.pid)
-                except (psutil.NoSuchProcess, psutil.AccessDenied):
-                    continue
+        for proc in psutil.process_iter(['pid', 'name']):
+            try:
+                # Verificar las conexiones de red del proceso
+                proc_connections = proc.connections()
+                for conn in proc_connections:
+                    if conn.laddr.port == port:
+                        logger.warning(f"Forzando cierre de proceso {proc.pid} en puerto {port}")
+                        try:
+                            os.kill(proc.pid, signal.SIGTERM)
+                            time.sleep(0.5)
+                            if psutil.pid_exists(proc.pid):
+                                os.kill(proc.pid, signal.SIGKILL)
+                        except Exception as e:
+                            logger.error(f"Error matando proceso {proc.pid}: {e}")
+            except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.Error) as e:
+                logger.warning(f"No se pudo acceder al proceso: {e}")
+                continue
 
-            if not verify_port_availability(port):
-                logger.error(f"No se pudo liberar el puerto {port}")
-                return False
-
-        except Exception as e:
-            logger.error(f"Error limpiando puerto {port}: {e}")
+        if not verify_port_availability(port):
+            logger.error(f"No se pudo liberar el puerto {port}")
             return False
 
         logger.info("Limpieza de recursos completada exitosamente")
         return True
 
     except Exception as e:
-        logger.error(f"Error fatal en limpieza de recursos: {e}")
+        logger.error(f"Error en limpieza de recursos: {e}")
         return False
 
 def verify_critical_services(app) -> Tuple[bool, str]:
@@ -115,63 +108,25 @@ def verify_critical_services(app) -> Tuple[bool, str]:
     except Exception as e:
         return False, f"Error verificando servicios: {str(e)}"
 
-def start_server(app) -> None:
-    """Inicia el servidor con manejo mejorado de errores y recuperación."""
-    try:
-        services_ok, service_msg = verify_critical_services(app)
-        if not services_ok:
-            raise Exception(f"Servicios críticos no disponibles: {service_msg}")
-
-        if not cleanup_resources(app):
-            raise Exception("No se pudieron limpiar los recursos necesarios")
-
-        port = int(os.environ.get('PORT', 5000))
-        if not verify_port_availability(port):
-            raise Exception(f"Puerto {port} no disponible después de intentos de limpieza")
-
-        def signal_handler(signum, frame):
-            logger.info(f"Señal {signum} recibida, iniciando apagado seguro...")
-            cleanup_resources(app)
-            sys.exit(0)
-
-        signal.signal(signal.SIGTERM, signal_handler)
-        signal.signal(signal.SIGINT, signal_handler)
-
-        server_options = {
-            'host': '0.0.0.0',
-            'port': port,
-            'threaded': True,
-            'use_reloader': False,
-            'debug': False
-        }
-
-        logger.info(f"Iniciando servidor en puerto {port}")
-        app.run(**server_options)
-
-    except Exception as e:
-        logger.error(f"Error fatal iniciando el servidor: {str(e)}")
-        cleanup_resources(app)
-        sys.exit(1)
-
 if __name__ == "__main__":
     try:
         logger.info("=== Iniciando proceso de arranque del servidor ===")
         app = create_app()
         if not app:
             raise Exception("No se pudo crear la aplicación Flask")
-        
-        port = int(os.environ.get('PORT', 5000))
-        app.run(host='0.0.0.0', port=port, debug=False)
-        
+
+        # Limpiar recursos y verificar puerto
+        if not cleanup_resources(app):
+            raise Exception("No se pudieron limpiar los recursos necesarios")
+
+        # Verificar servicios críticos
         services_ok, service_msg = verify_critical_services(app)
         if not services_ok:
             raise Exception(f"Error en servicios críticos: {service_msg}")
-            
-        if not db_monitor.is_running:
-            db_monitor.start()
-            
-        logger.info("=== Iniciando servidor ===")
-        start_server(app)
+
+        port = int(os.environ.get('PORT', 5000))
+        logger.info(f"=== Iniciando servidor en puerto {port} ===")
+        app.run(host='0.0.0.0', port=port, debug=False)
 
     except Exception as e:
         logger.error("=== ERROR FATAL EN ARRANQUE DEL SERVIDOR ===")

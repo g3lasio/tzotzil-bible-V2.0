@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, FlatList } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { Title, Card, Text, ActivityIndicator, TouchableRipple } from 'react-native-paper';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { BIBLE_API_URL } from '@env';
+import { useApiWithCache } from '../hooks/useApiWithCache';
 
 type Book = {
   name: string;
@@ -14,29 +14,11 @@ type BibleScreenProps = {
 };
 
 export default function BibleScreen({ navigation }: BibleScreenProps) {
-  const [loading, setLoading] = useState(true);
-  const [books, setBooks] = useState<Book[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchBooks();
-  }, []);
-
-  const fetchBooks = async () => {
-    try {
-      const response = await fetch(`${BIBLE_API_URL}/api/bible/books`);
-      if (!response.ok) {
-        throw new Error('Error al cargar los libros');
-      }
-      const data = await response.json();
-      setBooks(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      console.error('Error fetching books:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: books, loading, error } = useApiWithCache<Book[]>({
+    endpoint: '/api/bible/books',
+    cacheKey: 'bible_books',
+    expiresIn: 30 * 24 * 60 * 60 * 1000, // 30 días
+  });
 
   const handleBookPress = (book: Book) => {
     navigation.navigate('Chapters', { book: book.name });
