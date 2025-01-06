@@ -95,8 +95,7 @@ export default function BibleScreen({ navigation }: BibleScreenProps) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
+    ...commonStyles.container,
   },
   loadingContainer: {
     flex: 1,
@@ -106,12 +105,12 @@ const styles = StyleSheet.create({
   searchBar: {
     margin: 16,
     elevation: 4,
+    backgroundColor: 'white',
   },
   listContainer: {
     padding: 16,
   },
   bookCard: {
-    marginBottom: 12,
-    elevation: 2,
+    ...commonStyles.card,
   },
 });
