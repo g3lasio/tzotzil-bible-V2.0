@@ -21,6 +21,7 @@
     "expo": "~49.0.0",
     "expo-cli": "^6.3.12",
     "expo-file-system": "^18.0.6",
+    "expo-in-app-purchases": "^14.5.0",
     "expo-sqlite": "^15.0.5",
     "expo-status-bar": "~1.6.0",
     "metro-config": "^0.81.0",

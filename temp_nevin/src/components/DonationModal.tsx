@@ -13,27 +13,24 @@ const DONATION_ITEMS = [
   { amount: '5.00', sku: 'donation_5' },
   { amount: '10.00', sku: 'donation_10' },
   { amount: '20.00', sku: 'donation_20' },
-];
+] as const;
 
 export default function DonationModal({ visible, onDismiss, onDonationComplete }: DonationModalProps) {
   const handleDonation = async (sku: string) => {
     try {
       // Conectar con el servicio de pagos
       await InAppPurchases.connectAsync();
-      
+
       // Obtener productos disponibles
       const { responseCode, results } = await InAppPurchases.getProductsAsync([sku]);
-      
+
       if (responseCode === InAppPurchases.IAPResponseCode.OK && results.length > 0) {
         // Iniciar la compra
-        await InAppPurchases.purchaseItemAsync(sku);
-        
-        // Escuchar el evento de compra completada
-        InAppPurchases.setPurchaseListener(({ responseCode, results }) => {
-          if (responseCode === InAppPurchases.IAPResponseCode.OK) {
-            onDonationComplete();
-          }
-        });
+        const { purchaseHistoryResponseCode } = await InAppPurchases.purchaseItemAsync(sku);
+
+        if (purchaseHistoryResponseCode === InAppPurchases.IAPResponseCode.OK) {
+          onDonationComplete();
+        }
       }
     } catch (error) {
       console.error('Error procesando donación:', error);
@@ -44,11 +41,14 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
     <Portal>
       <Modal visible={visible} onDismiss={onDismiss} contentContainerStyle={styles.container}>
         <Surface style={styles.surface}>
-          <Text style={styles.title}>Apoya Nuestro Ministerio</Text>
-          <Text style={styles.description}>
-            Tu donación nos ayuda a continuar compartiendo la Palabra de Dios en español y tzotzil.
+          <Text variant="headlineMedium" style={styles.title}>
+            Apoya Nuestro Ministerio
           </Text>
-          
+          <Text variant="bodyMedium" style={styles.description}>
+            Tu donación nos ayuda a continuar compartiendo la Palabra de Dios 
+            en español y tzotzil.
+          </Text>
+
           <ScrollView style={styles.optionsContainer}>
             {DONATION_ITEMS.map((item) => (
               <Button
@@ -61,8 +61,12 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
               </Button>
             ))}
           </ScrollView>
-          
-          <Button onPress={onDismiss} style={styles.cancelButton}>
+
+          <Button 
+            mode="text" 
+            onPress={onDismiss} 
+            style={styles.cancelButton}
+          >
             Cancelar
           </Button>
         </Surface>
@@ -74,6 +78,7 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
 const styles = StyleSheet.create({
   container: {
     padding: 20,
+    margin: 20,
   },
   surface: {
     padding: 20,
@@ -81,13 +86,10 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 10,
   },
   description: {
-    fontSize: 16,
     textAlign: 'center',
     marginBottom: 20,
     color: '#666',
