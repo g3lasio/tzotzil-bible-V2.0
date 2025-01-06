@@ -1,52 +1,29 @@
 
-import { MD3LightTheme, configureFonts } from 'react-native-paper';
-
-const fontConfig = {
-  android: {
-    regular: {
-      fontFamily: 'sans-serif',
-      fontWeight: 'normal',
-    },
-    medium: {
-      fontFamily: 'sans-serif-medium',
-      fontWeight: 'normal',
-    },
-    light: {
-      fontFamily: 'sans-serif-light',
-      fontWeight: 'normal',
-    },
-    thin: {
-      fontFamily: 'sans-serif-thin',
-      fontWeight: 'normal',
-    },
-  },
-  ios: {
-    regular: {
-      fontFamily: 'System',
-      fontWeight: '400',
-    },
-    medium: {
-      fontFamily: 'System',
-      fontWeight: '500',
-    },
-    light: {
-      fontFamily: 'System',
-      fontWeight: '300',
-    },
-    thin: {
-      fontFamily: 'System',
-      fontWeight: '100',
-    },
-  },
-};
+import { MD3LightTheme } from 'react-native-paper';
 
 export const theme = {
   ...MD3LightTheme,
   colors: {
     ...MD3LightTheme.colors,
-    primary: '#0984e3',
-    secondary: '#00b894',
-    background: '#f5f6fa',
+    primary: '#00f3ff',
+    secondary: '#0066cc',
+    background: '#0d1117',
+    surface: '#090d13',
+    text: '#e6f3ff',
+    textSecondary: '#99ccff',
+    accent: '#007fff',
+    glow: '#00f3ff',
   },
-  fonts: configureFonts({config: fontConfig}),
+  spacing: {
+    xs: 4,
+    sm: 8,
+    md: 16,
+    lg: 24,
+    xl: 32
+  },
+  borderRadius: {
+    sm: 4,
+    md: 8,
+    lg: 16
+  }
 };

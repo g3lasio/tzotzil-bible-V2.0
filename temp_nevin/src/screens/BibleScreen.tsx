@@ -59,24 +59,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   searchBar: {
-    margin: 16,
-    elevation: 4,
-    backgroundColor: 'white',
+    margin: theme.spacing.md,
+    backgroundColor: theme.colors.surface,
+    borderWidth: 1,
+    borderColor: theme.colors.primary,
+    borderRadius: theme.borderRadius.md,
   },
   listContainer: {
-    padding: 16,
+    padding: theme.spacing.md,
   },
   bookCard: {
     ...commonStyles.card,
-    marginBottom: 12,
   },
   bookTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 4,
+    color: theme.colors.primary,
+    marginBottom: theme.spacing.sm,
   },
   chapterCount: {
     fontSize: 14,
-    color: '#666',
+    color: theme.colors.textSecondary,
   }
-});
+});;
