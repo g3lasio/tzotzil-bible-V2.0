@@ -93,13 +93,13 @@ class DatabaseManager:
             if chapter is None:
                 # Solo obtenemos los números de capítulo distintos
                 query = text("""
-                    SELECT DISTINCT CAST(chapter AS INTEGER) as chapter
+                    SELECT DISTINCT CAST(chapter AS INTEGER) as chapter_num
                     FROM bibleverse 
                     WHERE book = :book 
-                    ORDER BY chapter
+                    ORDER BY chapter_num
                 """)
                 result = session.execute(query, {'book': book}).fetchall()
-                chapters = [row.chapter for row in result] # Corrected line
+                chapters = [int(row[0]) for row in result]
                 return {
                     'success': True,
                     'data': {'chapters': chapters},
