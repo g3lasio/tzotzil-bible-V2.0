@@ -6,7 +6,14 @@ from routes import init_routes
 import logging
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["https://sistema-nevin.replit.app", "https://tzotzil-bible-reader.replit.app"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
+        "supports_credentials": True
+    }
+})
 
 # Import error handlers
 from error_handlers import register_error_handlers
