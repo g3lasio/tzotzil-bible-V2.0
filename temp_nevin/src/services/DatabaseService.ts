@@ -91,3 +91,51 @@ class DatabaseService {
 }
 
 export const databaseService = new DatabaseService();
+import * as SQLite from 'expo-sqlite';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+class DatabaseService {
+  private db: SQLite.WebSQLDatabase;
+
+  constructor() {
+    this.db = SQLite.openDatabase('bible.db');
+  }
+
+  async initDatabase() {
+    return new Promise((resolve, reject) => {
+      this.db.transaction(tx => {
+        tx.executeSql(
+          `CREATE TABLE IF NOT EXISTS bible_verses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            book TEXT,
+            chapter INTEGER,
+            verse INTEGER,
+            tzotzil_text TEXT,
+            spanish_text TEXT
+          );`
+        );
+      },
+      error => reject(error),
+      () => resolve(true)
+      );
+    });
+  }
+
+  async getVerses(book: string, chapter?: number) {
+    return new Promise((resolve, reject) => {
+      this.db.transaction(tx => {
+        const query = chapter 
+          ? `SELECT * FROM bible_verses WHERE book = ? AND chapter = ?`
+          : `SELECT * FROM bible_verses WHERE book = ?`;
+        const params = chapter ? [book, chapter] : [book];
+        
+        tx.executeSql(query, params,
+          (_, { rows: { _array } }) => resolve(_array),
+          (_, error) => reject(error)
+        );
+      });
+    });
+  }
+}
+
+export const databaseService = new DatabaseService();
