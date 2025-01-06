@@ -20,25 +20,27 @@ class User(db.Model):
 class DatabaseManager:
     def __init__(self):
         self._initialized = False
-        
+        self._session = None # Initialize session attribute
+
     def get_session(self):
         """Obtiene una sesión de base de datos con validación"""
-        if not hasattr(g, 'db_session'):
-            g.db_session = db.session
+        if self._session is None:
+            self._session = db.session
         try:
-            g.db_session.execute(text('SELECT 1'))
-            return g.db_session
+            self._session.execute(text('SELECT 1'))
+            return self._session
         except Exception as e:
             logger.error(f"Error de conexión a base de datos: {str(e)}")
-            if hasattr(g, 'db_session'):
-                g.db_session.rollback()
-            g.db_session = db.session()
-            return g.db_session
+            if self._session:
+                self._session.rollback()
+            self._session = db.session()
+            return self._session
         except Exception as e:
             logger.error(f"Error de sesión de base de datos: {str(e)}")
-            g.db_session.rollback()
-            g.db_session = db.session
-            return g.db_session
+            if self._session:
+                self._session.rollback()
+            self._session = db.session
+            return self._session
 
     def get_books(self):
         """Obtener lista de libros ordenada con caché."""
@@ -57,7 +59,11 @@ class DatabaseManager:
             result = session.execute(text("""
                 SELECT DISTINCT book 
                 FROM bibleverse 
-                ORDER BY book ASC
+                ORDER BY CASE 
+                    WHEN book = ANY(ARRAY['Génesis','Éxodo','Levítico']) 
+                    THEN 1 
+                    ELSE 2 
+                END, book
             """)).fetchall()
             
             books = [book[0] for book in result]
@@ -112,12 +118,12 @@ class DatabaseManager:
                 verses = []
                 for row in result:
                     verses.append({
-                        'id': row.id,
-                        'book': row.book,
-                        'chapter': row.chapter,
-                        'verse': row.verse,
-                        'spanish_text': row.spanish_text,
-                        'tzotzil_text': row.tzotzil_text
+                        'id': row[0],
+                        'book': row[1],
+                        'chapter': row[2],
+                        'verse': row[3],
+                        'spanish_text': row[4],
+                        'tzotzil_text': row[5]
                     })
                 return {
                     'success': True,
