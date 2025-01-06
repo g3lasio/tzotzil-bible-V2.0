@@ -30,7 +30,12 @@
       ]
     },
     "plugins": [
-      "expo-router",
+      [
+        "expo-router",
+        {
+          "origin": "root"
+        }
+      ],
       "expo-sqlite",
       "expo-file-system",
       "expo-secure-store",

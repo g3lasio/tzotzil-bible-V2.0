@@ -24,6 +24,7 @@
     "expo-file-system": "^18.0.6",
     "expo-in-app-purchases": "^14.5.0",
     "expo-local-authentication": "^15.0.1",
+    "expo-router": "^4.0.15",
     "expo-secure-store": "^14.0.0",
     "expo-sqlite": "^15.0.5",
     "expo-status-bar": "~1.6.0",

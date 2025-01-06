@@ -1,45 +1,19 @@
-import React from 'react';
+
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { NavigationContainer } from '@react-navigation/native';
-import NevinChatScreen from '../screens/NevinChatScreen';
-import SettingsScreen from '../screens/SettingsScreen';
 import HomeScreen from '../screens/HomeScreen';
+import BibleScreen from '../screens/BibleScreen';
+import ChatScreen from '../screens/ChatScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 const Stack = createNativeStackNavigator();
 
-export const AppNavigator = () => {
+export default function AppNavigator() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: '#f4511e',
-          },
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      >
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ title: 'Inicio' }}
-        />
-        <Stack.Screen 
-          name="NevinChat" 
-          component={NevinChatScreen} 
-          options={{ title: 'Chat con Nevin' }}
-        />
-        <Stack.Screen 
-          name="Settings" 
-          component={SettingsScreen} 
-          options={{ title: 'Configuración' }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Stack.Navigator initialRouteName="Home">
+      <Stack.Screen name="Home" component={HomeScreen} />
+      <Stack.Screen name="Bible" component={BibleScreen} />
+      <Stack.Screen name="Chat" component={ChatScreen} />
+      <Stack.Screen name="Settings" component={SettingsScreen} />
+    </Stack.Navigator>
   );
-};
-
-export default AppNavigator;
+}
