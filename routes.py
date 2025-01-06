@@ -203,10 +203,55 @@ def validate_test():
         }), 500
 
 
+@routes.route('/daily_promise', methods=['GET'])
+def daily_promise():
+    try:
+        # Obtener la fecha actual en UTC
+        today = datetime.utcnow().date()
+        
+        # Usar el día del año como semilla para obtener una promesa consistente
+        day_of_year = today.timetuple().tm_yday
+        
+        # Contar total de promesas
+        total_promises = db.session.query(Promise).count()
+        if total_promises == 0:
+            logger.warning("No hay promesas disponibles en la base de datos")
+            return jsonify({
+                'status': 'error',
+                'message': 'No hay promesas disponibles'
+            }), 404
+            
+        # Usar el módulo para obtener un índice consistente para el día
+        promise_index = day_of_year % total_promises
+        
+        # Obtener la promesa del día
+        daily_promise = db.session.query(Promise).offset(promise_index).limit(1).first()
+        
+        if not daily_promise:
+            logger.error("Error al obtener la promesa diaria")
+            return jsonify({
+                'status': 'error',
+                'message': 'Error al obtener la promesa diaria'
+            }), 500
+
+        return jsonify({
+            'status': 'success',
+            'verse_text': daily_promise.verse_text,
+            'background_image': daily_promise.background_image,
+            'book_reference': daily_promise.book_reference,
+            'date': today.isoformat()
+        })
+        
+    except Exception as e:
+        logger.error(f"Error al obtener la promesa diaria: {str(e)}")
+        return jsonify({
+            'status': 'error',
+            'message': 'Error al obtener la promesa diaria'
+        }), 500
+
 @routes.route('/random_promise')
 def random_promise():
     try:
-        # Intentar obtener una promesa aleatoria directamente con SQL
         random_promise = db.session.query(Promise).order_by(func.random()).first()
 
         if not random_promise:
