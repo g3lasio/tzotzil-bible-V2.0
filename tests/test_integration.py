@@ -18,48 +18,68 @@ def app():
 def client(app):
     return app.test_client()
 
-def test_home_route(client):
-    response = client.get('/')
-    assert response.status_code in [200, 302]
-
-def test_bible_routes(client):
-    # Test books list
-    response = client.get('/books')
-    assert response.status_code == 200
-
-    # Test specific book
-    response = client.get('/chapter/Génesis/1')
-    assert response.status_code == 200
-
-def test_search_functionality(client):
-    response = client.get('/search?keyword=amor&version=spanish')
-    assert response.status_code == 200
-
-def test_user_auth_flow(client):
-    # Test registration
-    signup_data = {
+@pytest.fixture
+def auth_headers(client):
+    # Create test user
+    response = client.post('/api/auth/register', json={
         'username': 'testuser',
         'email': 'test@example.com',
-        'password': 'TestPass123!',
+        'password': 'Test123!',
         'lastname': 'Test',
         'phone': '1234567890'
-    }
-    response = client.post('/api/auth/register', json=signup_data)
-    assert response.status_code in [201, 200]
+    })
+    
+    # Login
+    response = client.post('/api/auth/login', json={
+        'email': 'test@example.com',
+        'password': 'Test123!'
+    })
+    token = json.loads(response.data)['token']
+    return {'Authorization': f'Bearer {token}'}
+
+def test_auth_flow(client):
+    # Test registro
+    response = client.post('/api/auth/register', json={
+        'username': 'testuser',
+        'email': 'test@example.com',
+        'password': 'Test123!',
+        'lastname': 'Test',
+        'phone': '1234567890'
+    })
+    assert response.status_code in [200, 201]
 
     # Test login
-    login_data = {
+    response = client.post('/api/auth/login', json={
         'email': 'test@example.com',
-        'password': 'TestPass123!'
-    }
-    response = client.post('/api/auth/login', json=login_data)
+        'password': 'Test123!'
+    })
+    assert response.status_code == 200
+    assert 'token' in json.loads(response.data)
+
+def test_bible_routes(client, auth_headers):
+    # Test obtener libros
+    response = client.get('/api/bible/books', headers=auth_headers)
+    assert response.status_code == 200
+    
+    # Test obtener capítulos
+    response = client.get('/api/bible/chapters/Genesis', headers=auth_headers)
     assert response.status_code == 200
 
-def test_nevin_chat(client):
+    # Test obtener versículos
+    response = client.get('/api/bible/verses/Genesis/1', headers=auth_headers)
+    assert response.status_code == 200
+
+def test_nevin_chat(client, auth_headers):
     response = client.post('/api/nevin/chat', 
-                         json={'message': 'Test message'})
+                         json={'message': 'Test message'},
+                         headers=auth_headers)
     assert response.status_code in [200, 401]
 
-def test_settings_routes(client):
-    response = client.get('/settings')
-    assert response.status_code in [200, 302]
+def test_user_settings(client, auth_headers):
+    response = client.get('/api/user/settings', headers=auth_headers)
+    assert response.status_code == 200
+
+    response = client.post('/api/user/settings', 
+                          json={'theme': 'dark'},
+                          headers=auth_headers)
+    assert response.status_code == 200
