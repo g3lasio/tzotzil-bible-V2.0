@@ -614,7 +614,7 @@ def get_chapters(book):
 
 @routes.route('/validate', methods=['POST'])
 @login_required
-def validate():
+def validate_data():
     """Validate data based on the request body"""
     try:
         data = request.get_json()
