@@ -1,36 +1,79 @@
+
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Title, Card, Paragraph, Button, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, FlatList, ActivityIndicator } from 'react-native';
+import { Title, Card, Text, useTheme } from 'react-native-paper';
+import { databaseService } from '../services/DatabaseService';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 type BibleScreenProps = {
   navigation: NativeStackNavigationProp<any, 'Bible'>;
 };
 
+type Book = {
+  name: string;
+  chapters: number;
+};
+
+const BIBLE_BOOKS: Book[] = [
+  { name: 'Génesis', chapters: 50 },
+  { name: 'Éxodo', chapters: 40 },
+  { name: 'Levítico', chapters: 27 },
+  // Añadir más libros según sea necesario
+];
+
 export default function BibleScreen({ navigation }: BibleScreenProps) {
   const [loading, setLoading] = useState(true);
-  const [books, setBooks] = useState<any[]>([]);
+  const theme = useTheme();
 
   useEffect(() => {
-    // Aquí implementaremos la carga de libros desde la API
-    setLoading(false);
+    const initializeBooks = async () => {
+      try {
+        await databaseService.initDatabase();
+        setLoading(false);
+      } catch (error) {
+        console.error('Error loading books:', error);
+        setLoading(false);
+      }
+    };
+
+    initializeBooks();
   }, []);
+
+  const handleBookSelect = (book: Book) => {
+    navigation.navigate('Chapter', { book: book.name, totalChapters: book.chapters });
+  };
+
+  const renderBookItem = ({ item }: { item: Book }) => (
+    <Card
+      style={styles.bookCard}
+      onPress={() => handleBookSelect(item)}
+    >
+      <Card.Content>
+        <Text variant="titleMedium">{item.name}</Text>
+        <Text variant="bodyMedium">{item.chapters} capítulos</Text>
+      </Card.Content>
+    </Card>
+  );
 
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={theme.colors.primary} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Title style={styles.title}>Biblia</Title>
-      <View style={styles.booksContainer}>
-        {/* Aquí irá la lista de libros */}
-      </View>
-    </ScrollView>
+      <FlatList
+        data={BIBLE_BOOKS}
+        renderItem={renderBookItem}
+        keyExtractor={(item) => item.name}
+        numColumns={2}
+        contentContainerStyle={styles.listContainer}
+      />
+    </View>
   );
 }
 
@@ -50,9 +93,12 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginVertical: 20,
   },
-  booksContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  listContainer: {
+    paddingBottom: 16,
+  },
+  bookCard: {
+    flex: 1,
+    margin: 8,
+    elevation: 2,
   },
 });
