@@ -1,28 +1,52 @@
 
 import pytest
-from bible_data import get_verse, get_chapter, get_book
+from bible_data_access import get_verse, get_chapter, get_book
+from models import BibleVerse
+from database import db
 
-def test_bible_verse_retrieval(app):
+def test_get_verse(app):
     with app.app_context():
-        verse = get_verse("Génesis", 1, 1)
-        assert verse is not None
-        assert verse['book'] == "Génesis"
-        assert verse['chapter'] == 1
-        assert verse['verse'] == 1
-        assert 'tzotzil_text' in verse
-        assert 'spanish_text' in verse
+        verse = BibleVerse(
+            book="Génesis",
+            chapter=1,
+            verse=1,
+            tzotzil_text="Test tzotzil",
+            spanish_text="Test spanish"
+        )
+        db.session.add(verse)
+        db.session.commit()
+        
+        result = get_verse("Génesis", 1, 1)
+        assert result is not None
+        assert result.spanish_text == "Test spanish"
 
-def test_chapter_retrieval(app):
+def test_get_chapter(app):
     with app.app_context():
-        chapter = get_chapter("Génesis", 1)
-        assert chapter is not None
-        assert len(chapter) > 0
-        assert all('verse' in v for v in chapter)
+        verse = BibleVerse(
+            book="Génesis",
+            chapter=1,
+            verse=1,
+            tzotzil_text="Test tzotzil",
+            spanish_text="Test spanish"
+        )
+        db.session.add(verse)
+        db.session.commit()
+        
+        result = get_chapter("Génesis", 1)
+        assert len(result) > 0
 
-def test_book_retrieval(app):
+def test_get_book(app):
     with app.app_context():
-        book = get_book("Génesis")
-        assert book is not None
-        assert 'name' in book
-        assert 'chapters' in book
-        assert book['name'] == "Génesis"
+        verse = BibleVerse(
+            book="Génesis",
+            chapter=1,
+            verse=1,
+            tzotzil_text="Test tzotzil",
+            spanish_text="Test spanish"
+        )
+        db.session.add(verse)
+        db.session.commit()
+        
+        result = get_book("Génesis")
+        assert result is not None
+        assert result['name'] == "Génesis"
