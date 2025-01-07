@@ -1,9 +1,16 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
+
+// Configuración base de la API según la plataforma
+const BASE_URL = Platform.select({
+  web: 'http://localhost:5000',
+  default: 'http://10.0.2.2:5000', // Para emulador Android
+});
 
 // Crear instancia de axios con configuración base
 export const api = axios.create({
-  baseURL: 'http://localhost:5000', // URL del servidor Flask
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -11,7 +18,7 @@ export const api = axios.create({
 
 // Interceptor para agregar el token de autenticación
 api.interceptors.request.use(async (config) => {
-  const token = await SecureStore.getItemAsync('auth_token');
+  const token = await SecureStore.getItemAsync('user_token');
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -26,8 +33,12 @@ api.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Token expirado o inválido
-      await SecureStore.deleteItemAsync('auth_token');
-      // Aquí podrías redirigir al login si lo necesitas
+      await SecureStore.deleteItemAsync('user_token');
+      await SecureStore.deleteItemAsync('user_data');
+      // Aquí podrías disparar un evento para redireccionar al login
+      if (typeof window !== 'undefined') { //Check if it is a browser environment
+          window.location.href = '/auth/login';
+      }
     }
     return Promise.reject(error);
   }

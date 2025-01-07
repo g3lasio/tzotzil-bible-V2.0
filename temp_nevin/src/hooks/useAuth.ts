@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
 import { LoginCredentials, RegisterCredentials, User } from '../types/auth';
 import { AuthService } from '../services/AuthService';
 
@@ -26,7 +25,7 @@ export function useAuth() {
   const login = async (credentials: LoginCredentials) => {
     try {
       setError(null);
-      const { token, user } = await AuthService.login(credentials.email, credentials.password);
+      const { user } = await AuthService.login(credentials.email, credentials.password);
       setUser(user);
     } catch (err) {
       setError('Error al iniciar sesión');
@@ -37,7 +36,7 @@ export function useAuth() {
   const register = async (credentials: RegisterCredentials) => {
     try {
       setError(null);
-      const { token, user } = await AuthService.register(credentials);
+      const { user } = await AuthService.register(credentials);
       setUser(user);
     } catch (err) {
       setError('Error al registrar usuario');

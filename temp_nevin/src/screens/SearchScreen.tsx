@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, TextInput, Button, Checkbox, Card, ActivityIndicator, SegmentedButtons } from 'react-native-paper';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import { Text, TextInput, Button, Checkbox, Card, ActivityIndicator, SegmentedButtons, Chip } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { api } from '../services/api';
-import { useNavigation } from '@react-navigation/native';
+import { useApiWithCache } from '../hooks/useApiWithCache';
 import { SearchResult, SearchParams } from '../types/search';
 import { books } from '../constants/bible';
 
@@ -18,12 +18,26 @@ export default function SearchScreen() {
   });
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<SearchResult[]>([]);
-  const navigation = useNavigation();
+  const [showFilters, setShowFilters] = useState(false);
+
+  // Asegurarse de que al menos una versión esté seleccionada
+  const handleVersionChange = (version: 'tzotzil' | 'spanish') => {
+    const otherVersion = version === 'tzotzil' ? 'spanish' : 'tzotzil';
+    setSearchParams(prev => ({
+      ...prev,
+      versions: {
+        ...prev.versions,
+        [version]: !prev.versions[version],
+        // Si se está desmarcando la única versión seleccionada, marcar la otra
+        [otherVersion]: prev.versions[version] && !prev.versions[otherVersion] 
+          ? true 
+          : prev.versions[otherVersion]
+      }
+    }));
+  };
 
   const handleSearch = async () => {
-    if (!searchParams.keyword.trim()) {
-      return;
-    }
+    if (!searchParams.keyword.trim()) return;
 
     try {
       setLoading(true);
@@ -44,105 +58,119 @@ export default function SearchScreen() {
     }
   };
 
-  const handleLanguageChange = (language: 'tzotzil' | 'spanish') => {
-    setSearchParams(prev => ({
-      ...prev,
-      versions: {
-        ...prev.versions,
-        [language]: !prev.versions[language],
-      }
-    }));
-  };
-
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <Text variant="headlineMedium" style={styles.title}>
-          Búsqueda Bíblica
-        </Text>
-        <Text style={styles.subtitle}>
-          Busca versículos en Tzotzil y Español
-        </Text>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.keyboardAvoid}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text variant="headlineMedium" style={styles.title}>
+            Búsqueda Bíblica
+          </Text>
+          <Text style={styles.subtitle}>
+            Busca versículos en Tzotzil y Español
+          </Text>
 
-        <Card style={styles.searchCard}>
-          <Card.Content>
-            <TextInput
-              label="Buscar versículo, palabra clave o referencia..."
-              value={searchParams.keyword}
-              onChangeText={(text) => setSearchParams(prev => ({ ...prev, keyword: text }))}
-              mode="outlined"
-              style={styles.input}
-              right={loading ? <TextInput.Icon icon="loading" /> : undefined}
-            />
-
-            <View style={styles.filtersContainer}>
-              <Text variant="titleMedium" style={styles.filterTitle}>Idiomas</Text>
-              <View style={styles.checkboxContainer}>
-                <Checkbox.Android
-                  status={searchParams.versions.tzotzil ? 'checked' : 'unchecked'}
-                  onPress={() => handleLanguageChange('tzotzil')}
-                />
-                <Text>Tzotzil</Text>
-              </View>
-              <View style={styles.checkboxContainer}>
-                <Checkbox.Android
-                  status={searchParams.versions.spanish ? 'checked' : 'unchecked'}
-                  onPress={() => handleLanguageChange('spanish')}
-                />
-                <Text>Español</Text>
-              </View>
-
-              <Text variant="titleMedium" style={[styles.filterTitle, styles.marginTop]}>
-                Libro
-              </Text>
-              <SegmentedButtons
-                value={searchParams.book}
-                onValueChange={(value) => 
-                  setSearchParams(prev => ({ ...prev, book: value }))
-                }
-                buttons={[
-                  { value: 'all', label: 'Todos' },
-                  ...books.map(book => ({
-                    value: book,
-                    label: book,
-                  }))
-                ]}
-                style={styles.segmentedButtons}
-              />
-            </View>
-
-            <Button
-              mode="contained"
-              onPress={handleSearch}
-              loading={loading}
-              style={styles.button}
-              disabled={!searchParams.keyword.trim() || 
-                (!searchParams.versions.tzotzil && !searchParams.versions.spanish)}
-            >
-              Buscar
-            </Button>
-          </Card.Content>
-        </Card>
-
-        {loading && (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" />
-            <Text style={styles.loadingText}>Buscando versículos...</Text>
-          </View>
-        )}
-
-        {results.map((result, index) => (
-          <Card key={index} style={styles.resultCard}>
+          <Card style={styles.searchCard}>
             <Card.Content>
-              <Text variant="titleMedium">{result.reference}</Text>
-              <Text style={styles.verseText}>{result.text}</Text>
-              <Text variant="labelSmall" style={styles.versionText}>
-                {result.version === 'tzotzil' ? 'Tzotzil' : 'Español'}
-              </Text>
+              <TextInput
+                label="Buscar versículo, palabra clave o referencia..."
+                value={searchParams.keyword}
+                onChangeText={(text) => setSearchParams(prev => ({ ...prev, keyword: text }))}
+                mode="outlined"
+                style={styles.input}
+                right={loading ? <TextInput.Icon icon="loading" /> : 
+                  <TextInput.Icon icon="magnify" onPress={handleSearch} />}
+                onSubmitEditing={handleSearch}
+              />
+
+              <Button
+                mode="outlined"
+                onPress={() => setShowFilters(!showFilters)}
+                icon={showFilters ? "chevron-up" : "chevron-down"}
+                style={styles.filterButton}
+              >
+                Filtros de búsqueda
+              </Button>
+
+              {showFilters && (
+                <View style={styles.filtersContainer}>
+                  <Text variant="titleMedium" style={styles.filterTitle}>
+                    Idiomas
+                  </Text>
+                  <View style={styles.languageContainer}>
+                    <Chip
+                      selected={searchParams.versions.tzotzil}
+                      onPress={() => handleVersionChange('tzotzil')}
+                      style={styles.chip}
+                    >
+                      Tzotzil
+                    </Chip>
+                    <Chip
+                      selected={searchParams.versions.spanish}
+                      onPress={() => handleVersionChange('spanish')}
+                      style={styles.chip}
+                    >
+                      Español
+                    </Chip>
+                  </View>
+
+                  <Text variant="titleMedium" style={[styles.filterTitle, styles.marginTop]}>
+                    Libro
+                  </Text>
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <SegmentedButtons
+                      value={searchParams.book}
+                      onValueChange={(value) => setSearchParams(prev => ({ ...prev, book: value }))}
+                      buttons={[
+                        { value: 'all', label: 'Todos' },
+                        ...books.map(book => ({
+                          value: book,
+                          label: book,
+                        }))
+                      ]}
+                      style={styles.segmentedButtons}
+                    />
+                  </ScrollView>
+                </View>
+              )}
+
+              <Button
+                mode="contained"
+                onPress={handleSearch}
+                loading={loading}
+                style={styles.searchButton}
+                disabled={!searchParams.keyword.trim() || 
+                  (!searchParams.versions.tzotzil && !searchParams.versions.spanish)}
+              >
+                Buscar
+              </Button>
             </Card.Content>
           </Card>
-        ))}
-      </ScrollView>
+
+          {loading && (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" />
+              <Text style={styles.loadingText}>Buscando versículos...</Text>
+            </View>
+          )}
+
+          {results.map((result, index) => (
+            <Card key={index} style={styles.resultCard}>
+              <Card.Content>
+                <Text variant="titleMedium" style={styles.referenceText}>
+                  {result.reference}
+                </Text>
+                <Text style={styles.verseText}>{result.text}</Text>
+                <Text variant="labelSmall" style={styles.versionText}>
+                  {result.version === 'tzotzil' ? 'Tzotzil' : 'Español'}
+                </Text>
+              </Card.Content>
+            </Card>
+          ))}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
@@ -151,6 +179,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  keyboardAvoid: {
+    flex: 1,
   },
   scrollContent: {
     padding: 20,
@@ -170,16 +201,23 @@ const styles = StyleSheet.create({
   input: {
     marginBottom: 15,
   },
+  filterButton: {
+    marginBottom: 10,
+  },
   filtersContainer: {
     marginBottom: 15,
   },
   filterTitle: {
     marginBottom: 10,
   },
-  checkboxContainer: {
+  languageContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
+    flexWrap: 'wrap',
+    gap: 10,
+    marginBottom: 15,
+  },
+  chip: {
+    marginRight: 8,
   },
   marginTop: {
     marginTop: 15,
@@ -187,8 +225,8 @@ const styles = StyleSheet.create({
   segmentedButtons: {
     marginTop: 5,
   },
-  button: {
-    marginTop: 10,
+  searchButton: {
+    marginTop: 15,
   },
   loadingContainer: {
     alignItems: 'center',
@@ -200,8 +238,13 @@ const styles = StyleSheet.create({
   resultCard: {
     marginBottom: 10,
   },
+  referenceText: {
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
   verseText: {
     marginTop: 5,
+    lineHeight: 22,
   },
   versionText: {
     marginTop: 5,
