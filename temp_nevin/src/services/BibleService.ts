@@ -1,7 +1,7 @@
-
 import axios from 'axios';
 import { API_URL } from '../config';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { CacheService } from './CacheService';
 
 interface BibleVerse {
   book: string;
@@ -73,6 +73,58 @@ export class BibleService {
       await AsyncStorage.multiRemove(bibleKeys);
     } catch (error) {
       console.error('Error clearing cache:', error);
+    }
+  }
+
+  static async searchVerses(query: string) {
+    try {
+      const cacheKey = `search_${query}`;
+      const cachedResults = await CacheService.get(cacheKey);
+
+      if (cachedResults) {
+        return JSON.parse(cachedResults);
+      }
+
+      const response = await fetch(`${API_URL}/api/search?q=${encodeURIComponent(query)}`);
+
+      if (!response.ok) {
+        throw new Error('Error searching verses');
+      }
+
+      const results = await response.json();
+      await CacheService.set(cacheKey, JSON.stringify(results), 3600); // Cache por 1 hora
+
+      return results;
+    } catch (error) {
+      console.error('Error in searchVerses:', error);
+      throw error;
+    }
+  }
+
+  static async getVerse(book: string, chapter: number, verse: number) {
+    try {
+      const cacheKey = `verse_${book}_${chapter}_${verse}`;
+      const cachedVerse = await CacheService.get(cacheKey);
+
+      if (cachedVerse) {
+        return JSON.parse(cachedVerse);
+      }
+
+      const response = await fetch(
+        `${API_URL}/api/verse/${encodeURIComponent(book)}/${chapter}/${verse}`
+      );
+
+      if (!response.ok) {
+        throw new Error('Error fetching verse');
+      }
+
+      const verseData = await response.json();
+      await CacheService.set(cacheKey, JSON.stringify(verseData), 86400); // Cache por 24 horas
+
+      return verseData;
+    } catch (error) {
+      console.error('Error in getVerse:', error);
+      throw error;
     }
   }
 }
