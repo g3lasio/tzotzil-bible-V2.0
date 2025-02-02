@@ -16,6 +16,7 @@ export default function NevinScreen() {
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const scrollViewRef = useRef<ScrollView>(null);
+  const [showDonationModal, setShowDonationModal] = useState(false);
 
   const handleSendMessage = async () => {
     if (!inputMessage.trim()) return;
@@ -48,7 +49,7 @@ export default function NevinScreen() {
       };
 
       setMessages(prev => [...prev, nevinResponse]);
-      
+
       // Scroll al último mensaje
       setTimeout(() => {
         scrollViewRef.current?.scrollToEnd({ animated: true });
@@ -107,6 +108,7 @@ export default function NevinScreen() {
               />
             }
           />
+          <Button style={styles.donateButton} onPress={() => setShowDonationModal(true)}>Donate</Button>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -116,7 +118,7 @@ export default function NevinScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
   },
   keyboardAvoid: {
     flex: 1,
@@ -151,5 +153,9 @@ const styles = StyleSheet.create({
   },
   input: {
     maxHeight: 100,
+  },
+  donateButton: {
+    margin: 16,
+    backgroundColor: '#4caf50',
   },
 });
