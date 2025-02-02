@@ -57,18 +57,20 @@ class DatabaseManager:
 
             session = self.get_session()
             result = session.execute(text("""
-                SELECT DISTINCT book 
-                FROM bibleverse 
-                ORDER BY CASE book
+                SELECT DISTINCT book,
+                CASE book
                     WHEN 'Génesis' THEN 1
                     WHEN 'Éxodo' THEN 2
                     WHEN 'Levítico' THEN 3
-                    -- Add remaining books in biblical order
+                    WHEN 'Números' THEN 4
+                    WHEN 'Deuteronomio' THEN 5
                     ELSE 999
-                END
+                END as book_order
+                FROM bibleverse 
+                ORDER BY book_order
             """)).fetchall()
             
-            books = [book[0] for book in result]
+            books = [row[0] for row in result if row[0] is not None]
             # Guardar en caché
             setattr(g, cache_key, books)
             
