@@ -1,38 +1,58 @@
-import React, { useState, useRef, useCallback } from 'react';
+
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 import {
   View,
   ScrollView,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from 'react-native';
 import {
   Text,
   TextInput,
   Button,
-  Portal,
-  Modal,
+  IconButton,
+  Card,
   ActivityIndicator,
   useTheme,
+  Menu,
 } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { nevinService } from '../services/NevinService';
-import { ChatMessage } from '../types/nevin';
-import { VerseBox } from '../components/VerseBox';
-import { QuoteBox } from '../components/QuoteBox';
-import HTML from 'react-native-render-html';
+import { NevinService } from '../services/NevinService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import type { ChatMessage } from '../types/nevin';
 
-export const NevinChatScreen = () => {
+export default function NevinChatScreen() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [menuVisible, setMenuVisible] = useState(false);
+  const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const theme = useTheme();
 
-  const parseNevinResponse = (htmlContent: string) => {
-    // Implementar el parser de HTML para convertir el formato de Nevin a componentes nativos
-    return htmlContent;
+  useEffect(() => {
+    loadChatHistory();
+  }, []);
+
+  const loadChatHistory = async () => {
+    try {
+      const history = await AsyncStorage.getItem('chat_history');
+      if (history) {
+        setMessages(JSON.parse(history));
+      }
+    } catch (error) {
+      console.error('Error loading chat history:', error);
+    }
+  };
+
+  const saveChatHistory = async (newMessages: ChatMessage[]) => {
+    try {
+      await AsyncStorage.setItem('chat_history', JSON.stringify(newMessages));
+    } catch (error) {
+      console.error('Error saving chat history:', error);
+    }
   };
 
   const handleSend = async () => {
@@ -40,7 +60,7 @@ export const NevinChatScreen = () => {
 
     const newUserMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: inputText,
+      content: inputText.trim(),
       type: 'user',
       timestamp: new Date(),
     };
@@ -50,53 +70,77 @@ export const NevinChatScreen = () => {
     setIsLoading(true);
 
     try {
-      const context = messages
-        .map(msg => `${msg.type === 'user' ? 'Usuario' : 'Nevin'}: ${msg.content}`)
-        .join('\n');
-
-      const response = await nevinService.getAIResponse(inputText, context);
-
-      if (response.success && response.response) {
-        const newAssistantMessage: ChatMessage = {
+      const response = await NevinService.getResponse(inputText.trim(), messages);
+      
+      if (response.success && response.message) {
+        const newNevinMessage: ChatMessage = {
           id: (Date.now() + 1).toString(),
-          content: response.response,
+          content: response.message,
           type: 'assistant',
           timestamp: new Date(),
         };
 
-        setMessages(prev => [...prev, newAssistantMessage]);
+        const updatedMessages = [...messages, newUserMessage, newNevinMessage];
+        setMessages(updatedMessages);
+        saveChatHistory(updatedMessages);
       } else {
-        // Manejar error
-        console.error('Error en la respuesta de Nevin:', response.error);
+        Alert.alert('Error', 'No pude procesar tu mensaje. Por favor, intenta de nuevo.');
       }
     } catch (error) {
-      console.error('Error al enviar mensaje:', error);
+      console.error('Error sending message:', error);
+      Alert.alert('Error', 'Hubo un problema al comunicarse con Nevin.');
     } finally {
       setIsLoading(false);
       scrollViewRef.current?.scrollToEnd({ animated: true });
     }
   };
 
+  const handleClearChat = () => {
+    Alert.alert(
+      'Limpiar Chat',
+      '¿Estás seguro que deseas borrar todo el historial?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Limpiar',
+          onPress: async () => {
+            setMessages([]);
+            await AsyncStorage.removeItem('chat_history');
+          },
+          style: 'destructive'
+        }
+      ]
+    );
+  };
+
+  const handleCopyMessage = (message: ChatMessage) => {
+    // Implementar la copia al portapapeles
+    setSelectedMessage(null);
+    setMenuVisible(false);
+  };
+
   const renderMessage = (message: ChatMessage) => {
     const isAssistant = message.type === 'assistant';
     
     return (
-      <View
+      <Card
         key={message.id}
         style={[
-          styles.messageContainer,
+          styles.messageCard,
           isAssistant ? styles.assistantMessage : styles.userMessage,
         ]}
+        onLongPress={() => {
+          setSelectedMessage(message);
+          setMenuVisible(true);
+        }}
       >
-        {isAssistant ? (
-          <HTML
-            source={{ html: parseNevinResponse(message.content) }}
-            // Configurar estilos y renderizadores personalizados
-          />
-        ) : (
+        <Card.Content>
           <Text style={styles.messageText}>{message.content}</Text>
-        )}
-      </View>
+          <Text style={styles.timestamp}>
+            {new Date(message.timestamp).toLocaleTimeString()}
+          </Text>
+        </Card.Content>
+      </Card>
     );
   };
 
@@ -106,6 +150,15 @@ export const NevinChatScreen = () => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.container}
       >
+        <View style={styles.header}>
+          <Text style={styles.title}>Nevin AI</Text>
+          <IconButton
+            icon="delete"
+            onPress={handleClearChat}
+            disabled={messages.length === 0}
+          />
+        </View>
+
         <ScrollView
           ref={scrollViewRef}
           style={styles.messagesContainer}
@@ -127,26 +180,46 @@ export const NevinChatScreen = () => {
             placeholder="Escribe tu pregunta..."
             style={styles.input}
             multiline
-            onSubmitEditing={handleSend}
+            maxLength={500}
+            right={<TextInput.Icon icon="send" onPress={handleSend} disabled={isLoading || !inputText.trim()} />}
           />
-          <Button
-            mode="contained"
-            onPress={handleSend}
-            disabled={isLoading || !inputText.trim()}
-            style={styles.sendButton}
-          >
-            Enviar
-          </Button>
         </View>
+
+        <Menu
+          visible={menuVisible}
+          onDismiss={() => {
+            setMenuVisible(false);
+            setSelectedMessage(null);
+          }}
+          anchor={{ x: 0, y: 0 }}
+        >
+          <Menu.Item 
+            onPress={() => handleCopyMessage(selectedMessage!)}
+            title="Copiar mensaje"
+            icon="content-copy"
+          />
+        </Menu>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#eee',
+  },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
   messagesContainer: {
     flex: 1,
@@ -154,11 +227,9 @@ const styles = StyleSheet.create({
   messagesContent: {
     padding: 16,
   },
-  messageContainer: {
+  messageCard: {
+    marginVertical: 4,
     maxWidth: '80%',
-    marginVertical: 8,
-    padding: 12,
-    borderRadius: 12,
   },
   userMessage: {
     alignSelf: 'flex-end',
@@ -169,25 +240,24 @@ const styles = StyleSheet.create({
     backgroundColor: '#E9ECEF',
   },
   messageText: {
-    color: '#fff',
     fontSize: 16,
   },
+  timestamp: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+    textAlign: 'right',
+  },
   inputContainer: {
-    flexDirection: 'row',
     padding: 16,
-    alignItems: 'center',
+    borderTopWidth: 1,
+    borderTopColor: '#eee',
   },
   input: {
-    flex: 1,
-    marginRight: 8,
-  },
-  sendButton: {
-    marginLeft: 8,
+    maxHeight: 100,
   },
   loadingContainer: {
     padding: 16,
     alignItems: 'center',
   },
 });
-
-export default NevinChatScreen;
