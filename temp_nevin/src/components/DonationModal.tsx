@@ -1,8 +1,7 @@
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Modal, Portal, Button, Text, Surface } from 'react-native-paper';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { loadSquareSdk } from '../services/PaymentService';
+import { View, StyleSheet } from 'react-native';
+import { createPaymentLink } from '../services/PaymentService';
 
 interface DonationModalProps {
   visible: boolean;
@@ -10,34 +9,12 @@ interface DonationModalProps {
   onDonationComplete: () => void;
 }
 
-const DONATION_ITEMS = [
-  { amount: '5.00', id: 'donation_5' },
-  { amount: '10.00', id: 'donation_10' },
-  { amount: '20.00', id: 'donation_20' },
-] as const;
-
 export default function DonationModal({ visible, onDismiss, onDonationComplete }: DonationModalProps) {
-  const [card, setCard] = useState(null);
-
-  useEffect(() => {
-    if (visible) {
-      initializeSquare();
-    }
-  }, [visible]);
-
-  const initializeSquare = async () => {
-    const payments = await loadSquareSdk();
-    const card = await payments.card();
-    await card.attach('#card-container');
-    setCard(card);
-  };
-
   const handleDonation = async () => {
     try {
       const paymentLink = await createPaymentLink();
       window.open(paymentLink, '_blank');
       onDonationComplete();
-    }
     } catch (error) {
       console.error('Error procesando donación:', error);
     }
@@ -50,21 +27,18 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
           <Text variant="headlineMedium" style={styles.title}>
             Apoya Nuestro Ministerio
           </Text>
-          
-          <View id="card-container" style={styles.cardContainer} />
-          
-          <ScrollView style={styles.optionsContainer}>
-            {DONATION_ITEMS.map((item) => (
-              <Button
-                key={item.id}
-                mode="contained"
-                onPress={() => handleDonation(item.amount)}
-                style={styles.donationButton}
-              >
-                Donar ${item.amount} USD
-              </Button>
-            ))}
-          </ScrollView>
+
+          <Text style={styles.description}>
+            Tu donación nos ayuda a seguir compartiendo la Palabra de Dios
+          </Text>
+
+          <Button
+            mode="contained"
+            onPress={handleDonation}
+            style={styles.donationButton}
+          >
+            Donar con Square
+          </Button>
 
           <Button mode="text" onPress={onDismiss} style={styles.cancelButton}>
             Cancelar
@@ -89,15 +63,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
   },
-  cardContainer: {
-    minHeight: 100,
+  description: {
+    textAlign: 'center',
     marginBottom: 20,
-  },
-  optionsContainer: {
-    maxHeight: 200,
+    color: '#666',
   },
   donationButton: {
     marginVertical: 8,
+    backgroundColor: '#006aff',
   },
   cancelButton: {
     marginTop: 16,

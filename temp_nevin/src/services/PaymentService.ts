@@ -1,16 +1,8 @@
 
-import { loadSquareSdk } from '@square/web-sdk';
+const SQUARE_PAYMENT_LINK = process.env.SQUARE_PAYMENT_LINK || 'https://square.link/u/your-link-here';
 
-const SQUARE_LOCATION_ID = process.env.SQUARE_LOCATION_ID;
-const SQUARE_APP_ID = process.env.SQUARE_APP_ID;
-
-export async function initializePayments() {
-  const payments = await loadSquareSdk();
-  await payments.initialize({
-    applicationId: SQUARE_APP_ID,
-    locationId: SQUARE_LOCATION_ID
-  });
-  return payments;
+export async function createPaymentLink() {
+  return SQUARE_PAYMENT_LINK;
 }
 
 export async function createPaymentLink(description: string = 'Donación a Sistema Nevin') {
