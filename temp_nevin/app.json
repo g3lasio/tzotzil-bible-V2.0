@@ -1,7 +1,8 @@
+
 {
   "expo": {
-    "name": "TzotzilBibleReader",
-    "slug": "tzotzil-bible-reader",
+    "name": "Tzotzil Bible",
+    "slug": "tzotzil-bible",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.tzotzilbible.reader"
+      "bundleIdentifier": "com.tzotzilbible.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.tzotzilbible.reader"
+      "package": "com.tzotzilbible.app"
     },
     "web": {
       "favicon": "./assets/favicon.png"
