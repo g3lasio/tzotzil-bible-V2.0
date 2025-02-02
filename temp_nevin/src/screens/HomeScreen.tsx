@@ -1,65 +1,71 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text, Card, Button, useTheme } from 'react-native-paper';
-import { useNavigation } from '@react-navigation/native';
+
+import React, { useState, useEffect } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { Text, Card, Button, useTheme, Surface } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { useNavigation } from '@react-navigation/native';
+import { BibleService } from '../services/BibleService';
 
 export default function HomeScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const navigation = useNavigation();
   const theme = useTheme();
+  const [dailyPromise, setDailyPromise] = useState('');
 
-  const navigateToScreen = (screenName: string) => {
-    navigation.navigate(screenName);
+  useEffect(() => {
+    loadDailyPromise();
+  }, []);
+
+  const loadDailyPromise = async () => {
+    try {
+      const promise = await BibleService.getRandomPromise();
+      setDailyPromise(promise);
+    } catch (error) {
+      console.error('Error loading daily promise:', error);
+    }
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <LinearGradient
         colors={[theme.colors.primary, theme.colors.surface]}
         style={styles.gradient}
       >
-        <Text style={styles.title}>Sistema Nevin</Text>
-        <Text style={styles.subtitle}>Biblia Tzotzil - Español</Text>
+        <Surface style={styles.promiseCard}>
+          <Text style={styles.promiseTitle}>Promesa del día</Text>
+          <Text style={styles.promiseText}>{dailyPromise}</Text>
+          <Button 
+            mode="outlined" 
+            onPress={() => {/* Implementar compartir */}}
+            style={styles.shareButton}
+          >
+            Compartir
+          </Button>
+        </Surface>
 
-        <View style={styles.cardsContainer}>
-          <Card style={styles.card} onPress={() => navigateToScreen('Bible')}>
+        <View style={styles.menuGrid}>
+          <Card style={styles.menuCard} onPress={() => navigation.navigate('Bible')}>
             <Card.Content>
               <Text variant="titleLarge">Biblia</Text>
-              <Text variant="bodyMedium">
-                Lee la Biblia en Tzotzil y Español
-              </Text>
+              <Text variant="bodyMedium">Lee la Biblia en Tzotzil y Español</Text>
             </Card.Content>
           </Card>
 
-          <Card style={styles.card} onPress={() => navigateToScreen('Nevin')}>
+          <Card style={styles.menuCard} onPress={() => navigation.navigate('Nevin')}>
             <Card.Content>
               <Text variant="titleLarge">Nevin AI</Text>
-              <Text variant="bodyMedium">
-                Consulta con nuestro asistente bíblico
-              </Text>
+              <Text variant="bodyMedium">Consulta con nuestro asistente bíblico</Text>
             </Card.Content>
           </Card>
 
-          <Card style={styles.card} onPress={() => navigateToScreen('Search')}>
+          <Card style={styles.menuCard} onPress={() => navigation.navigate('Search')}>
             <Card.Content>
               <Text variant="titleLarge">Búsqueda</Text>
-              <Text variant="bodyMedium">
-                Busca versículos por palabra o referencia
-              </Text>
+              <Text variant="bodyMedium">Busca versículos por palabra o referencia</Text>
             </Card.Content>
           </Card>
         </View>
-
-        <Button
-          mode="contained"
-          onPress={() => navigateToScreen('Settings')}
-          style={styles.settingsButton}
-        >
-          Configuración
-        </Button>
       </LinearGradient>
-    </View>
+    </ScrollView>
   );
 }
 
@@ -68,34 +74,34 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   gradient: {
-    flex: 1,
     padding: 16,
-    alignItems: 'center',
+    minHeight: '100%',
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginTop: 40,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 18,
-    color: '#fff',
-    marginTop: 8,
-    marginBottom: 32,
-    textAlign: 'center',
-  },
-  cardsContainer: {
-    width: '100%',
-    gap: 16,
-  },
-  card: {
-    marginBottom: 16,
+  promiseCard: {
+    padding: 20,
+    marginVertical: 20,
+    borderRadius: 10,
     elevation: 4,
   },
-  settingsButton: {
-    marginTop: 24,
-    width: '80%',
+  promiseTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  promiseText: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 16,
+  },
+  shareButton: {
+    marginTop: 8,
+  },
+  menuGrid: {
+    gap: 16,
+  },
+  menuCard: {
+    marginBottom: 16,
+    elevation: 4,
   },
 });
