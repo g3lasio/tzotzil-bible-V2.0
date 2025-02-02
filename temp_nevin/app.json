@@ -1,4 +1,3 @@
-
 {
   "expo": {
     "name": "TzotzilBibleReader",
@@ -12,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.tzotzilbible.reader"
@@ -26,6 +27,11 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "a810d3d6-839d-49b2-9dab-c42a44e3a6b0"
+      }
     }
   }
 }
