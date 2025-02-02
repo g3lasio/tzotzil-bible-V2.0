@@ -20,6 +20,8 @@ class NevinService:
         self.app = app
         self.client = None
         self.principles_path = "Nevin_AI/data/principios_de_interpretacion.json"
+        self.doctrinal_path = "Nevin_AI/data/validacion_doctrinal.json"
+        logger.info(f"Cargando archivos de validación doctrinal desde: {self.doctrinal_path}")
 
         try:
             # Verificar y obtener API key
