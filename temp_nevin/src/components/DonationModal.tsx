@@ -19,6 +19,10 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
       onDonationComplete();
     } catch (error) {
       console.error('Error procesando donación:', error);
+      Alert.alert(
+        'Error',
+        'Hubo un problema procesando tu donación. Por favor intenta nuevamente.'
+      );
     }
   };
 

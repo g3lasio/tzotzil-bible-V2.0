@@ -1,5 +1,6 @@
 
-import { api } from './api';
+import { Platform } from 'react-native';
+import { Linking } from 'react-native';
 
 const SQUARE_PAYMENT_LINK = 'https://square.link/u/ZbdMAkZv';
 
@@ -9,19 +10,22 @@ export interface PaymentResponse {
 }
 
 export class PaymentService {
-  static async createPaymentLink(description: string = 'Donación a Sistema Nevin'): Promise<string> {
+  static async createPaymentLink(): Promise<string> {
     return SQUARE_PAYMENT_LINK;
   }
   
   static async processPayment(amount: number): Promise<void> {
     try {
       const paymentUrl = await this.createPaymentLink();
-      if (typeof window !== 'undefined') {
+      
+      if (Platform.OS === 'web') {
         window.open(paymentUrl, '_blank');
+      } else {
+        await Linking.openURL(paymentUrl);
       }
     } catch (error) {
       console.error('Error processing payment:', error);
-      throw error;
+      throw new Error('Failed to process payment');
     }
   }
 }
