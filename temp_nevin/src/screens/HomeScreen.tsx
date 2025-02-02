@@ -1,82 +1,63 @@
-
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Share, Animated } from 'react-native';
-import { Button, Title, Card, Text } from 'react-native-paper';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React from 'react';
+import { View, StyleSheet } from 'react-native';
+import { Text, Card, Button, useTheme } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-type HomeScreenProps = {
-  navigation: NativeStackNavigationProp<any, 'Home'>;
-};
+export default function HomeScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const theme = useTheme();
 
-export default function HomeScreen({ navigation }: HomeScreenProps) {
-  const [dailyPromise, setDailyPromise] = useState('');
-  
-  const handleShare = async () => {
-    try {
-      await Share.share({
-        message: `${dailyPromise}\nby Tzotzil Bible`,
-      });
-    } catch (error) {
-      console.error(error);
-    }
+  const navigateToScreen = (screenName: string) => {
+    navigation.navigate(screenName);
   };
-
-  useEffect(() => {
-    // TODO: Implementar obtención de promesa diaria desde el backend
-    setDailyPromise("Ejemplo de promesa diaria");
-  }, []);
 
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#1a1a1a', '#2d2d2d']}
+        colors={[theme.colors.primary, theme.colors.surface]}
         style={styles.gradient}
       >
-        <Title style={styles.title}>Bienvenido a Nevin</Title>
-        
-        <Card style={styles.promiseCard}>
-          <Card.Content>
-            <Title style={styles.promiseTitle}>Promesa del día</Title>
-            <Text style={styles.promiseText}>{dailyPromise}</Text>
-            <Button 
-              mode="outlined" 
-              onPress={handleShare}
-              style={styles.shareButton}
-              icon="share"
-            >
-              Compartir
-            </Button>
-          </Card.Content>
-        </Card>
+        <Text style={styles.title}>Sistema Nevin</Text>
+        <Text style={styles.subtitle}>Biblia Tzotzil - Español</Text>
 
-        <Card style={styles.menuCard}>
-          <Card.Content>
-            <Button 
-              mode="contained" 
-              onPress={() => navigation.navigate('Bible')}
-              style={styles.button}
-            >
-              Leer Biblia
-            </Button>
-            
-            <Button 
-              mode="contained" 
-              onPress={() => navigation.navigate('Chat')}
-              style={styles.button}
-            >
-              Chat con Nevin
-            </Button>
-            
-            <Button 
-              mode="contained" 
-              onPress={() => navigation.navigate('Settings')}
-              style={styles.button}
-            >
-              Configuración
-            </Button>
-          </Card.Content>
-        </Card>
+        <View style={styles.cardsContainer}>
+          <Card style={styles.card} onPress={() => navigateToScreen('Bible')}>
+            <Card.Content>
+              <Text variant="titleLarge">Biblia</Text>
+              <Text variant="bodyMedium">
+                Lee la Biblia en Tzotzil y Español
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card} onPress={() => navigateToScreen('Nevin')}>
+            <Card.Content>
+              <Text variant="titleLarge">Nevin AI</Text>
+              <Text variant="bodyMedium">
+                Consulta con nuestro asistente bíblico
+              </Text>
+            </Card.Content>
+          </Card>
+
+          <Card style={styles.card} onPress={() => navigateToScreen('Search')}>
+            <Card.Content>
+              <Text variant="titleLarge">Búsqueda</Text>
+              <Text variant="bodyMedium">
+                Busca versículos por palabra o referencia
+              </Text>
+            </Card.Content>
+          </Card>
+        </View>
+
+        <Button
+          mode="contained"
+          onPress={() => navigateToScreen('Settings')}
+          style={styles.settingsButton}
+        >
+          Configuración
+        </Button>
       </LinearGradient>
     </View>
   );
@@ -89,38 +70,32 @@ const styles = StyleSheet.create({
   gradient: {
     flex: 1,
     padding: 16,
+    alignItems: 'center',
   },
   title: {
-    fontSize: 24,
-    textAlign: 'center',
-    marginVertical: 20,
+    fontSize: 32,
+    fontWeight: 'bold',
     color: '#fff',
-  },
-  promiseCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    marginVertical: 20,
-    borderRadius: 15,
-  },
-  promiseTitle: {
-    fontSize: 20,
+    marginTop: 40,
     textAlign: 'center',
-    color: '#00ffcc',
   },
-  promiseText: {
+  subtitle: {
+    fontSize: 18,
+    color: '#fff',
+    marginTop: 8,
+    marginBottom: 32,
     textAlign: 'center',
-    marginVertical: 10,
-    fontSize: 16,
   },
-  shareButton: {
-    marginTop: 10,
-    borderColor: '#00ffcc',
+  cardsContainer: {
+    width: '100%',
+    gap: 16,
   },
-  menuCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.9)',
-    marginTop: 20,
+  card: {
+    marginBottom: 16,
+    elevation: 4,
   },
-  button: {
-    marginVertical: 8,
-    backgroundColor: '#00ffcc',
+  settingsButton: {
+    marginTop: 24,
+    width: '80%',
   },
 });

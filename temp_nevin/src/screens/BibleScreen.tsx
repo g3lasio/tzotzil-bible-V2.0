@@ -1,31 +1,57 @@
 
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, StyleSheet, FlatList } from 'react-native';
 import { Text, Card, Searchbar, ActivityIndicator, useTheme } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { commonStyles } from '../styles/common';
+import { BibleService } from '../services/BibleService';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-export default function BibleScreen({ navigation }) {
-  const theme = useTheme();
-  const [loading, setLoading] = useState(true);
-  const [books, setBooks] = useState([]);
+type Book = {
+  id: string;
+  name: string;
+  chapters: number;
+};
+
+export default function BibleScreen({ navigation }: NativeStackScreenProps<any>) {
+  const [books, setBooks] = useState<Book[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [loading, setLoading] = useState(true);
+  const theme = useTheme();
 
-  const renderBookItem = ({ item }) => (
-    <Card 
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  const loadBooks = async () => {
+    try {
+      const data = await BibleService.getBooks();
+      setBooks(data);
+    } catch (error) {
+      console.error('Error loading books:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredBooks = books.filter(book =>
+    book.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const renderBookItem = ({ item }: { item: Book }) => (
+    <Card
       style={styles.bookCard}
-      onPress={() => navigation.navigate('Chapter', { bookId: item.id })}
+      onPress={() => navigation.navigate('Chapter', { book: item.name })}
     >
       <Card.Content>
-        <Text style={styles.bookTitle}>{item.name}</Text>
-        <Text style={styles.chapterCount}>{item.chapters} capítulos</Text>
+        <Text variant="titleMedium" style={styles.bookName}>{item.name}</Text>
+        <Text variant="bodyMedium">{item.chapters} capítulos</Text>
       </Card.Content>
     </Card>
   );
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.centered}>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -40,10 +66,10 @@ export default function BibleScreen({ navigation }) {
         style={styles.searchBar}
       />
       <FlatList
-        data={books}
+        data={filteredBooks}
         renderItem={renderBookItem}
-        keyExtractor={item => item.id.toString()}
-        contentContainerStyle={styles.listContainer}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.listContent}
       />
     </SafeAreaView>
   );
@@ -51,34 +77,25 @@ export default function BibleScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    ...commonStyles.container,
+    flex: 1,
+    backgroundColor: '#fff',
   },
-  loadingContainer: {
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
   searchBar: {
-    margin: theme.spacing.md,
-    backgroundColor: theme.colors.surface,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-    borderRadius: theme.borderRadius.md,
+    margin: 16,
+    elevation: 4,
   },
-  listContainer: {
-    padding: theme.spacing.md,
+  listContent: {
+    padding: 16,
   },
   bookCard: {
-    ...commonStyles.card,
+    marginBottom: 12,
   },
-  bookTitle: {
-    fontSize: 18,
+  bookName: {
     fontWeight: 'bold',
-    color: theme.colors.primary,
-    marginBottom: theme.spacing.sm,
   },
-  chapterCount: {
-    fontSize: 14,
-    color: theme.colors.textSecondary,
-  }
-});;
+});
