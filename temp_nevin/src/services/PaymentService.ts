@@ -1,19 +1,27 @@
 
-const SQUARE_PAYMENT_LINK = process.env.SQUARE_PAYMENT_LINK || 'https://square.link/u/ZbdMAkZv';
+import { api } from './api';
 
-export async function createPaymentLink() {
-  return SQUARE_PAYMENT_LINK;
+const SQUARE_PAYMENT_LINK = 'https://square.link/u/ZbdMAkZv';
+
+export interface PaymentResponse {
+  paymentUrl: string;
+  amount: number;
 }
 
-export async function createPaymentLink(description: string = 'Donación a Sistema Nevin') {
-  const response = await fetch('/api/create-payment-link', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ description })
-  });
+export class PaymentService {
+  static async createPaymentLink(description: string = 'Donación a Sistema Nevin'): Promise<string> {
+    return SQUARE_PAYMENT_LINK;
+  }
   
-  const data = await response.json();
-  return data.paymentLink;
+  static async processPayment(amount: number): Promise<void> {
+    try {
+      const paymentUrl = await this.createPaymentLink();
+      if (typeof window !== 'undefined') {
+        window.open(paymentUrl, '_blank');
+      }
+    } catch (error) {
+      console.error('Error processing payment:', error);
+      throw error;
+    }
+  }
 }
