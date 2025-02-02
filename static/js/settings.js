@@ -291,8 +291,8 @@ function processCustomDonation() {
 function handleDonation(amount) {
     try {
         console.log('Iniciando proceso de donación...');
-        const donationUrl = "https://www.paypal.com/donate/?hosted_button_id=ZZT98YTR4YCXE";
-        console.log('URL de PayPal generada:', donationUrl);
+        const squareUrl = "https://square.link/u/ZbdMAkZv";
+        console.log('URL de Square generada:', squareUrl);
         
         // Validar monto antes de abrir la URL
         if (!amount || amount <= 0) {
@@ -301,11 +301,11 @@ function handleDonation(amount) {
             return;
         }
 
-        console.log('Redirigiendo a PayPal con monto:', amount);
-        const paypalWindow = window.open(donationUrl, '_blank');
+        console.log('Redirigiendo a Square con monto:', amount);
+        const squareWindow = window.open(squareUrl, '_blank');
         
-        if (paypalWindow) {
-            console.log('Ventana de PayPal abierta exitosamente');
+        if (squareWindow) {
+            console.log('Ventana de Square abierta exitosamente');
         } else {
             console.error('Bloqueador de popups detectado');
             window.createToast('Por favor permita las ventanas emergentes para continuar', 'warning');
