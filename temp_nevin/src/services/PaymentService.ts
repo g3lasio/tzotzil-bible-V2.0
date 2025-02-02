@@ -1,5 +1,5 @@
 
-const SQUARE_PAYMENT_LINK = process.env.SQUARE_PAYMENT_LINK || 'https://square.link/u/your-link-here';
+const SQUARE_PAYMENT_LINK = process.env.SQUARE_PAYMENT_LINK || 'https://square.link/u/ZbdMAkZv';
 
 export async function createPaymentLink() {
   return SQUARE_PAYMENT_LINK;
