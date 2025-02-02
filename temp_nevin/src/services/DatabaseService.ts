@@ -1,11 +1,11 @@
-import * as SQLite from 'expo-sqlite';
+import { openDatabaseSync } from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 
 export class DatabaseService {
   private db: SQLite.WebSQLDatabase;
 
   constructor() {
-    this.db = SQLite.openDatabase('bible.db');
+    this.db = openDatabaseSync('bible.db');
     this.initializeDatabase();
   }
 

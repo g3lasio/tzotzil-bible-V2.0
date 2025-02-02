@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 def create_app():
     app = Flask(__name__)
+    from auth import init_login_manager
+    init_login_manager(app)
 
     # Configuración CORS actualizada para React Native
     CORS(app, resources={
