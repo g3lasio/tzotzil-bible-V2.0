@@ -1,15 +1,33 @@
 import { OpenAIApi, Configuration } from 'openai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as FileSystem from 'expo-file-system';
 import { DetectedEmotion, AIResponse, UserPreferences } from '../types/nevin';
 
 class NevinService {
   private openai: OpenAIApi;
+  private static CACHE_KEY = 'nevin_offline_data';
+
 
   constructor() {
     const configuration = new Configuration({
       apiKey: process.env.OPENAI_API_KEY,
     });
     this.openai = new OpenAIApi(configuration);
+  }
+
+  async initializeOfflineContent() {
+    try {
+      const contentExists = await AsyncStorage.getItem(NevinService.CACHE_KEY);
+      if (!contentExists) {
+        await this.downloadInitialContent();
+      }
+    } catch (error) {
+      console.error('Offline content initialization error:', error);
+    }
+  }
+
+  private async downloadInitialContent() {
+    // Implementar lógica de descarga inicial de contenido
   }
 
   private detectEmotion(text: string): Record<string, number> {
