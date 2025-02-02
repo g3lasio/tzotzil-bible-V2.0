@@ -1,7 +1,8 @@
+
 import React from 'react';
-import { Modal, Portal, Button, Text, Surface } from 'react-native-paper';
-import { View, StyleSheet } from 'react-native';
-import { createPaymentLink } from '../services/PaymentService';
+import { Modal, Portal, Button, Text, Surface, List } from 'react-native-paper';
+import { View, StyleSheet, Platform } from 'react-native';
+import { PaymentService } from '../services/PaymentService';
 
 interface DonationModalProps {
   visible: boolean;
@@ -9,11 +10,12 @@ interface DonationModalProps {
   onDonationComplete: () => void;
 }
 
+const DONATION_AMOUNTS = [5, 10, 20];
+
 export default function DonationModal({ visible, onDismiss, onDonationComplete }: DonationModalProps) {
-  const handleDonation = async () => {
+  const handleDonation = async (amount?: number) => {
     try {
-      const paymentLink = await createPaymentLink();
-      window.open(paymentLink, '_blank');
+      await PaymentService.processPayment(amount || 0);
       onDonationComplete();
     } catch (error) {
       console.error('Error procesando donación:', error);
@@ -32,12 +34,23 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
             Tu donación nos ayuda a seguir compartiendo la Palabra de Dios
           </Text>
 
+          {DONATION_AMOUNTS.map((amount) => (
+            <Button
+              key={amount}
+              mode="contained"
+              onPress={() => handleDonation(amount)}
+              style={styles.donationButton}
+            >
+              Donar ${amount}
+            </Button>
+          ))}
+
           <Button
             mode="contained"
-            onPress={handleDonation}
+            onPress={() => handleDonation()}
             style={styles.donationButton}
           >
-            Donar con Square
+            Otra Cantidad
           </Button>
 
           <Button mode="text" onPress={onDismiss} style={styles.cancelButton}>
