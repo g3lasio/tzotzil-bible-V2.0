@@ -1,103 +1,118 @@
 
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, Card, ActivityIndicator, useTheme } from 'react-native-paper';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { databaseService } from '../services/DatabaseService';
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useEffect, useState } from 'react';
+import { View, ScrollView, StyleSheet } from 'react-native';
+import { Text, ActivityIndicator, FAB, useTheme } from 'react-native-paper';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import { BibleService } from '../services/BibleService';
+import VerseBox from '../components/VerseBox';
+import type { BibleVerse } from '../types/bible';
 
-type ChapterScreenProps = NativeStackScreenProps<any, 'Chapter'>;
-
-type Verse = {
-  verse: number;
-  tzotzil_text: string;
-  spanish_text: string;
-};
-
-export default function ChapterScreen({ route, navigation }: ChapterScreenProps) {
-  const [verses, setVerses] = useState<Verse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const { book, chapter = 1 } = route.params;
+export default function ChapterScreen() {
+  const route = useRoute<any>();
+  const navigation = useNavigation();
   const theme = useTheme();
+  const { book, chapter } = route.params;
+  
+  const [verses, setVerses] = useState<BibleVerse[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const loadVerses = async () => {
-      try {
-        const verseData = await databaseService.getVerses(book, chapter);
-        setVerses(verseData);
-      } catch (error) {
-        console.error('Error loading verses:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadVerses();
   }, [book, chapter]);
 
+  const loadVerses = async () => {
+    try {
+      setLoading(true);
+      const versesData = await BibleService.getVerses(book, chapter);
+      setVerses(versesData);
+      setError(null);
+    } catch (err) {
+      setError('Error cargando versículos');
+      console.error('Error loading verses:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const navigateToNextChapter = () => {
+    navigation.setParams({ chapter: chapter + 1 });
+  };
+
+  const navigateToPreviousChapter = () => {
+    if (chapter > 1) {
+      navigation.setParams({ chapter: chapter - 1 });
+    }
+  };
+
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
+      <View style={styles.centered}>
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.centered}>
+        <Text>{error}</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+    <View style={styles.container}>
+      <ScrollView style={styles.scrollView}>
         <Text style={styles.header}>{book} {chapter}</Text>
         {verses.map((verse) => (
-          <Card key={verse.verse} style={styles.verseCard}>
-            <Card.Content>
-              <Text variant="bodyLarge" style={styles.verseNumber}>
-                {verse.verse}
-              </Text>
-              <Text variant="bodyMedium" style={styles.tzotzilText}>
-                {verse.tzotzil_text}
-              </Text>
-              <Text variant="bodyMedium" style={styles.spanishText}>
-                {verse.spanish_text}
-              </Text>
-            </Card.Content>
-          </Card>
+          <VerseBox key={verse.id} verse={verse} />
         ))}
       </ScrollView>
-    </SafeAreaView>
+      
+      <FAB
+        icon="chevron-left"
+        style={[styles.fab, styles.fabLeft]}
+        onPress={navigateToPreviousChapter}
+        disabled={chapter <= 1}
+      />
+      
+      <FAB
+        icon="chevron-right"
+        style={[styles.fab, styles.fabRight]}
+        onPress={navigateToNextChapter}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
   },
-  loadingContainer: {
+  scrollView: {
+    flex: 1,
+    padding: 16,
+  },
+  centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  scrollContent: {
-    padding: 16,
-  },
   header: {
     fontSize: 24,
     fontWeight: 'bold',
-    textAlign: 'center',
     marginBottom: 16,
+    textAlign: 'center',
   },
-  verseCard: {
-    marginBottom: 12,
-    elevation: 2,
+  fab: {
+    position: 'absolute',
+    bottom: 16,
   },
-  verseNumber: {
-    fontWeight: 'bold',
-    marginBottom: 4,
+  fabLeft: {
+    left: 16,
   },
-  tzotzilText: {
-    marginBottom: 8,
-  },
-  spanishText: {
-    fontStyle: 'italic',
-  },
+  fabRight: {
+    right: 16,
+  }
 });
