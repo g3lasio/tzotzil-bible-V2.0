@@ -1,51 +1,51 @@
 
 import React, { useEffect, useState } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
-import { Text, ActivityIndicator, FAB, useTheme } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { Text, Card, ActivityIndicator, useTheme } from 'react-native-paper';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { BibleService } from '../services/BibleService';
-import VerseBox from '../components/VerseBox';
-import type { BibleVerse } from '../types/bible';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 export default function ChapterScreen() {
   const route = useRoute<any>();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<any>>();
   const theme = useTheme();
-  const { book, chapter } = route.params;
+  const { book } = route.params;
   
-  const [verses, setVerses] = useState<BibleVerse[]>([]);
+  const [chapters, setChapters] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadVerses();
-  }, [book, chapter]);
-
-  const loadVerses = async () => {
+  const loadChapters = async () => {
     try {
       setLoading(true);
-      const versesData = await BibleService.getVerses(book, chapter);
-      setVerses(versesData);
+      const chapterData = await BibleService.getChapters(book);
+      setChapters(chapterData);
       setError(null);
     } catch (err) {
-      setError('Error cargando versículos');
-      console.error('Error loading verses:', err);
+      console.error('Error loading chapters:', err);
+      setError('Error cargando capítulos');
     } finally {
       setLoading(false);
     }
   };
 
-  const navigateToNextChapter = () => {
-    navigation.setParams({ chapter: chapter + 1 });
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await loadChapters();
+    setRefreshing(false);
   };
 
-  const navigateToPreviousChapter = () => {
-    if (chapter > 1) {
-      navigation.setParams({ chapter: chapter - 1 });
-    }
+  useEffect(() => {
+    loadChapters();
+  }, [book]);
+
+  const handleChapterPress = (chapter: number) => {
+    navigation.navigate('Verses', { book, chapter });
   };
 
-  if (loading) {
+  if (loading && !refreshing) {
     return (
       <View style={styles.centered}>
         <ActivityIndicator size="large" />
@@ -56,63 +56,71 @@ export default function ChapterScreen() {
   if (error) {
     return (
       <View style={styles.centered}>
-        <Text>{error}</Text>
+        <Text style={styles.errorText}>{error}</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollView}>
-        <Text style={styles.header}>{book} {chapter}</Text>
-        {verses.map((verse) => (
-          <VerseBox key={verse.id} verse={verse} />
+    <ScrollView 
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
+    >
+      <Text style={styles.title}>{book}</Text>
+      <View style={styles.chaptersGrid}>
+        {chapters.map((chapter) => (
+          <Card
+            key={chapter}
+            style={styles.chapterCard}
+            onPress={() => handleChapterPress(chapter)}
+          >
+            <Card.Content>
+              <Text style={styles.chapterNumber}>{chapter}</Text>
+            </Card.Content>
+          </Card>
         ))}
-      </ScrollView>
-      
-      <FAB
-        icon="chevron-left"
-        style={[styles.fab, styles.fabLeft]}
-        onPress={navigateToPreviousChapter}
-        disabled={chapter <= 1}
-      />
-      
-      <FAB
-        icon="chevron-right"
-        style={[styles.fab, styles.fabRight]}
-        onPress={navigateToNextChapter}
-      />
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  scrollView: {
-    flex: 1,
-    padding: 16,
+    backgroundColor: '#f5f5f5',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  header: {
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
-    marginBottom: 16,
+    textAlign: 'center',
+    marginVertical: 16,
+  },
+  chaptersGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    padding: 8,
+  },
+  chapterCard: {
+    width: 80,
+    height: 80,
+    margin: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  chapterNumber: {
+    fontSize: 20,
     textAlign: 'center',
   },
-  fab: {
-    position: 'absolute',
-    bottom: 16,
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
   },
-  fabLeft: {
-    left: 16,
-  },
-  fabRight: {
-    right: 16,
-  }
 });
