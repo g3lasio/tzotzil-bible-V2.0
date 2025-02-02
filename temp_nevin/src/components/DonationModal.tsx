@@ -32,26 +32,12 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
     setCard(card);
   };
 
-  const handleDonation = async (amount: string) => {
+  const handleDonation = async () => {
     try {
-      if (!card) return;
-      
-      const result = await card.tokenize();
-      if (result.status === 'OK') {
-        // Enviar token a nuestro backend
-        const response = await fetch('/api/process-payment', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            sourceId: result.token,
-            amount: amount
-          })
-        });
-
-        if (response.ok) {
-          onDonationComplete();
-        }
-      }
+      const paymentLink = await createPaymentLink();
+      window.open(paymentLink, '_blank');
+      onDonationComplete();
+    }
     } catch (error) {
       console.error('Error procesando donación:', error);
     }
