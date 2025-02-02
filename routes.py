@@ -524,11 +524,6 @@ def settings():
                 logger.error("Datos proporcionados en formato inválido")
                 return jsonify({'status': 'error', 'message': 'Invalid data format'}), 400
 
-            # Validar sesión
-            if not session:
-                logger.error("No hay sesión activa")
-                return jsonify({'status': 'error', 'message': 'No active session'}), 401
-
             setting_type = data.get('type')
             if not setting_type:
                 return jsonify({'status': 'error', 'message': 'Setting type required'}), 400
@@ -614,12 +609,8 @@ def settings():
 
     # GET request
     try:
-        if not current_user.is_authenticated:
-            return redirect(url_for('auth.login'))
-
         return render_template('settings.html',
-                             books=get_sorted_books(),
-                             user=current_user)
+                             books=get_sorted_books())
     except Exception as e:
         logger.error(f"Error loading settings page: {str(e)}")
         return render_template('error.html',
