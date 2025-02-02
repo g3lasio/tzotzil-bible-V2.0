@@ -15,7 +15,10 @@ export default function App() {
   useEffect(() => {
     const initializeApp = async () => {
       try {
-        await databaseService.initDatabase();
+        const dbInitialized = await databaseService.initDatabase();
+        if (!dbInitialized) {
+          console.error('Failed to initialize database');
+        }
       } catch (error) {
         console.error('Error initializing app:', error);
       }
