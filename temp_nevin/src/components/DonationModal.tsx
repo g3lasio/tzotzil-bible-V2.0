@@ -1,7 +1,8 @@
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { Modal, Portal, Button, Text, Surface } from 'react-native-paper';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import * as InAppPurchases from 'expo-in-app-purchases';
+import { loadSquareSdk } from '../services/PaymentService';
 
 interface DonationModalProps {
   visible: boolean;
@@ -10,25 +11,44 @@ interface DonationModalProps {
 }
 
 const DONATION_ITEMS = [
-  { amount: '5.00', sku: 'donation_5' },
-  { amount: '10.00', sku: 'donation_10' },
-  { amount: '20.00', sku: 'donation_20' },
+  { amount: '5.00', id: 'donation_5' },
+  { amount: '10.00', id: 'donation_10' },
+  { amount: '20.00', id: 'donation_20' },
 ] as const;
 
 export default function DonationModal({ visible, onDismiss, onDonationComplete }: DonationModalProps) {
-  const handleDonation = async (sku: string) => {
+  const [card, setCard] = useState(null);
+
+  useEffect(() => {
+    if (visible) {
+      initializeSquare();
+    }
+  }, [visible]);
+
+  const initializeSquare = async () => {
+    const payments = await loadSquareSdk();
+    const card = await payments.card();
+    await card.attach('#card-container');
+    setCard(card);
+  };
+
+  const handleDonation = async (amount: string) => {
     try {
-      // Conectar con el servicio de pagos
-      await InAppPurchases.connectAsync();
+      if (!card) return;
+      
+      const result = await card.tokenize();
+      if (result.status === 'OK') {
+        // Enviar token a nuestro backend
+        const response = await fetch('/api/process-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            sourceId: result.token,
+            amount: amount
+          })
+        });
 
-      // Obtener productos disponibles
-      const { responseCode, results } = await InAppPurchases.getProductsAsync([sku]);
-
-      if (responseCode === InAppPurchases.IAPResponseCode.OK && results.length > 0) {
-        // Iniciar la compra
-        const { purchaseHistoryResponseCode } = await InAppPurchases.purchaseItemAsync(sku);
-
-        if (purchaseHistoryResponseCode === InAppPurchases.IAPResponseCode.OK) {
+        if (response.ok) {
           onDonationComplete();
         }
       }
@@ -44,17 +64,15 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
           <Text variant="headlineMedium" style={styles.title}>
             Apoya Nuestro Ministerio
           </Text>
-          <Text variant="bodyMedium" style={styles.description}>
-            Tu donación nos ayuda a continuar compartiendo la Palabra de Dios 
-            en español y tzotzil.
-          </Text>
-
+          
+          <View id="card-container" style={styles.cardContainer} />
+          
           <ScrollView style={styles.optionsContainer}>
             {DONATION_ITEMS.map((item) => (
               <Button
-                key={item.sku}
+                key={item.id}
                 mode="contained"
-                onPress={() => handleDonation(item.sku)}
+                onPress={() => handleDonation(item.amount)}
                 style={styles.donationButton}
               >
                 Donar ${item.amount} USD
@@ -62,11 +80,7 @@ export default function DonationModal({ visible, onDismiss, onDonationComplete }
             ))}
           </ScrollView>
 
-          <Button 
-            mode="text" 
-            onPress={onDismiss} 
-            style={styles.cancelButton}
-          >
+          <Button mode="text" onPress={onDismiss} style={styles.cancelButton}>
             Cancelar
           </Button>
         </Surface>
@@ -87,12 +101,11 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: 'center',
-    marginBottom: 10,
-  },
-  description: {
-    textAlign: 'center',
     marginBottom: 20,
-    color: '#666',
+  },
+  cardContainer: {
+    minHeight: 100,
+    marginBottom: 20,
   },
   optionsContainer: {
     maxHeight: 200,
