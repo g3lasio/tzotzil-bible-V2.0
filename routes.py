@@ -208,10 +208,10 @@ def daily_promise():
     try:
         # Obtener la fecha actual en UTC
         today = datetime.utcnow().date()
-        
+
         # Usar el día del año como semilla para obtener una promesa consistente
         day_of_year = today.timetuple().tm_yday
-        
+
         # Contar total de promesas
         total_promises = db.session.query(Promise).count()
         if total_promises == 0:
@@ -220,13 +220,13 @@ def daily_promise():
                 'status': 'error',
                 'message': 'No hay promesas disponibles'
             }), 404
-            
+
         # Usar el módulo para obtener un índice consistente para el día
         promise_index = day_of_year % total_promises
-        
+
         # Obtener la promesa del día
         daily_promise = db.session.query(Promise).offset(promise_index).limit(1).first()
-        
+
         if not daily_promise:
             logger.error("Error al obtener la promesa diaria")
             return jsonify({
@@ -241,7 +241,7 @@ def daily_promise():
             'book_reference': daily_promise.book_reference,
             'date': today.isoformat()
         })
-        
+
     except Exception as e:
         logger.error(f"Error al obtener la promesa diaria: {str(e)}")
         return jsonify({
@@ -461,7 +461,7 @@ def search():
         try:
             # Ordenar resultados
             results = query.order_by(BibleVerse.book, BibleVerse.chapter, BibleVerse.verse).all()
-            
+
             # Convertir resultados a diccionarios
             results_dict = [{
                 'id': verse.id,
@@ -471,7 +471,7 @@ def search():
                 'tzotzil_text': verse.tzotzil_text,
                 'spanish_text': verse.spanish_text
             } for verse in results]
-            
+
             logger.info(f"Búsqueda completada. Encontrados {len(results_dict)} resultados")
             return render_template('search_results.html',
                                 results=results_dict,
@@ -479,7 +479,7 @@ def search():
                                 versions=versions,
                                 book=book,
                                 books=books)
-                                
+
         except Exception as e:
             logger.error(f"Error en la búsqueda: {str(e)}")
             return render_template('error.html',
@@ -528,7 +528,7 @@ def settings():
             if not session:
                 logger.error("No hay sesión activa")
                 return jsonify({'status': 'error', 'message': 'No active session'}), 401
-                
+
             setting_type = data.get('type')
             if not setting_type:
                 return jsonify({'status': 'error', 'message': 'Setting type required'}), 400
@@ -614,6 +614,9 @@ def settings():
 
     # GET request
     try:
+        if not current_user.is_authenticated:
+            return redirect(url_for('auth.login'))
+
         return render_template('settings.html',
                              books=get_sorted_books(),
                              user=current_user)
@@ -628,17 +631,17 @@ def get_chapters(book):
     """Obtiene los capítulos de un libro con manejo de errores mejorado y caché"""
     try:
         logger.info(f"Solicitando capítulos para el libro: {book}")
-        
+
         # Usar el gestor de base de datos con caché
         verses_result = db_manager.get_verses(book)
-        
+
         if not verses_result['success']:
             logger.error(f"Error obteniendo capítulos: {verses_result['error']}")
             return jsonify({
                 'error': 'Error obteniendo capítulos',
                 'message': verses_result['error']
             }), 500
-            
+
         chapters = verses_result['data'].get('chapters', [])
         if not chapters:
             logger.warning(f"No se encontraron capítulos para el libro {book}")
@@ -646,10 +649,10 @@ def get_chapters(book):
                 'error': 'No hay capítulos disponibles',
                 'message': f"No se encontraron capítulos para {book}"
             }), 404
-            
+
         logger.info(f"Retornando {len(chapters)} capítulos para {book}")
         return jsonify(chapters)
-        
+
     except Exception as e:
         error_msg = f"Error obteniendo capítulos para {book}: {str(e)}"
         logger.error(error_msg)
@@ -722,14 +725,14 @@ def generate_seminar():
         topic = data.get('topic', '')
         audience = data.get('audience', 'general')
         duration = data.get('duration', '60min')
-        
+
         generator = SeminarGenerator()
         seminar = generator.generate_seminar(topic, audience, duration)
-        
+
         # Generar PDF
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         filename = f"seminar_{timestamp}.pdf"
-        
+
         success, signed_url = generator.export_to_pdf(seminar, filename)
         if success:
             return jsonify({
@@ -742,7 +745,7 @@ def generate_seminar():
                 'success': False,
                 'error': 'Error generating PDF'
             }), 500
-            
+
     except Exception as e:
         current_app.logger.error(f"Error in generate_seminar: {str(e)}")
         return jsonify({
@@ -760,15 +763,15 @@ def download_seminar(filename):
                 'success': False,
                 'error': 'Archivo no encontrado'
             }), 404
-            
+
         # Generar URL de descarga temporal
         download_url = storage_client.get_download_url(filename, expire_in=3600)
-        
+
         return jsonify({
             'success': True,
             'download_url': download_url
         })
-        
+
     except Exception as e:
         current_app.logger.error(f"Error obteniendo URL de descarga: {str(e)}")
         return jsonify({
@@ -786,7 +789,7 @@ def donate(amount):
     try:
         logger.info(f"Iniciando proceso de donación - IP: {request.remote_addr}")
         logger.info(f"Monto solicitado: ${amount}")
-        
+
         try:
             amount = float(amount)
         except ValueError:
@@ -802,19 +805,19 @@ def donate(amount):
         # Usar el enlace de donación de PayPal
         paypal_link = "https://www.paypal.com/donate/?hosted_button_id=ZZT98YTR4YCXE"
         logger.info(f"URL de PayPal generada: {paypal_link}")
-        
+
         # Registrar detalles adicionales
         logger.info(f"User Agent: {request.user_agent}")
         logger.info(f"Tipo de solicitud: {'AJAX' if request.headers.get('X-Requested-With') else 'Normal'}")
-        
+
         # Retornar JSON para solicitudes AJAX o redirección para solicitudes normales
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             logger.info("Respondiendo con JSON para solicitud AJAX")
             return jsonify({'redirect_url': paypal_link, 'amount': amount})
-        
+
         logger.info("Redirigiendo directamente a PayPal")
         return redirect(paypal_link)
-        
+
     except ValueError as e:
         logger.error(f"Error procesando donación: {str(e)}")
         flash('Monto inválido', 'error')
@@ -841,7 +844,7 @@ def check_subscription(current_user):
                 current_user.subscription_status = 'inactive'
                 current_user.nevin_access = False
                 db.session.commit()
-                
+
         return jsonify(current_user.to_dict())
     except Exception as e:
         logger.error(f"Error checking subscription: {str(e)}")
@@ -899,7 +902,7 @@ def get_verses_api(book, chapter):
 def validate():
     """
     Validates input data
-    
+
     Request body:
     {
         "type": "bible_verse|user_data",
@@ -907,7 +910,7 @@ def validate():
             // Data fields depending on type
         }
     }
-    
+
     Returns:
         200: Validation successful
         400: Invalid data with error details
@@ -965,14 +968,14 @@ def download_bible():
     try:
         from database_export import export_bible_data
         db_path = export_bible_data()
-        
+
         return send_file(
             db_path,
             as_attachment=True,
             download_name=f"biblia_tzotzil_{datetime.now().strftime('%Y%m%d')}.db",
             mimetype='application/x-sqlite3'
         )
-        
+
     except Exception as e:
         logger.error(f"Error en descarga: {str(e)}")
         return jsonify({
