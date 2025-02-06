@@ -1,12 +1,12 @@
 import { OpenAIApi, Configuration } from 'openai';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system';
-import { DetectedEmotion, AIResponse, UserPreferences } from '../types/nevin';
+import { DetectedEmotion, AIResponse, UserPreferences, ChatMessage } from '../types/nevin';
+import { api } from './api';
 
 class NevinService {
   private openai: OpenAIApi;
   private static CACHE_KEY = 'nevin_offline_data';
-
 
   constructor() {
     const configuration = new Configuration({
@@ -42,7 +42,7 @@ class NevinService {
     const emotions: Record<string, number> = {};
 
     Object.entries(emotionPatterns).forEach(([emotion, keywords]) => {
-      const score = keywords.reduce((count, keyword) => 
+      const score = keywords.reduce((count, keyword) =>
         textLower.includes(keyword) ? count + 1 : count, 0);
       emotions[emotion] = score > 0 ? score / keywords.length : 0;
     });
@@ -52,7 +52,7 @@ class NevinService {
 
   private getEmotionalGuidance(emotions: Record<string, number>): string {
     const highestEmotion = Object.entries(emotions)
-      .reduce((max, [emotion, score]) => 
+      .reduce((max, [emotion, score]) =>
         score > (max[1] || 0) ? [emotion, score] : max, ['', 0]);
 
     const guidanceMap: Record<string, string> = {
@@ -65,74 +65,74 @@ class NevinService {
     return highestEmotion[1] > 0.3 ? guidanceMap[highestEmotion[0]] : "";
   }
 
-  async getAIResponse(
-    question: string,
-    context: string = "",
-    language: string = "Spanish",
-    userPreferences?: UserPreferences
+  static async getToken(): Promise<string | null> {
+    return await AsyncStorage.getItem('user_token');
+  }
+
+  static async sendMessage(
+    message: string,
+    chatHistory: ChatMessage[]
   ): Promise<AIResponse> {
     try {
-      const emotions = this.detectEmotion(question);
-      const emotionalGuidance = this.getEmotionalGuidance(emotions);
+      const token = await this.getToken();
 
-      const prompt = `
-        Eres Nevin, un asistente virtual amigable y empático que ayuda a encontrar respuestas en la Biblia.
-        
-        Contexto emocional:
-        ${emotionalGuidance}
-        
-        Formato de respuesta:
-        1. Para versículos bíblicos:
-           <div class="verse-box">
-           [Texto del versículo]
-           <small class="verse-ref">[Libro Capítulo:Versículo]</small>
-           </div>
+      if (!token) {
+        throw new Error('No se encontró token de autenticación');
+      }
 
-        2. Para citas de Elena G. White:
-           <div class="quote-box">
-           [Texto de la cita]
-           <small class="quote-ref">[Nombre del Libro, página]</small>
-           </div>
-
-        3. Para información importante:
-           <div class="info-box">
-           [Información relevante]
-           </div>
-
-        Responde en ${language} de manera profesional y estructurada.
-
-        Conversación previa:
-        ${context}
-
-        Mensaje del usuario: ${question}
-      `;
-
-      const response = await this.openai.createChatCompletion({
-        model: "gpt-4",
-        messages: [
-          {
-            role: "system",
-            content: "Eres Nevin, un asistente virtual amigable y empático que ayuda a encontrar respuestas bíblicas y comparte pensamientos inspiradores de literatura cristiana como complemento."
-          },
-          { role: "user", content: prompt }
-        ]
-      });
-
-      const responseText = response.data.choices[0].message?.content || "";
+      const response = await api.post(
+        '/nevin/chat',
+        {
+          message,
+          chat_history: chatHistory.map(msg => ({
+            role: msg.type === 'user' ? 'user' : 'assistant',
+            content: msg.content
+          }))
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` }
+        }
+      );
 
       return {
         success: true,
-        response: responseText,
-        emotions
+        response: response.data.response,
+        emotions: response.data.emotions || {}
       };
 
     } catch (error) {
-      console.error('Error in getAIResponse:', error);
+      console.error('Error en NevinService.sendMessage:', error);
       return {
         success: false,
-        error: "Lo siento, hubo un error inesperado. Por favor, intenta nuevamente.",
+        error: "Lo siento, hubo un error procesando tu mensaje. Por favor, intenta nuevamente.",
         emotions: {}
       };
+    }
+  }
+
+  static async loadChatHistory(): Promise<ChatMessage[]> {
+    try {
+      const history = await AsyncStorage.getItem('nevin_chat_history');
+      return history ? JSON.parse(history) : [];
+    } catch (error) {
+      console.error('Error cargando historial del chat:', error);
+      return [];
+    }
+  }
+
+  static async saveChatHistory(messages: ChatMessage[]): Promise<void> {
+    try {
+      await AsyncStorage.setItem('nevin_chat_history', JSON.stringify(messages));
+    } catch (error) {
+      console.error('Error guardando historial del chat:', error);
+    }
+  }
+
+  static async clearChatHistory(): Promise<void> {
+    try {
+      await AsyncStorage.removeItem('nevin_chat_history');
+    } catch (error) {
+      console.error('Error limpiando historial del chat:', error);
     }
   }
 }

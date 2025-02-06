@@ -1,4 +1,3 @@
-
 export interface User {
   id: string;
   username: string;
@@ -22,9 +21,9 @@ export interface SubscriptionStatus {
 
 export interface ChatMessage {
   id: string;
-  type: 'user' | 'assistant';
   content: string;
-  timestamp: string;
+  type: 'user' | 'ai';
+  timestamp: Date;
 }
 
 export interface BibleVerse {
@@ -39,12 +38,12 @@ export interface AIResponse {
   success: boolean;
   response?: string;
   error?: string;
-  emotions?: DetectedEmotion;
+  emotions: DetectedEmotion;
 }
 
 export interface DetectedEmotion {
-  tristeza: number;
-  desmotivación: number;
-  búsqueda_motivación: number;
-  preocupación: number;
+  tristeza?: number;
+  desmotivación?: number;
+  búsqueda_motivación?: number;
+  preocupación?: number;
 }
