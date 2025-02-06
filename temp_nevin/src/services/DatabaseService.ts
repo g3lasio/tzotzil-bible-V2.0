@@ -1,11 +1,14 @@
 
-import * as FileSystem from 'expo-file-system';
 import * as SQLite from 'expo-sqlite';
+import * as FileSystem from 'expo-file-system';
 import { Asset } from 'expo-asset';
+import { Platform } from 'react-native';
+import { BibleVerse, Book, Chapter } from '../types/bible';
 
 export class DatabaseService {
   private static instance: DatabaseService;
-  private db: SQLite.WebSQLDatabase | null = null;
+  private db: SQLite.SQLiteDatabase | null = null;
+  private static readonly DB_NAME = 'bible.db';
 
   private constructor() {}
 
@@ -16,10 +19,10 @@ export class DatabaseService {
     return DatabaseService.instance;
   }
 
-  async initDatabase() {
+  async initialize(): Promise<boolean> {
     try {
       await this.copyDatabaseFile();
-      this.db = SQLite.openDatabase('bible.db');
+      this.db = await SQLite.openDatabaseAsync(DatabaseService.DB_NAME);
       return true;
     } catch (error) {
       console.error('Error initializing database:', error);
@@ -27,25 +30,25 @@ export class DatabaseService {
     }
   }
 
-  private async copyDatabaseFile() {
-    const dbPath = `${FileSystem.documentDirectory}SQLite/bible.db`;
-    const dbExists = await FileSystem.getInfoAsync(dbPath);
+  private async copyDatabaseFile(): Promise<void> {
+    if (Platform.OS === 'web') return;
 
-    if (!dbExists.exists) {
+    const dbPath = `${FileSystem.documentDirectory}SQLite/${DatabaseService.DB_NAME}`;
+    const fileExists = await FileSystem.getInfoAsync(dbPath);
+
+    if (!fileExists.exists) {
       try {
-        // Asegurarse que el directorio existe
+        // Asegurar que el directorio existe
         await FileSystem.makeDirectoryAsync(
           `${FileSystem.documentDirectory}SQLite`,
           { intermediates: true }
         );
 
         // Copiar desde assets
-        const asset = Asset.fromModule(require('../assets/bible.db'));
-        await asset.downloadAsync();
-        
-        if (asset.localUri) {
+        const asset = await Asset.loadAsync(require('../assets/bible.db'));
+        if (asset[0]?.localUri) {
           await FileSystem.copyAsync({
-            from: asset.localUri,
+            from: asset[0].localUri,
             to: dbPath
           });
         }
@@ -56,47 +59,84 @@ export class DatabaseService {
     }
   }
 
-  async getVerses(book: string, chapter: number): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        reject(new Error('Database not initialized'));
-        return;
-      }
-
-      this.db.transaction(tx => {
-        tx.executeSql(
-          'SELECT * FROM verses WHERE book = ? AND chapter = ?',
-          [book, chapter],
-          (_, { rows: { _array } }) => resolve(_array),
-          (_, error) => {
-            reject(error);
-            return false;
-          }
+  async getBooks(): Promise<Book[]> {
+    try {
+      const result = await this.db?.transactionAsync(async (tx) => {
+        const resultSet = await tx.executeSqlAsync(
+          'SELECT * FROM books ORDER BY book_number',
+          []
         );
+        return resultSet.rows;
       });
-    });
+      return result || [];
+    } catch (error) {
+      console.error('Error getting books:', error);
+      return [];
+    }
   }
 
-  async searchVerses(query: string): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        reject(new Error('Database not initialized'));
-        return;
-      }
-
-      this.db.transaction(tx => {
-        tx.executeSql(
-          'SELECT * FROM verses WHERE text LIKE ?',
-          [`%${query}%`],
-          (_, { rows: { _array } }) => resolve(_array),
-          (_, error) => {
-            reject(error);
-            return false;
-          }
+  async getChapters(bookId: number): Promise<Chapter[]> {
+    try {
+      const result = await this.db?.transactionAsync(async (tx) => {
+        const resultSet = await tx.executeSqlAsync(
+          'SELECT * FROM chapters WHERE book_id = ? ORDER BY chapter_number',
+          [bookId]
         );
+        return resultSet.rows;
       });
-    });
+      return result || [];
+    } catch (error) {
+      console.error('Error getting chapters:', error);
+      return [];
+    }
+  }
+
+  async getVerses(bookId: number, chapterNumber: number): Promise<BibleVerse[]> {
+    try {
+      const result = await this.db?.transactionAsync(async (tx) => {
+        const resultSet = await tx.executeSqlAsync(
+          'SELECT * FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse',
+          [bookId, chapterNumber]
+        );
+        return resultSet.rows;
+      });
+      return result || [];
+    } catch (error) {
+      console.error('Error getting verses:', error);
+      return [];
+    }
+  }
+
+  async searchVerses(query: string): Promise<BibleVerse[]> {
+    try {
+      const result = await this.db?.transactionAsync(async (tx) => {
+        const resultSet = await tx.executeSqlAsync(
+          `SELECT v.*, b.name as book_name 
+           FROM verses v 
+           JOIN books b ON v.book_id = b.id 
+           WHERE v.text LIKE ? OR v.text_tzotzil LIKE ?
+           LIMIT 100`,
+          [`%${query}%`, `%${query}%`]
+        );
+        return resultSet.rows;
+      });
+      return result || [];
+    } catch (error) {
+      console.error('Error searching verses:', error);
+      return [];
+    }
+  }
+
+  async close(): Promise<void> {
+    try {
+      if (this.db) {
+        await this.db.closeAsync();
+        this.db = null;
+      }
+    } catch (error) {
+      console.error('Error closing database:', error);
+    }
   }
 }
 
-export const databaseService = DatabaseService.getInstance();
+export default DatabaseService.getInstance();

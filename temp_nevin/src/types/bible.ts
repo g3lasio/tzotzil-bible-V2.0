@@ -1,21 +1,30 @@
 
-export interface BibleVerse {
+export interface Book {
   id: number;
-  book: string;
-  chapter: number;
-  verse: number;
-  tzotzil_text: string;
-  spanish_text: string;
+  name: string;
+  book_number: number;
+  testament: string;
 }
 
-export interface BibleChapter {
-  book: string;
+export interface Chapter {
+  id: number;
+  book_id: number;
+  chapter_number: number;
+  verses_count: number;
+}
+
+export interface BibleVerse {
+  id: number;
+  book_id: number;
   chapter: number;
-  verses: BibleVerse[];
+  verse: number;
+  text: string;
+  text_tzotzil?: string;
+  book_name?: string;
 }
 
 export interface SearchResult {
   verses: BibleVerse[];
-  query: string;
   total: number;
+  query: string;
 }
