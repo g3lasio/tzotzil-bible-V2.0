@@ -22,7 +22,7 @@ export interface SubscriptionStatus {
 export interface ChatMessage {
   id: string;
   content: string;
-  type: 'user' | 'ai';
+  type: 'user' | 'assistant';
   timestamp: Date;
 }
 
@@ -38,12 +38,18 @@ export interface AIResponse {
   success: boolean;
   response?: string;
   error?: string;
-  emotions: DetectedEmotion;
+  emotions: DetectedEmotions;
 }
 
-export interface DetectedEmotion {
+export interface DetectedEmotions {
   tristeza?: number;
-  desmotivación?: number;
-  búsqueda_motivación?: number;
-  preocupación?: number;
+  desmotivacion?: number;
+  busqueda_motivacion?: number;
+  preocupacion?: number;
+}
+
+export interface NevinState {
+  currentEmotion: string;
+  chatHistory: ChatMessage[];
+  isProcessing: boolean;
 }
