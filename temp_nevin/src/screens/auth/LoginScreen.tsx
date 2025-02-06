@@ -1,110 +1,101 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Button, TextInput, Text } from 'react-native-paper';
-import { useAuth } from '../../hooks/useAuth';
-import { SafeAreaView } from 'react-native-safe-area-context';
+
+import React, { useState } from 'react';
+import { View, StyleSheet, KeyboardAvoidingView, Platform } from 'react-native';
+import { TextInput, Button, Text, Surface } from 'react-native-paper';
+import { AuthService } from '../../services/AuthService';
 import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { LoginCredentials } from '../../types/auth';
 
 export default function LoginScreen() {
-  const [credentials, setCredentials] = React.useState<LoginCredentials>({
-    email: '',
-    password: '',
-    rememberMe: false
-  });
-  const [loading, setLoading] = React.useState(false);
-  const { login } = useAuth();
-  const navigation = useNavigation<NativeStackNavigationProp<any>>();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
     try {
-      setLoading(true);
-      await login(credentials);
-    } catch (error) {
-      console.error('Error logging in:', error);
-    } finally {
-      setLoading(false);
+      const success = await AuthService.login({ email, password });
+      if (success) {
+        navigation.replace('Home');
+      }
+    } catch (err) {
+      setError('Error al iniciar sesión');
     }
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.content}>
-        <Text variant="headlineMedium" style={styles.title}>
-          Iniciar Sesión
-        </Text>
+    <KeyboardAvoidingView 
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
+      <Surface style={styles.surface}>
+        <Text variant="headlineMedium" style={styles.title}>Iniciar Sesión</Text>
         
         <TextInput
           label="Email"
-          value={credentials.email}
-          onChangeText={(text) => setCredentials(prev => ({ ...prev, email: text }))}
+          value={email}
+          onChangeText={setEmail}
           mode="outlined"
-          keyboardType="email-address"
-          autoCapitalize="none"
           style={styles.input}
+          autoCapitalize="none"
         />
-        
+
         <TextInput
           label="Contraseña"
-          value={credentials.password}
-          onChangeText={(text) => setCredentials(prev => ({ ...prev, password: text }))}
+          value={password}
+          onChangeText={setPassword}
           mode="outlined"
-          secureTextEntry
           style={styles.input}
+          secureTextEntry
         />
-        
-        <Button
-          mode="contained"
+
+        {error && <Text style={styles.errorText}>{error}</Text>}
+
+        <Button 
+          mode="contained" 
           onPress={handleLogin}
-          loading={loading}
           style={styles.button}
         >
           Iniciar Sesión
         </Button>
-        
-        <Button
-          mode="text"
+
+        <Button 
+          mode="text" 
           onPress={() => navigation.navigate('Register')}
-          style={styles.link}
         >
           ¿No tienes cuenta? Regístrate
         </Button>
-        
-        <Button
-          mode="text"
-          onPress={() => navigation.navigate('ForgotPassword')}
-          style={styles.link}
-        >
-          ¿Olvidaste tu contraseña?
-        </Button>
-      </View>
-    </SafeAreaView>
+      </Surface>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
+    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
+    padding: 16,
+  },
+  surface: {
+    padding: 20,
+    borderRadius: 8,
+    elevation: 4,
   },
   title: {
     textAlign: 'center',
-    marginBottom: 30,
+    marginBottom: 24,
   },
   input: {
-    marginBottom: 15,
+    marginBottom: 16,
+    backgroundColor: '#fff',
   },
   button: {
-    marginTop: 10,
-    paddingVertical: 8,
+    marginTop: 8,
+    marginBottom: 16,
   },
-  link: {
-    marginTop: 15,
-  },
+  errorText: {
+    color: 'red',
+    textAlign: 'center',
+    marginBottom: 16,
+  }
 });
