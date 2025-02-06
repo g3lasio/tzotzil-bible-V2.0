@@ -6,7 +6,7 @@ import { api } from './api';
 
 class NevinService {
   private openai: OpenAIApi;
-  private static CACHE_KEY = 'nevin_offline_data';
+  private static readonly CHAT_HISTORY_KEY = 'nevin_chat_history';
 
   constructor() {
     const configuration = new Configuration({
@@ -17,7 +17,7 @@ class NevinService {
 
   async initializeOfflineContent() {
     try {
-      const contentExists = await AsyncStorage.getItem(NevinService.CACHE_KEY);
+      const contentExists = await AsyncStorage.getItem(NevinService.CHAT_HISTORY_KEY);
       if (!contentExists) {
         await this.downloadInitialContent();
       }
@@ -71,28 +71,28 @@ class NevinService {
 
   static async sendMessage(
     message: string,
-    chatHistory: ChatMessage[]
+    chatHistory: ChatMessage[] = []
   ): Promise<AIResponse> {
     try {
       const token = await this.getToken();
 
       if (!token) {
-        throw new Error('No se encontró token de autenticación');
+        return {
+          success: false,
+          error: 'No se encontró el token de autenticación',
+          emotions: {}
+        };
       }
 
-      const response = await api.post(
-        '/nevin/chat',
-        {
-          message,
-          chat_history: chatHistory.map(msg => ({
-            role: msg.type === 'user' ? 'user' : 'assistant',
-            content: msg.content
-          }))
-        },
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      const response = await api.post('/nevin/chat', {
+        message,
+        chat_history: chatHistory.map(msg => ({
+          role: msg.type === 'user' ? 'user' : 'assistant',
+          content: msg.content
+        }))
+      }, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
 
       return {
         success: true,
@@ -112,7 +112,7 @@ class NevinService {
 
   static async loadChatHistory(): Promise<ChatMessage[]> {
     try {
-      const history = await AsyncStorage.getItem('nevin_chat_history');
+      const history = await AsyncStorage.getItem(this.CHAT_HISTORY_KEY);
       return history ? JSON.parse(history) : [];
     } catch (error) {
       console.error('Error cargando historial del chat:', error);
@@ -122,7 +122,7 @@ class NevinService {
 
   static async saveChatHistory(messages: ChatMessage[]): Promise<void> {
     try {
-      await AsyncStorage.setItem('nevin_chat_history', JSON.stringify(messages));
+      await AsyncStorage.setItem(this.CHAT_HISTORY_KEY, JSON.stringify(messages));
     } catch (error) {
       console.error('Error guardando historial del chat:', error);
     }
@@ -130,7 +130,7 @@ class NevinService {
 
   static async clearChatHistory(): Promise<void> {
     try {
-      await AsyncStorage.removeItem('nevin_chat_history');
+      await AsyncStorage.removeItem(this.CHAT_HISTORY_KEY);
     } catch (error) {
       console.error('Error limpiando historial del chat:', error);
     }
