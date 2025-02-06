@@ -10,6 +10,17 @@ import NevinChatScreen from '../screens/NevinChatScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AuthScreen from '../screens/AuthScreen';
 
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from '../hooks/useAuth';
+import AuthScreen from '../screens/auth/AuthScreen';
+import BibleScreen from '../screens/BibleScreen';
+import ChaptersScreen from '../screens/ChaptersScreen';
+import NevinChatScreen from '../screens/NevinChatScreen';
+import SearchScreen from '../screens/SearchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import HomeScreen from '../screens/HomeScreen';
+
 const Stack = createNativeStackNavigator();
 
 export default function AppNavigator() {

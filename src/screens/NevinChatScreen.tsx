@@ -1,75 +1,66 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { View, StyleSheet, FlatList, KeyboardAvoidingView, Platform } from 'react-native';
 import { TextInput, Button, Card, Text, ActivityIndicator } from 'react-native-paper';
+import { NevinAIService } from '../services/NevinAIService';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { BIBLE_API_URL } from '@env';
-
-type Message = {
-  id: string;
-  content: string;
-  isUser: boolean;
-  timestamp: Date;
-};
+import { ChatMessage } from '../types/nevin';
 
 type NevinChatScreenProps = NativeStackScreenProps<any, 'NevinChat'>;
 
 export default function NevinChatScreen({ navigation }: NevinChatScreenProps) {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const flatListRef = useRef<FlatList>(null);
 
   const sendMessage = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || loading) return;
 
-    const userMessage: Message = {
+    const userMessage: ChatMessage = {
       id: Date.now().toString(),
-      content: input,
-      isUser: true,
-      timestamp: new Date(),
+      content: input.trim(),
+      type: 'user',
+      timestamp: new Date()
     };
 
     setMessages(prev => [...prev, userMessage]);
     setInput('');
     setLoading(true);
+    setError(null);
 
     try {
-      const response = await fetch(`${BIBLE_API_URL}/api/chat`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: input,
-        }),
-      });
+      const response = await NevinAIService.processQuery(
+        userMessage.content,
+        '',
+        messages
+      );
 
-      if (!response.ok) {
-        throw new Error('Error al procesar el mensaje');
+      if (response.success) {
+        const nevinResponse: ChatMessage = {
+          id: (Date.now() + 1).toString(),
+          content: response.response,
+          type: 'ai',
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, nevinResponse]);
+      } else {
+        setError(response.error || 'Error procesando tu mensaje');
       }
-
-      const data = await response.json();
-      const nevinResponse: Message = {
-        id: (Date.now() + 1).toString(),
-        content: data.response,
-        isUser: false,
-        timestamp: new Date(),
-      };
-
-      setMessages(prev => [...prev, nevinResponse]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error desconocido');
-      console.error('Error sending message:', err);
+      setError('Error de conexión');
+      console.error('Error in chat:', err);
     } finally {
       setLoading(false);
     }
   };
 
-  const renderMessage = ({ item }: { item: Message }) => (
+  const renderMessage = ({ item }: { item: ChatMessage }) => (
     <Card
       style={[
         styles.messageCard,
-        item.isUser ? styles.userMessage : styles.nevinMessage,
+        item.type === 'user' ? styles.userMessage : styles.nevinMessage,
       ]}
     >
       <Card.Content>
@@ -78,24 +69,31 @@ export default function NevinChatScreen({ navigation }: NevinChatScreenProps) {
     </Card>
   );
 
+  useEffect(() => {
+    if (messages.length > 0) {
+      flatListRef.current?.scrollToEnd();
+    }
+  }, [messages]);
+
   return (
     <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 100 : 0}
+      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
     >
       <View style={styles.chatContainer}>
         {error && (
           <Text style={styles.errorText}>{error}</Text>
         )}
         <FlatList
+          ref={flatListRef}
           data={messages}
           renderItem={renderMessage}
           keyExtractor={item => item.id}
           contentContainerStyle={styles.messagesList}
-          inverted={false}
         />
       </View>
+
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
