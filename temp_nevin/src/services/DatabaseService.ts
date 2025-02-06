@@ -45,7 +45,7 @@ export class DatabaseService {
         );
 
         // Copiar desde assets
-        const asset = await Asset.loadAsync(require('../assets/bible.db'));
+        const asset = await Asset.loadAsync(require('../../assets/bible.db'));
         if (asset[0]?.localUri) {
           await FileSystem.copyAsync({
             from: asset[0].localUri,
@@ -139,4 +139,5 @@ export class DatabaseService {
   }
 }
 
-export default DatabaseService.getInstance();
+export const databaseService = DatabaseService.getInstance();
+export default DatabaseService;

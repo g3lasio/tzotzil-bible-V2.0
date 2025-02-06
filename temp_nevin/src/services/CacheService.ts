@@ -1,5 +1,5 @@
 
-import * as SQLite from 'expo-sqlite';
+import { openDatabaseSync as SQLite } from 'expo-sqlite';
 import * as FileSystem from 'expo-file-system';
 
 export class CacheService {
