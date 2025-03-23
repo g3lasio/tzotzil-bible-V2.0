@@ -823,6 +823,11 @@ def donation_success():
     """Página de agradecimiento por la donación"""
     return render_template('donation_success.html')
 
+@routes.route('/privacy')
+def privacy():
+    """Página de política de privacidad"""
+    return render_template('privacy.html')
+
 @routes.route('/check_subscription')
 @token_required
 def check_subscription(current_user):
