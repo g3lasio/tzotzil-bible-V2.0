@@ -25,12 +25,7 @@ def init_nevin_routes(app):
 def nevin_page():
     """Renderiza la página principal de Nevin."""
     try:
-        user_name = "Usuario"
-        welcome_message = f"¡Hola {user_name}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?"
-
-        return render_template('nevin.html', 
-                           welcome_message=welcome_message,
-                           user_name=user_name)
+        return render_template('nevin.html')
     except Exception as e:
         logger.error(f"Error en nevin_page: {str(e)}")
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500

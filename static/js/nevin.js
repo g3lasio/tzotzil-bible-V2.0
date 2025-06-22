@@ -17,10 +17,7 @@ class NevinChat {
 
     init() {
         this.setupEventListeners();
-        // Only show welcome message if chat history is empty
-        if (!document.querySelector(".nevin-message")) {
-            this.showWelcomeMessage();
-        }
+        this.showWelcomeMessage();
         this.displayRandomSuggestions();
         this.initTransformationEffects();
     }
@@ -81,7 +78,6 @@ class NevinChat {
 
     async showWelcomeMessage() {
         const username = localStorage.getItem("username");
-        const hour = new Date().getHours();
         let welcomeText = "";
 
         if (username && username !== "null") {
@@ -93,16 +89,12 @@ class NevinChat {
             ];
             const randomGreeting =
                 greetings[Math.floor(Math.random() * greetings.length)];
-            welcomeText = `${randomGreeting}, ${username}! ¿En qué puedo ayudarte hoy?`;
+            welcomeText = `${randomGreeting}, ${username}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte hoy?`;
         } else {
-            welcomeText = `¡Hola! Soy Nevin, tu asistente bíblico personal. Para brindarte una experiencia más personalizada, ¿podrías decirme tu nombre?`;
+            welcomeText = `¡Hola! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte hoy?`;
         }
 
         await this.showTransformationMessage(welcomeText);
-
-        if (!username || username === "null") {
-            this.showNameInput();
-        }
     }
 
     showNameInput() {
