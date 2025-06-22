@@ -76,8 +76,27 @@ def create_app():
             return None
         logger.info("Rutas de Nevin inicializadas")
 
-        @app.route('/api/health')
+        @app.route('/')
+        def root_health():
+            """Root endpoint for deployment health checks"""
+            return jsonify({
+                "status": "healthy",
+                "app": "Tzotzil Bible App",
+                "version": "1.0.0"
+            })
+
+        @app.route('/health')
         def health_check():
+            db_status = db_monitor.get_status()
+            return jsonify({
+                "status": "healthy" if db_status['is_healthy'] else "unhealthy",
+                "version": "1.0.0",
+                "debug": app.debug,
+                "database": db_status
+            })
+
+        @app.route('/api/health')
+        def api_health_check():
             db_status = db_monitor.get_status()
             return jsonify({
                 "status": "healthy" if db_status['is_healthy'] else "unhealthy",

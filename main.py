@@ -126,6 +126,12 @@ if __name__ == "__main__":
 
         port = int(os.environ.get('PORT', 5000))
         logger.info(f"=== Iniciando servidor en puerto {port} ===")
+        
+        # Test root endpoint before starting server
+        with app.test_client() as client:
+            response = client.get('/')
+            logger.info(f"Root endpoint test: {response.status_code}")
+            
         app.run(host='0.0.0.0', port=port, debug=False)
 
     except Exception as e:
