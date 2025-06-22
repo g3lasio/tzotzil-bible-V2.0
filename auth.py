@@ -149,38 +149,25 @@ def get_token_from_request():
     return None
 
 def token_required(f):
-    """Decorador para proteger rutas"""
+    """Decorador deshabilitado - ahora permite acceso libre"""
     from functools import wraps
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        token = get_token_from_request()
+        # Omitir todas las verificaciones de autenticación
+        # Crear un objeto usuario mock para compatibilidad con código existente
+        class MockUser:
+            def __init__(self):
+                self.id = 1
+                self.username = "usuario_libre"
+                self.email = "libre@acceso.com"
+                self.is_active = True
+            
+            def has_nevin_access(self):
+                return True  # Acceso libre a Nevin
         
-        if not token:
-            if request.endpoint not in ['auth.login', 'auth.register', 'auth.forgot_password', 'static']:
-                flash('Por favor inicia sesión para acceder', 'warning')
-                return redirect(url_for('auth.login'))
-        
-        payload = validate_token(token)
-        if not payload:
-            return redirect(url_for('auth.login'))
-
-        try:
-            current_user = User.query.filter_by(id=payload['sub']).first()
-            if not current_user or not current_user.is_active:
-                flash('Usuario inactivo o no encontrado', 'error')
-                return redirect(url_for('auth.login'))
-
-            if request.endpoint and 'nevin' in request.endpoint:
-                if not current_user.has_nevin_access():
-                    flash('Necesitas una suscripción premium o estar en período de prueba para acceder a Nevin', 'warning')
-                    return redirect(url_for('routes.index'))
-
-            return f(current_user, *args, **kwargs)
-        except Exception as e:
-            logger.error(f"Error en autenticación: {str(e)}")
-            flash('Error de autenticación', 'error')
-            return redirect(url_for('auth.login'))
+        mock_user = MockUser()
+        return f(mock_user, *args, **kwargs)
 
     return decorated
 

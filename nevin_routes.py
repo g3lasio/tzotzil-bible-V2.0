@@ -1,7 +1,5 @@
 import logging
 from flask import Blueprint, render_template, request, jsonify, session, flash, redirect, url_for
-from flask_login import login_required, current_user
-from auth import token_required
 from attached_assets.chat_request import get_ai_response
 
 logging.basicConfig(level=logging.DEBUG)
@@ -24,15 +22,10 @@ def init_nevin_routes(app):
         return False
 
 @nevin_bp.route('/')
-@token_required
-def nevin_page(current_user):
+def nevin_page():
     """Renderiza la página principal de Nevin."""
     try:
-        if not current_user.has_nevin_access():
-            flash('Tu período de prueba ha terminado. Actualiza a Premium para continuar usando Nevin.', 'warning')
-            return redirect(url_for('routes.index'))
-
-        user_name = current_user.username.split('@')[0] if '@' in current_user.username else current_user.username
+        user_name = "Usuario"
         welcome_message = f"¡Hola {user_name}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte?"
 
         return render_template('nevin.html', 
@@ -43,17 +36,9 @@ def nevin_page(current_user):
         return render_template('error.html', error="Hubo un problema al cargar la página."), 500
 
 @nevin_bp.route('/query', methods=['POST'])
-@token_required
-def nevin_query(current_user):
+def nevin_query():
     """Procesa las consultas a la API de Nevin"""
     try:
-        if not current_user.has_nevin_access():
-            return jsonify({
-                'response': "Necesitas una suscripción premium para usar Nevin.",
-                'success': False,
-                'error': 'no_access'
-            }), 403
-
         data = request.get_json()
         if not data:
             logger.error("No se recibieron datos en la consulta")
