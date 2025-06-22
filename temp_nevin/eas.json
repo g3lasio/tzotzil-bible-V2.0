@@ -1,7 +1,6 @@
-
 {
   "cli": {
-    "version": ">= 5.9.1"
+    "version": ">= 5.8.0"
   },
   "build": {
     "development": {
@@ -15,8 +14,17 @@
       }
     },
     "production": {
+      "autoIncrement": true,
       "android": {
         "buildType": "app-bundle"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./service-account-key.json",
+        "track": "internal"
       }
     }
   }

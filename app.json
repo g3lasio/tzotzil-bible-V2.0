@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Sistema Nevin",
-    "slug": "sistema-nevin",
-    "version": "1.0.0",
+    "name": "Tzotzil Bible",
+    "slug": "tzotzil-bible",
+    "version": "2.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,14 +16,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.sistemanevin.app"
+      "bundleIdentifier": "com.chyrris.tzotzilbible"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.sistemanevin.app"
+      "package": "com.chyrris.tzotzilbible"
     },
     "web": {
       "favicon": "./assets/favicon.png",
