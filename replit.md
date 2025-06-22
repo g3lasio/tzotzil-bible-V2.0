@@ -125,6 +125,7 @@ This is a bilingual Bible app (Spanish/Tzotzil) with an AI assistant called "Nev
 - June 22, 2025. Initial setup
 - June 22, 2025. Disabled authentication system for free access to all users, removed login requirements for Nevin AI, fixed duplicate welcome message issue
 - June 22, 2025. Fixed Google Play compliance issues: unified package ID to com.chyrris.tzotzilbible, cleaned problematic images, updated app configuration for Play Store approval
+- June 22, 2025. Prepared APK build configuration: fixed assets, created build instructions, prepared Play Store submission materials with proper app name "Tzotzil Bible"
 
 # User Preferences
 
