@@ -39,7 +39,7 @@ externalPort = 3002
 channel = "stable-24_05"
 
 [workflows]
-runButton = "Project"
+runButton = "Flask App"
 
 [[workflows.workflow]]
 name = "Project"
@@ -83,3 +83,12 @@ task = "packager.installForAll"
 task = "shell.exec"
 args = "cd temp_nevin && EXPO_PORT=8083 npx expo start --web --port=8083"
 waitForPort = 8083
+
+[[workflows.workflow]]
+name = "Flask App"
+author = 36525909
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
