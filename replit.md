@@ -123,6 +123,7 @@ This is a bilingual Bible app (Spanish/Tzotzil) with an AI assistant called "Nev
 
 # Changelog
 - June 22, 2025. Initial setup
+- June 22, 2025. Disabled authentication system for free access to all users, removed login requirements for Nevin AI, fixed duplicate welcome message issue
 
 # User Preferences
 

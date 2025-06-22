@@ -530,25 +530,23 @@ def settings():
 
             if setting_type == 'profile':
                 try:
-                    db = get_db()
-                    cur = db.cursor()
-                    cur.execute("""
-                        UPDATE users 
-                        SET first_name = ?, phone = ? 
-                        WHERE id = ?
-                    """, (data.get('name', current_user.first_name),
-                          data.get('phone', current_user.phone), 
-                          current_user.id))
-                    db.commit()
+                    # Simular actualización de perfil sin base de datos de usuarios
+                    name = data.get('name', '')
+                    phone = data.get('phone', '')
+                    
+                    # Guardar en sesión para persistencia temporal
+                    session['user_name'] = name
+                    session['user_phone'] = phone
+                    
                     return jsonify({
                         'status': 'success',
-                        'message': 'Profile updated successfully'
+                        'message': 'Perfil actualizado exitosamente'
                     })
                 except Exception as e:
                     logger.error(f"Error updating profile: {str(e)}")
                     return jsonify({
                         'status': 'error',
-                        'message': 'Error updating profile'
+                        'message': 'Error actualizando el perfil'
                     }), 500
 
             elif setting_type == 'appearance':

@@ -52,33 +52,8 @@ async function updateSettings(type, settings) {
 }
 
 function initializeSettings() {
-    // Theme mode
-    const currentTheme = localStorage.getItem('themeMode') || 'dark';
-    document.documentElement.setAttribute('data-bs-theme', currentTheme);
-    document.querySelector(`input[name="themeMode"][value="${currentTheme}"]`).checked = true;
-    
-    // Font size
-    const fontSize = localStorage.getItem('fontSize') || '16';
-    document.documentElement.style.fontSize = fontSize + 'px';
-    if (document.getElementById('fontSizeRange')) {
-        document.getElementById('fontSizeRange').value = fontSize;
-        if (document.getElementById('fontSizeValue')) {
-            document.getElementById('fontSizeValue').textContent = fontSize + 'px';
-        }
-    }
-    
-    // Reading preferences
-    if (document.getElementById('verseNumbers')) {
-        document.getElementById('verseNumbers').checked = localStorage.getItem('verseNumbers') !== 'false';
-    }
-    if (document.getElementById('parallelView')) {
-        document.getElementById('parallelView').checked = localStorage.getItem('parallelView') === 'true';
-    }
-    if (document.getElementById('primaryLanguage')) {
-        document.getElementById('primaryLanguage').value = localStorage.getItem('primaryLanguage') || 'tzotzil';
-    }
-    
-    
+    // Cargar configuraciones básicas para funcionalidad restante
+    console.log("Settings initialized successfully");
 }
 
 function setupEventListeners() {
@@ -109,88 +84,11 @@ function setupEventListeners() {
         });
     }
 
-    // Theme mode toggles
-    const themeToggles = document.querySelectorAll('input[name="themeMode"]');
-    themeToggles.forEach(toggle => {
-        toggle.addEventListener('change', async function() {
-            if (this.checked) {
-                const theme = this.value;
-                try {
-                    document.documentElement.setAttribute('data-bs-theme', theme);
-                    localStorage.setItem('themeMode', theme);
-                    await updateSettings('appearance', { theme_mode: theme });
-                } catch (error) {
-                    console.error('Error updating theme:', error);
-                }
-            }
-        });
-    });
-
-    // Font size control
-    const fontSizeRange = document.getElementById('fontSizeRange');
-    if (fontSizeRange) {
-        fontSizeRange.addEventListener('input', function() {
-            const size = this.value;
-            document.getElementById('fontSizeValue').textContent = size + 'px';
-        });
-
-        fontSizeRange.addEventListener('change', async function() {
-            try {
-                const size = this.value;
-                document.documentElement.style.fontSize = size + 'px';
-                localStorage.setItem('fontSize', size);
-                await updateSettings('appearance', { font_size: size });
-            } catch (error) {
-                console.error('Error updating font size:', error);
-            }
-        });
-    }
-
-    // Reading preferences
-    setupReadingPreferences();
+    // No theme or reading preference controls needed
+    console.log("Event listeners setup completed");
 }
 
-function setupReadingPreferences() {
-    const verseNumbers = document.getElementById('verseNumbers');
-    const parallelView = document.getElementById('parallelView');
-    const primaryLanguage = document.getElementById('primaryLanguage');
-    
-    if (verseNumbers) {
-        verseNumbers.addEventListener('change', async function() {
-            try {
-                localStorage.setItem('verseNumbers', this.checked);
-                await updateSettings('reading', { verse_numbers: this.checked });
-            } catch (error) {
-                console.error('Error updating verse numbers setting:', error);
-                window.createToast('Error updating reading preferences', 'danger');
-            }
-        });
-    }
-    
-    if (parallelView) {
-        parallelView.addEventListener('change', async function() {
-            try {
-                localStorage.setItem('parallelView', this.checked);
-                await updateSettings('reading', { parallel_view: this.checked });
-            } catch (error) {
-                console.error('Error updating parallel view:', error);
-                window.createToast('Error updating reading preferences', 'danger');
-            }
-        });
-    }
-    
-    if (primaryLanguage) {
-        primaryLanguage.addEventListener('change', async function() {
-            try {
-                localStorage.setItem('primaryLanguage', this.value);
-                await updateSettings('reading', { primary_language: this.value });
-            } catch (error) {
-                console.error('Error updating primary language:', error);
-                window.createToast('Error updating reading preferences', 'danger');
-            }
-        });
-    }
-}
+// Reading preferences removed as they are not functional
 
 
 
@@ -254,79 +152,6 @@ function setupBackupAndSync() {
     }
 }
 
-function showCustomDonation() {
-    const modal = new bootstrap.Modal(document.getElementById('customDonationModal'));
-    modal.show();
-}
+// Additional donation functions removed
 
-function processCustomDonation() {
-    const amount = document.getElementById('customAmount').value;
-    if (!amount || amount <= 0) {
-        window.createToast('Por favor ingrese un monto válido', 'error');
-        return;
-    }
-
-    // Usar fetch para manejar la redirección de manera más controlada
-    fetch(`/donate/${amount}`, {
-        method: 'GET',
-        headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.redirect_url) {
-            console.log('Redirigiendo a PayPal...');
-            window.open(data.redirect_url, '_blank');
-        } else {
-            throw new Error('No se recibió URL de redirección');
-        }
-    })
-    .catch(error => {
-        console.error('Error procesando donación:', error);
-        window.createToast('Error procesando la donación. Por favor intente nuevamente.', 'error');
-    });
-}
-
-function handleDonation(amount) {
-    try {
-        console.log('Iniciando proceso de donación...');
-        const squareUrl = "https://square.link/u/ZbdMAkZv";
-        console.log('URL de Square generada:', squareUrl);
-        
-        // Validar monto antes de abrir la URL
-        if (!amount || amount <= 0) {
-            console.error('Monto inválido:', amount);
-            window.createToast('Por favor ingrese un monto válido', 'error');
-            return;
-        }
-
-        console.log('Redirigiendo a Square con monto:', amount);
-        const squareWindow = window.open(squareUrl, '_blank');
-        
-        if (squareWindow) {
-            console.log('Ventana de Square abierta exitosamente');
-        } else {
-            console.error('Bloqueador de popups detectado');
-            window.createToast('Por favor permita las ventanas emergentes para continuar', 'warning');
-        }
-    } catch (error) {
-        console.error('Error procesando donación:', error);
-        window.createToast('Error procesando la donación', 'error');
-    }
-}
-
-function showCustomDonation() {
-    const modal = new bootstrap.Modal(document.getElementById('customDonationModal'));
-    modal.show();
-}
-
-function processCustomDonation() {
-    const amount = document.getElementById('customAmount').value;
-    if (!amount || amount <= 0) {
-        window.createToast('Por favor ingrese un monto válido', 'error');
-        return;
-    }
-    handleDonation(amount);
-    bootstrap.Modal.getInstance(document.getElementById('customDonationModal')).hide();
-}
+// Donation functions removed as per request
