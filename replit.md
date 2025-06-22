@@ -127,6 +127,7 @@ This is a bilingual Bible app (Spanish/Tzotzil) with an AI assistant called "Nev
 - June 22, 2025. Fixed Google Play compliance issues: unified package ID to com.chyrris.tzotzilbible, cleaned problematic images, updated app configuration for Play Store approval
 - June 22, 2025. Prepared APK build configuration: fixed assets, created build instructions, prepared Play Store submission materials with proper app name "Tzotzil Bible"
 - June 22, 2025. Fixed deployment configuration: added root health endpoint, configured Flask app for port 5000, added missing API endpoints for Nevin chat, improved health check endpoints
+- June 22, 2025. Resolved deployment port conflict: Flask backend properly configured for port 5000, created web-deploy script for Expo frontend, identified deployment configuration pointing to wrong application
 
 # User Preferences
 
