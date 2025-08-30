@@ -15,10 +15,12 @@ babel = Babel()
 cors = CORS(resources={
     r"/api/*": {
         "origins": [
-            "https://sistema-nevin.replit.app",
-            "https://tzotzil-bible-reader.replit.app",
-            "https://nevin-ai.replit.app",
-            "http://localhost:19006"  # Agregado para desarrollo local de React Native/Expo
+            "https://*.replit.app",
+            "https://*.replit.dev",
+            "http://localhost:19006",  # Para desarrollo local de React Native/Expo
+            "http://localhost:8083",   # Para Expo development server
+            "http://localhost:3000",   # Para web-deploy script
+            "exp://localhost:19000"    # Para Expo desarrollo con QR
         ],
         "methods": ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         "allow_headers": [

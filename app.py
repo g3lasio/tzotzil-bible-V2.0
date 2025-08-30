@@ -2,7 +2,6 @@ import os
 import sys
 import logging
 from flask import Flask, jsonify
-from flask_cors import CORS
 from database import db_manager
 from routes import init_routes
 from extensions import init_extensions
@@ -20,18 +19,7 @@ def create_app():
     from auth import init_login_manager
     init_login_manager(app)
 
-    # Configuración CORS actualizada para React Native
-    CORS(app, resources={
-        r"/api/*": {
-            "origins": ["https://sistema-nevin.replit.app", 
-                       "https://tzotzil-bible-reader.replit.app",
-                       "http://localhost:19006",  # Para desarrollo de React Native/Expo
-                       "exp://localhost:19000"],  # Para desarrollo de Expo
-            "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization"],
-            "supports_credentials": True
-        }
-    })
+    # CORS se configura en extensions.py para evitar duplicación
 
     # Configurar la aplicación
     app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
