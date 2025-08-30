@@ -1,6 +1,8 @@
 
 { pkgs }: {
   deps = [
+    pkgs.openjdk17
+    pkgs.openjdk11
     pkgs.xcodebuild
     pkgs.grpc
     pkgs.which
