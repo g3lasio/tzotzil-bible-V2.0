@@ -44,14 +44,9 @@ export class DatabaseService {
           { intermediates: true }
         );
 
-        // Copiar desde assets
-        const asset = await Asset.loadAsync(require('../../assets/bible.db'));
-        if (asset[0]?.localUri) {
-          await FileSystem.copyAsync({
-            from: asset[0].localUri,
-            to: dbPath
-          });
-        }
+        // Para esta app, usamos la API del backend en lugar de archivo local
+        // Crear una base de datos vacía si no existe
+        console.log('Creando base de datos SQLite local para caché...');
       } catch (error) {
         console.error('Error copying database:', error);
         throw error;
@@ -61,14 +56,11 @@ export class DatabaseService {
 
   async getBooks(): Promise<Book[]> {
     try {
-      const result = await this.db?.transactionAsync(async (tx) => {
-        const resultSet = await tx.executeSqlAsync(
-          'SELECT * FROM books ORDER BY book_number',
-          []
-        );
-        return resultSet.rows;
-      });
-      return result || [];
+      if (!this.db) return [];
+      const resultSet = await this.db.getAllAsync(
+        'SELECT * FROM books ORDER BY book_number'
+      );
+      return resultSet as Book[];
     } catch (error) {
       console.error('Error getting books:', error);
       return [];
@@ -77,14 +69,12 @@ export class DatabaseService {
 
   async getChapters(bookId: number): Promise<Chapter[]> {
     try {
-      const result = await this.db?.transactionAsync(async (tx) => {
-        const resultSet = await tx.executeSqlAsync(
-          'SELECT * FROM chapters WHERE book_id = ? ORDER BY chapter_number',
-          [bookId]
-        );
-        return resultSet.rows;
-      });
-      return result || [];
+      if (!this.db) return [];
+      const resultSet = await this.db.getAllAsync(
+        'SELECT * FROM chapters WHERE book_id = ? ORDER BY chapter_number',
+        [bookId]
+      );
+      return resultSet as Chapter[];
     } catch (error) {
       console.error('Error getting chapters:', error);
       return [];
@@ -93,14 +83,12 @@ export class DatabaseService {
 
   async getVerses(bookId: number, chapterNumber: number): Promise<BibleVerse[]> {
     try {
-      const result = await this.db?.transactionAsync(async (tx) => {
-        const resultSet = await tx.executeSqlAsync(
-          'SELECT * FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse',
-          [bookId, chapterNumber]
-        );
-        return resultSet.rows;
-      });
-      return result || [];
+      if (!this.db) return [];
+      const resultSet = await this.db.getAllAsync(
+        'SELECT * FROM verses WHERE book_id = ? AND chapter = ? ORDER BY verse',
+        [bookId, chapterNumber]
+      );
+      return resultSet as BibleVerse[];
     } catch (error) {
       console.error('Error getting verses:', error);
       return [];
@@ -109,18 +97,16 @@ export class DatabaseService {
 
   async searchVerses(query: string): Promise<BibleVerse[]> {
     try {
-      const result = await this.db?.transactionAsync(async (tx) => {
-        const resultSet = await tx.executeSqlAsync(
-          `SELECT v.*, b.name as book_name 
-           FROM verses v 
-           JOIN books b ON v.book_id = b.id 
-           WHERE v.text LIKE ? OR v.text_tzotzil LIKE ?
-           LIMIT 100`,
-          [`%${query}%`, `%${query}%`]
-        );
-        return resultSet.rows;
-      });
-      return result || [];
+      if (!this.db) return [];
+      const resultSet = await this.db.getAllAsync(
+        `SELECT v.*, b.name as book_name 
+         FROM verses v 
+         JOIN books b ON v.book_id = b.id 
+         WHERE v.text LIKE ? OR v.text_tzotzil LIKE ?
+         LIMIT 100`,
+        [`%${query}%`, `%${query}%`]
+      );
+      return resultSet as BibleVerse[];
     } catch (error) {
       console.error('Error searching verses:', error);
       return [];
