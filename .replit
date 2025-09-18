@@ -37,6 +37,7 @@ externalPort = 3002
 
 [nix]
 channel = "stable-24_05"
+packages = ["bash", "cacert", "cargo", "freetype", "gitFull", "glibcLocales", "grpc", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "postgresql", "rustc", "tcl", "tk", "which", "xcodebuild", "xsimd", "zlib"]
 
 [workflows]
 runButton = "Flask App"
@@ -94,4 +95,4 @@ task = "shell.exec"
 args = "python main.py"
 
 [agent]
-integrations = ["perplexity_v0:1.0.0"]
+integrations = ["perplexity_v0:1.0.0", "python_anthropic:1.0.0"]
