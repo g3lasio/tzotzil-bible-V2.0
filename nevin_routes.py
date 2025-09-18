@@ -15,9 +15,18 @@ def init_nevin_routes(app):
             logger.error("Se recibió una instancia de app nula")
             return False
 
+        # Register the revolutionary Nevin AI system
+        try:
+            from nevin_routes_revolutionary import nevin_revolutionary
+            app.register_blueprint(nevin_revolutionary)
+            logger.info("Revolutionary Nevin AI blueprints registrados correctamente")
+        except Exception as e:
+            logger.warning(f"Error cargando sistema revolucionario (usando fallback): {e}")
+
+        # Register legacy blueprints for backward compatibility
         app.register_blueprint(nevin_bp)
         app.register_blueprint(api_nevin_bp)
-        logger.info("Nevin blueprints registrados correctamente")
+        logger.info("Legacy Nevin blueprints registrados para compatibilidad")
         return True
     except Exception as e:
         logger.error(f"Error inicializando rutas Nevin: {str(e)}")
