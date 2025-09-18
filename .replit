@@ -92,3 +92,6 @@ mode = "sequential"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "python main.py"
+
+[agent]
+integrations = ["perplexity_v0:1.0.0"]
