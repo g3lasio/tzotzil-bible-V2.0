@@ -218,3 +218,6 @@ werkzeug==2.3.7
 flask-login
 oauthlib
 anthropic
+beautifulsoup4
+lxml
+requests

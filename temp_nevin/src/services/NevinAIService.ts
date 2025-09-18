@@ -21,23 +21,31 @@ export class NevinAIService {
         };
       }
 
-      const response = await api.post('/nevin/chat', {
-        message,
+      // Use the revolutionary Nevin AI system with Claude 4 + EGW search + doctrinal validation
+      const response = await api.post('/api/nevin/chat/revolutionary', {
+        question: message,
         context,
+        language: 'Spanish',
+        extended_thinking: true,
         chat_history: chatHistory.map(msg => ({
           role: msg.type === 'user' ? 'user' : 'assistant',
           content: msg.content
         }))
       }, {
         headers: {
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
 
       return {
         success: true,
         response: response.data.response,
-        emotions: response.data.emotions || {}
+        emotions: response.data.emotions || {},
+        metadata: response.data.metadata || {
+          system_version: "Revolutionary Nevin AI v2.0",
+          powered_by: "Claude 4 + EGW Web Search + Doctrinal Validation"
+        }
       };
     } catch (error) {
       console.error('Error en NevinAIService.processQuery:', error);
