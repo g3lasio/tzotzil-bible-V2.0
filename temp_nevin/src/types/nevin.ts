@@ -39,6 +39,22 @@ export interface AIResponse {
   response?: string;
   error?: string;
   emotions: DetectedEmotions;
+  metadata?: {
+    system_version?: string;
+    powered_by?: string;
+    text_type?: string;
+    hermeneutic_principles?: string[];
+  };
+  egw_sources?: Array<{
+    title: string;
+    url: string;
+    snippet: string;
+  }>;
+  doctrinal_validation?: {
+    status: string;
+    principles_applied: string[];
+    warnings?: string[];
+  };
 }
 
 export interface DetectedEmotions {

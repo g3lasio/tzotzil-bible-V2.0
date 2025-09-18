@@ -63,11 +63,12 @@ def revolutionary_chat():
                 "metadata": {
                     "text_type": result.get('text_type'),
                     "egw_sources_found": result.get('egw_sources', 0),
-                    "doctrinal_validation": result.get('doctrinal_validation', {}),
                     "thinking_tokens": result.get('thinking_tokens', 0),
                     "system_version": "Revolutionary Nevin AI v2.0",
                     "powered_by": "Claude 4 + EGW Web Search + Doctrinal Validation"
-                }
+                },
+                "egw_sources": result.get('egw_sources_list', []),
+                "doctrinal_validation": result.get('doctrinal_validation', {})
             })
         else:
             logger.error(f"Revolutionary Nevin error: {result.get('error')}")

@@ -501,14 +501,16 @@ class NevinChat {
             });
 
             // Llamada al backend
-            const response = await fetch("/nevin/query", {
+            const response = await fetch("/api/nevin/chat/revolutionary", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
                     question: message,
-                    user_id: window.userId || this.state.userId,
+                    context: "",
+                    language: "Spanish",
+                    extended_thinking: true
                 }),
             });
 

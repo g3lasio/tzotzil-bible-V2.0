@@ -45,7 +45,9 @@ export class NevinAIService {
         metadata: response.data.metadata || {
           system_version: "Revolutionary Nevin AI v2.0",
           powered_by: "Claude 4 + EGW Web Search + Doctrinal Validation"
-        }
+        },
+        egw_sources: response.data.egw_sources || [],
+        doctrinal_validation: response.data.doctrinal_validation || {}
       };
     } catch (error) {
       console.error('Error en NevinAIService.processQuery:', error);

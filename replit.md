@@ -128,6 +128,7 @@ This is a bilingual Bible app (Spanish/Tzotzil) with an AI assistant called "Nev
 - June 22, 2025. Prepared APK build configuration: fixed assets, created build instructions, prepared Play Store submission materials with proper app name "Tzotzil Bible"
 - June 22, 2025. Fixed deployment configuration: added root health endpoint, configured Flask app for port 5000, added missing API endpoints for Nevin chat, improved health check endpoints
 - June 22, 2025. Resolved deployment port conflict: Flask backend properly configured for port 5000, created web-deploy script for Expo frontend, identified deployment configuration pointing to wrong application
+- September 18, 2025. **REVOLUTIONARY NEVIN AI v2.0 COMPLETED**: Integrated Claude 4 for superior theological reasoning with transparent thinking processes, implemented dynamic web-based EGW search replacing static FAISS, integrated comprehensive theological framework using JSON materials for hermeneutic principles and doctrinal validation, created new API endpoints with backward compatibility, updated frontend web and mobile for full system integration
 
 # User Preferences
 

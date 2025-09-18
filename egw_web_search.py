@@ -39,6 +39,8 @@ class EGWWebSearchEngine:
         self.session.headers.update({
             'User-Agent': 'Mozilla/5.0 (compatible; NevinAI-TheologicalResearch/1.0; +info@tzotzilbible.org)'
         })
+        # Add global timeout for EGW searches
+        self.timeout = 15
         
         # Sitios de búsqueda para EGW
         self.search_sources = {
@@ -108,7 +110,7 @@ class EGWWebSearchEngine:
             
             # Búsqueda mediante Google Site Search como fallback
             google_query = f"site:egwwritings.org {query}"
-            google_results = self._google_site_search(google_query, max_results)
+            google_results = self._google_site_search(google_query, max_results, timeout=self.timeout)
             
             for i, result in enumerate(google_results):
                 egw_result = EGWSearchResult(
@@ -136,7 +138,7 @@ class EGWWebSearchEngine:
         try:
             # Implementar búsqueda en White Estate
             google_query = f"site:whiteestate.org {query}"
-            google_results = self._google_site_search(google_query, max_results)
+            google_results = self._google_site_search(google_query, max_results, timeout=self.timeout)
             
             for i, result in enumerate(google_results):
                 egw_result = EGWSearchResult(
@@ -164,7 +166,7 @@ class EGWWebSearchEngine:
         try:
             # Implementar búsqueda en EllenWhite.info
             google_query = f"site:ellenwhite.info {query}"
-            google_results = self._google_site_search(google_query, max_results)
+            google_results = self._google_site_search(google_query, max_results, timeout=self.timeout)
             
             for i, result in enumerate(google_results):
                 egw_result = EGWSearchResult(
@@ -185,7 +187,7 @@ class EGWWebSearchEngine:
         
         return results
     
-    def _google_site_search(self, query: str, max_results: int) -> List[Dict]:
+    def _google_site_search(self, query: str, max_results: int, timeout: int = 15) -> List[Dict]:
         """
         Realizar búsqueda en sitios específicos usando métodos públicos
         """
