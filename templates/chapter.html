@@ -15,47 +15,44 @@
     </head>
     <body class="cyberpunk">
         <div class="container-fluid px-4">
-            <header class="header header-compact">
-                <div class="header-content">
-                    <div class="header-unified">
-                        <div class="book-nav">
-                            <a
-                                href="{{ url_for('routes.books') }}"
-                                class="header-book-btn compact"
-                            >
-                                <i class="bi bi-book-half"></i>
-                            </a>
-                        </div>
-                        
-                        <div class="title-section compact">
-                            <h1 class="chapter-title compact">{{ book }} {{ chapter }}</h1>
-                        </div>
-                        
-                        <div class="controls-section compact">
-                            <div class="nav-arrows compact">
-                                {% if chapter > 1 %}
-                                <button
-                                    class="nav-arrow-btn prev-btn compact"
-                                    data-direction="prev"
-                                    data-book="{{ book }}"
-                                    data-chapter="{{ chapter-1 }}"
-                                >
-                                    <i class="bi bi-arrow-left"></i>
-                                    <span class="nav-text">Anterior</span>
-                                </button>
-                                {% endif %} {% if chapter < max_chapter %}
-                                <button
-                                    class="nav-arrow-btn next-btn compact"
-                                    data-direction="next"
-                                    data-book="{{ book }}"
-                                    data-chapter="{{ chapter+1 }}"
-                                >
-                                    <span class="nav-text">Siguiente</span>
-                                    <i class="bi bi-arrow-right"></i>
-                                </button>
-                                {% endif %}
-                            </div>
-                        </div>
+            <header class="header-redesigned">
+                <div class="header-grid">
+                    <!-- Icono de libro estático en esquina izquierda -->
+                    <div class="book-icon-left">
+                        <a href="{{ url_for('routes.books') }}" class="book-icon-link">
+                            <i class="bi bi-book-half"></i>
+                        </a>
+                    </div>
+                    
+                    <!-- Título centrado -->
+                    <div class="title-center">
+                        <h1 class="chapter-title-large">{{ book }} {{ chapter }}</h1>
+                    </div>
+                    
+                    <!-- Navegación minimalista en esquina derecha -->
+                    <div class="nav-minimal">
+                        {% if chapter > 1 %}
+                        <button
+                            class="arrow-btn prev"
+                            data-direction="prev"
+                            data-book="{{ book }}"
+                            data-chapter="{{ chapter-1 }}"
+                            title="Capítulo anterior"
+                        >
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        {% endif %}
+                        {% if chapter < max_chapter %}
+                        <button
+                            class="arrow-btn next"
+                            data-direction="next"
+                            data-book="{{ book }}"
+                            data-chapter="{{ chapter+1 }}"
+                            title="Siguiente capítulo"
+                        >
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </header>

@@ -309,8 +309,9 @@ function setupVerseHighlighting() {
 }
 
 function initializeChapterNavigation() {
-    const prevButton = document.querySelector('.nav-arrow-btn.prev-btn');
-    const nextButton = document.querySelector('.nav-arrow-btn.next-btn');
+    // Usar los nuevos selectores para el header rediseñado
+    const prevButton = document.querySelector('.arrow-btn.prev');
+    const nextButton = document.querySelector('.arrow-btn.next');
     
     if (prevButton) {
         prevButton.addEventListener("click", () => {

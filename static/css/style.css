@@ -549,6 +549,36 @@ body {
         min-width: 44px;
         min-height: 44px;
     }
+    
+    /* Header rediseñado - móvil pequeño */
+    .header-redesigned {
+        padding: 0.5rem 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .header-grid {
+        gap: 0.5rem;
+        min-height: 40px;
+    }
+    
+    .chapter-title-large {
+        font-size: 1.2rem;
+    }
+    
+    .book-icon-link {
+        font-size: 1.2rem;
+        padding: 0.3rem;
+    }
+    
+    .arrow-btn {
+        width: 32px;
+        height: 32px;
+        font-size: 0.8rem;
+    }
+    
+    .nav-minimal {
+        gap: 0.3rem;
+    }
 }
 
 @media (max-width: 480px) {
@@ -663,6 +693,32 @@ body {
     
     .language-headers.spanish-only {
         grid-template-columns: 1fr 54px 1fr !important;
+    }
+    
+    /* Header rediseñado - responsivo móvil */
+    .header-redesigned {
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .header-grid {
+        gap: 0.75rem;
+        min-height: 45px;
+    }
+    
+    .chapter-title-large {
+        font-size: 1.4rem;
+    }
+    
+    .book-icon-link {
+        font-size: 1.3rem;
+        padding: 0.4rem;
+    }
+    
+    .arrow-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 0.9rem;
     }
 }
 
@@ -1704,6 +1760,94 @@ body {
 /* Layout equilibrado: tzotzil invisible | toggle | español */
 .language-headers.spanish-only {
     grid-template-columns: 1fr 60px 1fr !important;
+}
+
+/* Header Rediseñado - Minimalista y Compacto */
+.header-redesigned {
+    background: var(--bg-darker);
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+}
+
+.header-grid {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 1rem;
+    min-height: 50px;
+}
+
+/* Icono de libro estático en esquina izquierda */
+.book-icon-left {
+    justify-self: start;
+}
+
+.book-icon-link {
+    color: var(--glow-primary);
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.book-icon-link:hover {
+    color: var(--accent-cyan);
+    background: rgba(0, 243, 255, 0.1);
+    transform: scale(1.1);
+}
+
+/* Título centrado y más grande */
+.title-center {
+    justify-self: center;
+    text-align: center;
+}
+
+.chapter-title-large {
+    font-size: 1.8rem;
+    font-family: 'Orbitron', sans-serif;
+    color: var(--glow-primary);
+    margin: 0;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+/* Navegación minimalista */
+.nav-minimal {
+    justify-self: end;
+    display: flex;
+    gap: 0.5rem;
+}
+
+.arrow-btn {
+    background: transparent;
+    border: 1px solid var(--glow-primary);
+    color: var(--glow-primary);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1rem;
+}
+
+.arrow-btn:hover {
+    background: var(--glow-primary);
+    color: var(--bg-darker);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+}
+
+.arrow-btn:active {
+    transform: scale(0.95);
 }
 
 /* Chapter Header Styles */
