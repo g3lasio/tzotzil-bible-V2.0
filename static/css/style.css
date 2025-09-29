@@ -53,6 +53,26 @@ button,
     --text-secondary: #b3b3b3;
 }
 
+/* Ocultar barra de scroll lateral pero mantener funcionalidad */
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+}
+
+html::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
+body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    overflow-y: scroll; /* Mantener funcionalidad de scroll */
+}
+
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+}
+
 /* Bottom Navigation Styles */
 .bottom-nav {
     position: fixed;
