@@ -368,6 +368,118 @@ body {
     width: 100%;
 }
 
+/* Header Compacto */
+.header-compact {
+    padding: 0.5rem 1rem;
+}
+
+.header-unified {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 0.5rem;
+}
+
+.title-section.compact {
+    flex: 1;
+    text-align: center;
+}
+
+.chapter-title.compact {
+    font-size: 1.3rem !important;
+    margin: 0;
+    color: var(--glow-primary);
+    text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+    font-family: 'Orbitron', sans-serif;
+}
+
+.controls-section.compact {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.header-book-btn.compact {
+    background-color: var(--bg-darker);
+    color: var(--glow-primary);
+    border: 2px solid var(--glow-primary);
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    text-shadow: 0 0 5px var(--glow-primary);
+    transition: all var(--transition-speed);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-book-btn.compact:hover {
+    background-color: var(--glow-primary);
+    color: var(--bg-dark);
+}
+
+.language-toggle-wrapper.compact {
+    margin: 0;
+    padding: 0;
+}
+
+.switch.compact {
+    width: 80px;
+    height: 28px;
+}
+
+.slider.compact {
+    padding: 0 6px;
+}
+
+.nav-arrows.compact {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.nav-arrow-btn.compact {
+    background: var(--bg-darker);
+    border: 1px solid var(--glow-primary);
+    color: var(--glow-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.4rem 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    justify-content: center;
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden;
+}
+
+.nav-arrow-btn.compact:hover {
+    background-color: var(--glow-primary);
+    color: var(--bg-dark);
+    transform: translateY(-1px);
+}
+
+.nav-arrow-btn.compact::before {
+    content: '';
+    position: absolute;
+    top: -100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(transparent,
+            rgba(255, 255, 255, 0.2),
+            transparent);
+    transition: var(--transition-speed);
+}
+
+.nav-arrow-btn.compact:hover::before {
+    top: 100%;
+}
+
 .header::before {
     content: '';
     position: absolute;
