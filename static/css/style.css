@@ -480,6 +480,147 @@ body {
     top: 100%;
 }
 
+/* Media queries para header compacto móvil */
+@media (max-width: 768px) {
+    .header-compact {
+        padding: 0.75rem 0.5rem;
+    }
+    
+    .header-unified {
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: center;
+    }
+    
+    .title-section.compact {
+        order: 1;
+        text-align: center;
+        width: 100%;
+    }
+    
+    .chapter-title.compact {
+        font-size: 1.4rem !important;
+        margin: 0;
+    }
+    
+    .controls-section.compact {
+        order: 2;
+        flex-direction: row;
+        justify-content: space-between;
+        width: 100%;
+        gap: 0.5rem;
+        align-items: center;
+    }
+    
+    .book-nav {
+        order: 0;
+        position: absolute;
+        left: 0.5rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+    
+    .language-toggle-wrapper.compact {
+        order: 3;
+        flex: none;
+    }
+    
+    .nav-arrows.compact {
+        order: 4;
+        flex: 1;
+        justify-content: center;
+        gap: 1rem;
+    }
+    
+    .nav-arrow-btn.compact {
+        padding: 0.6rem 1rem;
+        font-size: 0.9rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    .switch.compact {
+        width: 75px;
+        height: 30px;
+    }
+    
+    .header-book-btn.compact {
+        padding: 0.6rem;
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-compact {
+        padding: 0.5rem;
+    }
+    
+    .header-unified {
+        gap: 0.5rem;
+        position: relative;
+    }
+    
+    .book-nav {
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 10;
+    }
+    
+    .title-section.compact {
+        padding: 0 3rem;
+        margin: 0;
+    }
+    
+    .chapter-title.compact {
+        font-size: 1.2rem !important;
+        text-align: center;
+    }
+    
+    .controls-section.compact {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+    }
+    
+    .language-toggle-wrapper.compact {
+        order: 1;
+        align-self: center;
+    }
+    
+    .nav-arrows.compact {
+        order: 2;
+        width: 100%;
+        justify-content: center;
+        gap: 1.5rem;
+    }
+    
+    .nav-arrow-btn.compact {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+        min-width: 120px;
+        min-height: 48px;
+        border-radius: 8px;
+    }
+    
+    .nav-arrow-btn.compact .nav-text {
+        font-weight: 500;
+    }
+    
+    .switch.compact {
+        width: 85px;
+        height: 32px;
+    }
+    
+    .header-book-btn.compact {
+        padding: 0.75rem;
+        min-width: 48px;
+        min-height: 48px;
+        border-radius: 10px;
+    }
+}
+
 .header::before {
     content: '';
     position: absolute;
