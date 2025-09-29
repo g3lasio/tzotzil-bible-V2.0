@@ -27,6 +27,7 @@
                                 id="profileName"
                                 name="name"
                                 placeholder="Ingresa tu nombre"
+                                value="{{ user.username if user else '' }}"
                             />
                         </div>
                         <div class="mb-3">
@@ -39,6 +40,7 @@
                                 id="profileEmail"
                                 name="email"
                                 placeholder="tu@email.com"
+                                value="{{ user.email if user else '' }}"
                                 readonly
                             />
                         </div>
@@ -52,6 +54,7 @@
                                 id="profilePhone"
                                 name="phone"
                                 placeholder="Tu número de teléfono"
+                                value="{{ user.phone if user else '' }}"
                             />
                         </div>
                         <button type="submit" class="btn btn-primary w-100">
