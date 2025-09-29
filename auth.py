@@ -3,6 +3,7 @@ Sistema de autenticación usando JWT
 """
 from datetime import datetime, timedelta
 import jwt
+import random
 from flask import Blueprint, request, jsonify, current_app, render_template, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from models import User, db
@@ -114,29 +115,6 @@ def validate_token(token):
     except Exception as e:
         logger.error(f"Error validando token: {str(e)}")
         return None
-    
-    try:
-        logger.debug(f"Validando token: {token[:10]}...")
-        secret_key = current_app.config.get('JWT_SECRET_KEY', current_app.config.get('SECRET_KEY'))
-        logger.debug(f"Usando JWT_SECRET_KEY para validación")
-        
-        payload = jwt.decode(
-            token,
-            secret_key,
-            algorithms=[JWT_ALGORITHM],
-            options={"verify_exp": True}
-        )
-        logger.info(f"Token validado exitosamente. User ID: {payload.get('sub')}")
-        return payload
-    except jwt.ExpiredSignatureError:
-        logger.warning("Token expirado")
-        return None
-    except jwt.InvalidTokenError as e:
-        logger.warning(f"Token inválido: {str(e)}")
-        return None
-    except Exception as e:
-        logger.error(f"Error validando token: {str(e)}")
-        return None
 
 def get_token_from_request():
     """Extrae el token JWT de la solicitud"""
@@ -149,25 +127,38 @@ def get_token_from_request():
     return None
 
 def token_required(f):
-    """Decorador deshabilitado - ahora permite acceso libre"""
+    """Decorador para requerir autenticación JWT"""
     from functools import wraps
 
     @wraps(f)
     def decorated(*args, **kwargs):
-        # Omitir todas las verificaciones de autenticación
-        # Crear un objeto usuario mock para compatibilidad con código existente
-        class MockUser:
-            def __init__(self):
-                self.id = 1
-                self.username = "usuario_libre"
-                self.email = "libre@acceso.com"
-                self.is_active = True
-            
-            def has_nevin_access(self):
-                return True  # Acceso libre a Nevin
-        
-        mock_user = MockUser()
-        return f(mock_user, *args, **kwargs)
+        try:
+            token = get_token_from_request()
+            if not token:
+                logger.warning("Token no encontrado en la solicitud")
+                return jsonify({'message': 'Token requerido'}), 401
+
+            payload = validate_token(token)
+            if not payload:
+                logger.warning("Token inválido o expirado")
+                return jsonify({'message': 'Token inválido o expirado'}), 401
+
+            user_id = payload.get('sub')
+            if not user_id:
+                logger.warning("ID de usuario no encontrado en token")
+                return jsonify({'message': 'Token inválido'}), 401
+
+            current_user = User.query.get(user_id)
+            if not current_user or not current_user.is_active:
+                logger.warning(f"Usuario no encontrado o inactivo: {user_id}")
+                return jsonify({'message': 'Usuario no encontrado'}), 401
+
+            logger.info(f"Usuario autenticado exitosamente: {current_user.username}")
+            return f(current_user, *args, **kwargs)
+
+        except Exception as e:
+            logger.error(f"Error en autenticación: {str(e)}")
+            return jsonify({'message': 'Error de autenticación'}), 500
 
     return decorated
 
