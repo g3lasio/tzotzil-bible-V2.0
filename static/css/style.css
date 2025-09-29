@@ -631,19 +631,18 @@ body {
         padding: 0.3rem 0.5rem;
     }
     
-    .switch.small {
-        width: 60px;
-        height: 22px;
+    /* Toggle con iconos - responsivo móvil */
+    .switch-icon.compact {
+        width: 44px;
+        height: 24px;
     }
     
-    .slider.small {
-        padding: 0 2px;
-        font-size: 0.6rem;
+    .toggle-icon {
+        font-size: 12px;
     }
     
-    .toggle-text-bilingual.small,
-    .toggle-text-spanish.small {
-        font-size: 0.55rem;
+    .language-toggle-center {
+        min-width: 44px;
     }
 }
 
@@ -1395,33 +1394,95 @@ body {
     text-align: center;
 }
 
-/* Toggle centrado entre headers */
+/* Toggle centrado entre headers - versión mejorada */
 .language-toggle-center {
     display: flex;
     justify-content: center;
     align-items: center;
     padding: 0;
+    position: relative;
+    min-width: 50px;
 }
 
 .language-toggle-wrapper.centered {
     margin: 0;
     padding: 0;
+    position: static;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.switch.small {
-    width: 70px;
-    height: 24px;
+/* Toggle con iconos - nuevo diseño */
+.switch-icon.compact {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+    background: rgba(13, 17, 23, 0.95);
+    border: 2px solid var(--glow-primary);
+    border-radius: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.slider.small {
-    padding: 0 4px;
-    font-size: 0.7rem;
+.switch-icon input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
 }
 
-.toggle-text-bilingual.small,
-.toggle-text-spanish.small {
-    font-size: 0.65rem;
-    font-weight: 500;
+.slider-icon {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.toggle-icon {
+    position: absolute;
+    font-size: 14px;
+    color: var(--glow-primary);
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+/* Estado por defecto: modo bilingüe (checked) */
+.switch-icon input:checked + .slider-icon .bilingual-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.switch-icon input:checked + .slider-icon .spanish-icon {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+/* Estado cambiado: modo español (unchecked) */
+.switch-icon input:not(:checked) + .slider-icon .bilingual-icon {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.switch-icon input:not(:checked) + .slider-icon .spanish-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.switch-icon:hover {
+    border-color: var(--accent-cyan);
+    box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
+}
+
+.switch-icon:hover .toggle-icon {
+    color: var(--accent-cyan);
 }
 
 .header-btn {
@@ -1569,12 +1630,13 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Modo solo español con nuevo layout manteniendo toggle visible */
+/* Modo solo español con nuevo layout manteniendo toggle centrado */
 .language-headers.spanish-only .language-header.tzotzil {
-    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
 }
 
-/* El toggle SIEMPRE permanece visible */
+/* El toggle SIEMPRE permanece visible y centrado */
 .language-headers.spanish-only .language-toggle-center {
     display: flex !important;
 }
@@ -1584,9 +1646,9 @@ body {
     width: 100% !important;
 }
 
-/* Layout ajustado: espacio vacío | toggle | español */
+/* Layout equilibrado: tzotzil invisible | toggle | español */
 .language-headers.spanish-only {
-    grid-template-columns: 0fr auto 1fr !important;
+    grid-template-columns: 1fr minmax(50px, auto) 1fr !important;
 }
 
 /* Chapter Header Styles */
