@@ -6,7 +6,7 @@ from extensions import db
 from datetime import datetime, timedelta
 from sqlalchemy import text, func
 from auth import auth
-from models import Promise, BibleVerse
+from models import Promise, BibleVerse, User
 from flask import current_app
 from database import get_sorted_books
 import logging
@@ -511,7 +511,8 @@ def search():
 
 
 @routes.route('/settings', methods=['GET', 'POST'])
-def settings():
+@token_required
+def settings(current_user):
     """Maneja las configuraciones del usuario"""
     if request.method == 'POST':
         try:
@@ -530,13 +531,17 @@ def settings():
 
             if setting_type == 'profile':
                 try:
-                    # Simular actualización de perfil sin base de datos de usuarios
-                    name = data.get('name', '')
-                    phone = data.get('phone', '')
+                    # Actualizar perfil del usuario autenticado en la base de datos
+                    name = data.get('name', data.get('first_name', '')).strip()
+                    phone = data.get('phone', '').strip()
                     
-                    # Guardar en sesión para persistencia temporal
-                    session['user_name'] = name
-                    session['user_phone'] = phone
+                    if name:
+                        current_user.username = name
+                    if phone:
+                        current_user.phone = phone
+                    
+                    db.session.commit()
+                    logger.info(f"Perfil actualizado para usuario {current_user.id}: name={name}, phone={phone}")
                     
                     return jsonify({
                         'status': 'success',
@@ -544,6 +549,7 @@ def settings():
                     })
                 except Exception as e:
                     logger.error(f"Error updating profile: {str(e)}")
+                    db.session.rollback()
                     return jsonify({
                         'status': 'error',
                         'message': 'Error actualizando el perfil'
@@ -608,7 +614,8 @@ def settings():
     # GET request
     try:
         return render_template('settings.html',
-                             books=get_sorted_books())
+                             books=get_sorted_books(),
+                             user=current_user)
     except Exception as e:
         logger.error(f"Error loading settings page: {str(e)}")
         return render_template('error.html',
