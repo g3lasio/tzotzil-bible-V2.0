@@ -44,9 +44,8 @@ function initializeLanguageToggle() {
 
     const updateLanguageDisplay = (showBoth) => {
         try {
-            // Actualizar textos
+            // SOLO actualizar el contenido de los versos, NO los headers
             verseContainer.querySelectorAll('.verse-content').forEach(content => {
-                content.classList.toggle('spanish-only', !showBoth);
                 const tzotzilText = content.querySelector('.verse-text.tzotzil');
                 const spanishText = content.querySelector('.verse-text.spanish');
                 
@@ -62,15 +61,8 @@ function initializeLanguageToggle() {
                 }
             });
 
-            // Actualizar encabezados
-            const headers = verseContainer.querySelector('.language-headers');
-            if (headers) {
-                const tzotzilHeader = headers.querySelector('.language-header.tzotzil');
-                if (tzotzilHeader) {
-                    tzotzilHeader.style.display = showBoth ? 'block' : 'none';
-                    headers.classList.toggle('spanish-only', !showBoth);
-                }
-            }
+            // NO modificar los headers - mantenerlos siempre visibles y fijos
+            // Los headers permanecen intactos para que el toggle no se mueva
 
             localStorage.setItem('languageMode', showBoth ? 'both' : 'spanish');
             console.log(`Changed to ${showBoth ? 'bilingual' : 'spanish'} mode successfully`);

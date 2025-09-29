@@ -661,38 +661,24 @@ body {
         padding: 0.3rem 0.5rem;
     }
     
-    /* Toggle Switch - responsivo móvil */
-    .toggle-track {
-        width: 54px;
-        height: 26px;
+    /* Toggle Switch Simple - responsivo móvil */
+    .toggle-track-simple {
+        width: 44px;
+        height: 24px;
     }
     
-    .toggle-slider {
-        width: 20px;
-        height: 20px;
+    .toggle-slider-simple {
+        width: 18px;
+        height: 18px;
     }
     
-    .toggle-icons {
-        top: -16px;
-        padding: 0 4px;
-    }
-    
-    .toggle-icons i {
-        font-size: 10px;
-        padding: 1px 2px;
-    }
-    
-    .toggle-switch input:not(:checked) + .toggle-track .toggle-slider {
-        transform: translateX(31px);
+    .toggle-switch-simple input:not(:checked) + .toggle-track-simple .toggle-slider-simple {
+        transform: translateX(20px);
     }
     
     .language-toggle-center {
-        min-width: 54px;
-        padding-top: 16px;
-    }
-    
-    .language-headers.spanish-only {
-        grid-template-columns: 1fr 54px 1fr !important;
+        min-width: 44px;
+        padding: 0;
     }
     
     /* Header rediseñado - responsivo móvil */
@@ -1470,14 +1456,14 @@ body {
     text-align: center;
 }
 
-/* Toggle centrado entre headers - versión mejorada */
+/* Toggle centrado entre headers - versión simplificada */
 .language-toggle-center {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 16px 0 0 0;
+    padding: 0;
     position: relative;
-    min-width: 60px;
+    min-width: 50px;
     flex-shrink: 0;
 }
 
@@ -1491,108 +1477,67 @@ body {
     width: 100%;
 }
 
-/* Toggle Switch Real - Diseño como toggle verdadero */
-.toggle-switch {
+/* Toggle Switch Simple - Sin iconos, solo slider */
+.toggle-switch-simple {
     position: relative;
     display: inline-block;
     cursor: pointer;
 }
 
-.toggle-switch input {
+.toggle-switch-simple input {
     opacity: 0;
     width: 0;
     height: 0;
     position: absolute;
 }
 
-.toggle-track {
+.toggle-track-simple {
     position: relative;
-    width: 60px;
-    height: 28px;
+    width: 50px;
+    height: 26px;
     background: rgba(13, 17, 23, 0.95);
     border: 2px solid var(--glow-primary);
-    border-radius: 20px;
+    border-radius: 15px;
     transition: all 0.3s ease;
-    overflow: visible;
 }
 
-.toggle-icons {
+.toggle-slider-simple {
     position: absolute;
-    top: -18px;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 6px;
-    z-index: 3;
-}
-
-.toggle-icons i {
-    font-size: 11px;
-    color: var(--glow-primary);
-    transition: all 0.3s ease;
-    background: rgba(13, 17, 23, 0.8);
-    padding: 2px 3px;
-    border-radius: 3px;
-    border: 1px solid var(--glow-primary);
-}
-
-.toggle-slider {
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 22px;
-    height: 22px;
+    top: 2px;
+    left: 2px;
+    width: 20px;
+    height: 20px;
     background: var(--glow-primary);
     border-radius: 50%;
     transition: all 0.3s ease;
-    z-index: 2;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* Estado checked (bilingüe) - slider a la izquierda */
-.toggle-switch input:checked + .toggle-track .toggle-slider {
+.toggle-switch-simple input:checked + .toggle-track-simple .toggle-slider-simple {
     transform: translateX(0);
 }
 
-.toggle-switch input:checked + .toggle-track .icon-left {
-    color: var(--accent-cyan);
-    border-color: var(--accent-cyan);
-    background: rgba(0, 243, 255, 0.1);
-    font-weight: bold;
-}
-
-.toggle-switch input:checked + .toggle-track .icon-right {
-    color: var(--glow-primary);
-    border-color: var(--glow-primary);
+.toggle-switch-simple input:checked + .toggle-track-simple {
+    background: rgba(0, 243, 255, 0.2);
 }
 
 /* Estado unchecked (español) - slider a la derecha */
-.toggle-switch input:not(:checked) + .toggle-track .toggle-slider {
-    transform: translateX(35px);
+.toggle-switch-simple input:not(:checked) + .toggle-track-simple .toggle-slider-simple {
+    transform: translateX(24px);
 }
 
-.toggle-switch input:not(:checked) + .toggle-track .icon-left {
-    color: var(--glow-primary);
-    border-color: var(--glow-primary);
-}
-
-.toggle-switch input:not(:checked) + .toggle-track .icon-right {
-    color: var(--accent-cyan);
-    border-color: var(--accent-cyan);
-    background: rgba(0, 243, 255, 0.1);
-    font-weight: bold;
+.toggle-switch-simple input:not(:checked) + .toggle-track-simple {
+    background: rgba(13, 17, 23, 0.95);
 }
 
 /* Hover effects */
-.toggle-switch:hover .toggle-track {
+.toggle-switch-simple:hover .toggle-track-simple {
     border-color: var(--accent-cyan);
     box-shadow: 0 0 10px rgba(0, 243, 255, 0.3);
 }
 
-.toggle-switch:hover .toggle-slider {
+.toggle-switch-simple:hover .toggle-slider-simple {
     background: var(--accent-cyan);
 }
 
@@ -1741,26 +1686,9 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Modo solo español con nuevo layout manteniendo toggle centrado */
-.language-headers.spanish-only .language-header.tzotzil {
-    visibility: hidden !important;
-    opacity: 0 !important;
-}
+/* Headers siempre fijos - no cambiar con toggle */
 
-/* El toggle SIEMPRE permanece visible y centrado */
-.language-headers.spanish-only .language-toggle-center {
-    display: flex !important;
-}
-
-.language-headers.spanish-only .language-header.spanish {
-    text-align: center !important;
-    width: 100% !important;
-}
-
-/* Layout equilibrado: tzotzil invisible | toggle | español */
-.language-headers.spanish-only {
-    grid-template-columns: 1fr 60px 1fr !important;
-}
+/* Remover reglas de spanish-only para headers - mantenerlos siempre fijos */
 
 /* Header Rediseñado - Minimalista y Compacto */
 .header-redesigned {
