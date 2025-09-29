@@ -32,20 +32,6 @@
                         </div>
                         
                         <div class="controls-section compact">
-                            <div class="language-toggle-wrapper compact">
-                                <label class="switch compact">
-                                    <input
-                                        type="checkbox"
-                                        id="languageToggle"
-                                        checked
-                                    />
-                                    <span class="slider round compact">
-                                        <span class="toggle-text-bilingual">Bilingüe</span>
-                                        <span class="toggle-text-spanish">Español</span>
-                                    </span>
-                                </label>
-                            </div>
-                            
                             <div class="nav-arrows compact">
                                 {% if chapter > 1 %}
                                 <button
@@ -78,10 +64,25 @@
                 <div class="verse-container card shadow-neon">
                     <div class="card-body">
                         <div class="language-headers">
-                            <div class="language-header tzotzil">
+                            <div class="language-header tzotzil compact">
                                 <i class="bi bi-translate"></i> Tzotzil
                             </div>
-                            <div class="language-header spanish">
+                            <div class="language-toggle-center">
+                                <div class="language-toggle-wrapper compact centered">
+                                    <label class="switch compact small">
+                                        <input
+                                            type="checkbox"
+                                            id="languageToggle"
+                                            checked
+                                        />
+                                        <span class="slider round compact small">
+                                            <span class="toggle-text-bilingual small">Bilingüe</span>
+                                            <span class="toggle-text-spanish small">Español</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="language-header spanish compact">
                                 <i class="bi bi-translate"></i> Español
                             </div>
                         </div>
