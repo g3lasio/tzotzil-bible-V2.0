@@ -627,8 +627,8 @@ body {
     }
     
     .language-header.compact {
-        font-size: 0.8rem;
-        padding: 0.4rem;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.5rem;
     }
     
     .switch.small {
@@ -873,9 +873,10 @@ body {
 }
 
 .language-header.compact {
-    font-size: 0.9rem;
-    padding: 0.5rem;
+    font-size: 0.85rem;
+    padding: 0.4rem 0.6rem;
     letter-spacing: 0.03em;
+    border-radius: 0.4rem;
 }
 
 .language-header:hover {
@@ -1568,23 +1569,24 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Modo solo español con nuevo layout de 3 columnas */
+/* Modo solo español con nuevo layout manteniendo toggle visible */
 .language-headers.spanish-only .language-header.tzotzil {
     display: none !important;
 }
 
+/* El toggle SIEMPRE permanece visible */
 .language-headers.spanish-only .language-toggle-center {
-    display: none !important;
+    display: flex !important;
 }
 
 .language-headers.spanish-only .language-header.spanish {
-    grid-column: 1 / -1 !important;
     text-align: center !important;
     width: 100% !important;
 }
 
+/* Layout ajustado: espacio vacío | toggle | español */
 .language-headers.spanish-only {
-    grid-template-columns: 1fr !important;
+    grid-template-columns: 0fr auto 1fr !important;
 }
 
 /* Chapter Header Styles */
