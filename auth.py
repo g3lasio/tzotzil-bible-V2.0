@@ -127,38 +127,48 @@ def get_token_from_request():
     return None
 
 def token_required(f):
-    """Decorador para requerir autenticación JWT"""
+    """Decorador deshabilitado - ahora permite acceso libre con usuario por defecto"""
     from functools import wraps
 
     @wraps(f)
     def decorated(*args, **kwargs):
+        # Crear o obtener un usuario por defecto para las configuraciones
         try:
-            token = get_token_from_request()
-            if not token:
-                logger.warning("Token no encontrado en la solicitud")
-                return jsonify({'message': 'Token requerido'}), 401
-
-            payload = validate_token(token)
-            if not payload:
-                logger.warning("Token inválido o expirado")
-                return jsonify({'message': 'Token inválido o expirado'}), 401
-
-            user_id = payload.get('sub')
-            if not user_id:
-                logger.warning("ID de usuario no encontrado en token")
-                return jsonify({'message': 'Token inválido'}), 401
-
-            current_user = User.query.get(user_id)
-            if not current_user or not current_user.is_active:
-                logger.warning(f"Usuario no encontrado o inactivo: {user_id}")
-                return jsonify({'message': 'Usuario no encontrado'}), 401
-
-            logger.info(f"Usuario autenticado exitosamente: {current_user.username}")
-            return f(current_user, *args, **kwargs)
-
+            # Buscar usuario por defecto o crearlo si no existe
+            default_user = User.query.filter_by(email="default@app.com").first()
+            if not default_user:
+                default_user = User(
+                    username="Usuario Default",
+                    lastname="App",
+                    phone="",
+                    email="default@app.com",
+                    is_active=True,
+                    nevin_access=True
+                )
+                default_user.set_password("default123")
+                db.session.add(default_user)
+                db.session.commit()
+                logger.info("Usuario por defecto creado en la base de datos")
+            
+            return f(default_user, *args, **kwargs)
+            
         except Exception as e:
-            logger.error(f"Error en autenticación: {str(e)}")
-            return jsonify({'message': 'Error de autenticación'}), 500
+            logger.error(f"Error obteniendo usuario por defecto: {str(e)}")
+            # Crear usuario mock como fallback
+            class MockUser:
+                def __init__(self):
+                    self.id = "default"
+                    self.username = "Usuario Default"
+                    self.lastname = "App"
+                    self.phone = ""
+                    self.email = "default@app.com"
+                    self.is_active = True
+                
+                def has_nevin_access(self):
+                    return True
+            
+            mock_user = MockUser()
+            return f(mock_user, *args, **kwargs)
 
     return decorated
 
