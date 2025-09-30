@@ -80,7 +80,7 @@ class NevinChat {
         const username = localStorage.getItem("username");
         let welcomeText = "";
 
-        if (username && username !== "null") {
+        if (username && username !== "null" && username.trim() !== "") {
             const greetings = [
                 "¡Me alegra verte de nuevo",
                 "¡Qué gusto tenerte de vuelta",
@@ -91,7 +91,13 @@ class NevinChat {
                 greetings[Math.floor(Math.random() * greetings.length)];
             welcomeText = `${randomGreeting}, ${username}! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte hoy?`;
         } else {
-            welcomeText = `¡Hola! Soy Nevin, tu asistente bíblico. ¿En qué puedo ayudarte hoy?`;
+            const genericGreetings = [
+                "¡Hola! Soy Nevin, tu asistente bíblico. Estoy aquí para ayudarte a explorar las Escrituras.",
+                "¡Bienvenido! Soy Nevin, tu compañero en el estudio bíblico. ¿En qué puedo ayudarte hoy?",
+                "¡Paz a ti! Soy Nevin, tu asistente para comprender mejor la Palabra de Dios.",
+                "¡Qué alegría tenerte aquí! Soy Nevin, y estoy para ayudarte con tus consultas bíblicas."
+            ];
+            welcomeText = genericGreetings[Math.floor(Math.random() * genericGreetings.length)];
         }
 
         await this.showTransformationMessage(welcomeText);
