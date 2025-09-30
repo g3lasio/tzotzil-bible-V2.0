@@ -1,9 +1,6 @@
-# React Native / Expo - DO NOT exclude temp_nevin, it's the main app
-# Only exclude build artifacts and node_modules inside temp_nevin
-temp_nevin/node_modules/
-temp_nevin/.expo/
-temp_nevin/.expo-shared/
-temp_nevin/web-build/
+# React Native / Expo - EXCLUDE completamente temp_nevin para Cloud Run deployment
+# Cloud Run solo necesita el backend Flask, no la app móvil React Native
+temp_nevin/
 
 # Android builds
 *.apk
