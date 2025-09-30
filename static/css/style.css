@@ -1430,6 +1430,27 @@ body {
     position: relative;
 }
 
+.verse-content::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: 2px;
+    background: linear-gradient(to bottom,
+            transparent,
+            rgba(0, 243, 255, 0.8),
+            rgba(0, 243, 255, 0.8),
+            transparent);
+    transform: translateX(-50%);
+    box-shadow: 
+        0 0 10px rgba(0, 243, 255, 0.6),
+        0 0 20px rgba(0, 243, 255, 0.4),
+        0 0 30px rgba(0, 243, 255, 0.2);
+    animation: neon-pulse 2s ease-in-out infinite;
+    pointer-events: none;
+}
+
 .verse-text.tzotzil,
 .verse-text.spanish {
     font-family: 'Dubai Medium', sans-serif;
