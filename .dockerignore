@@ -83,3 +83,35 @@ __pycache__/
 
 # Attached assets que no son necesarios para producción
 attached_assets/
+
+# Vector stores y knowledge base (no necesarios para deployment inicial)
+nevin_knowledge/
+
+# Environment files y secrets
+.env
+.env.*
+.python-version
+
+# Test directories
+tests/
+test/
+
+# Python caches adicionales
+.mypy_cache/
+.ruff_cache/
+.cache/
+
+# Static seminars si no son necesarios
+# static/seminars/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Large CSV files (comentar si son necesarios)
+# Tzotzil_database.csv
+# *.csv
