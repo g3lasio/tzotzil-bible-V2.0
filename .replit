@@ -39,6 +39,10 @@ externalPort = 3002
 localPort = 35629
 externalPort = 5000
 
+[[ports]]
+localPort = 38173
+externalPort = 4200
+
 [nix]
 channel = "stable-24_05"
 packages = ["bash", "cacert", "cargo", "freetype", "gitFull", "glibcLocales", "grpc", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "postgresql", "rustc", "tcl", "tk", "which", "xcodebuild", "xsimd", "zlib"]
