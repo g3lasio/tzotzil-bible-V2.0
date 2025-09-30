@@ -1,0 +1,85 @@
+# React Native / Expo (no necesario para web deployment)
+temp_nevin/
+temp_nevin/**
+
+# Android builds
+*.apk
+*.aab
+android/
+**/android/build/
+**/android/.gradle/
+**/android/app/build/
+
+# iOS builds (si existen)
+ios/
+**/ios/build/
+**/ios/Pods/
+
+# Node modules - se reinstalarán en deployment
+node_modules/
+**/node_modules/
+
+# Build artifacts
+build/
+dist/
+*.log
+*.lock
+
+# Development files
+.expo/
+.expo-shared/
+*.jks
+*.keystore
+
+# Testing
+coverage/
+.nyc_output/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Large data files that aren't needed
+Nevin_AI/nevin_knowledge/*.faiss
+Nevin_AI/nevin_knowledge/*.pkl
+other_authors/*.faiss
+other_authors/*.pkl
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Logs
+*.log
+logs/
+app.log
+
+# Database files (no necesarias para deployment inicial)
+instance/*.db
+*.db
+bible_app.db
+biblia_egw.db
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Migrations (optional - comentar si se necesitan)
+# migrations/
+
+# Attached assets que no son necesarios para producción
+attached_assets/
