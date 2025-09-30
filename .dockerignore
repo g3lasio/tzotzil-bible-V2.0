@@ -50,11 +50,11 @@ Thumbs.db
 .git/
 .gitignore
 
-# Large data files that aren't needed
-Nevin_AI/nevin_knowledge/*.faiss
-Nevin_AI/nevin_knowledge/*.pkl
-other_authors/*.faiss
-other_authors/*.pkl
+# IMPORTANTE: NO excluir archivos FAISS - Nevin AI los necesita en runtime
+# Nevin_AI/nevin_knowledge/*.faiss
+# Nevin_AI/nevin_knowledge/*.pkl
+# other_authors/*.faiss
+# other_authors/*.pkl
 
 # Temporary files
 tmp/
@@ -84,8 +84,8 @@ __pycache__/
 # Attached assets que no son necesarios para producción
 attached_assets/
 
-# Vector stores y knowledge base (no necesarios para deployment inicial)
-nevin_knowledge/
+# IMPORTANTE: NO excluir nevin_knowledge/ - contiene FAISS indexes necesarios para Nevin AI
+# nevin_knowledge/
 
 # Environment files y secrets
 .env
