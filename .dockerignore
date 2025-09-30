@@ -1,6 +1,9 @@
-# React Native / Expo (no necesario para web deployment)
-temp_nevin/
-temp_nevin/**
+# React Native / Expo - DO NOT exclude temp_nevin, it's the main app
+# Only exclude build artifacts and node_modules inside temp_nevin
+temp_nevin/node_modules/
+temp_nevin/.expo/
+temp_nevin/.expo-shared/
+temp_nevin/web-build/
 
 # Android builds
 *.apk
