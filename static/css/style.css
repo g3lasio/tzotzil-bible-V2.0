@@ -1465,7 +1465,7 @@ body {
     width: 100%;
     display: block;
     margin: 0;
-    padding: 0;
+    padding: 0 1.5rem;
 }
 
 .verse-content.spanish-only .verse-text.spanish {
