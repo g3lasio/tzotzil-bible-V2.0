@@ -1426,7 +1426,7 @@ body {
     display: grid;
     /* Mantiene el contenido en columnas paralelas */
     grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+    gap: 3rem;
     position: relative;
 }
 
@@ -1449,6 +1449,11 @@ body {
         0 0 30px rgba(0, 243, 255, 0.2);
     animation: neon-pulse 2s ease-in-out infinite;
     pointer-events: none;
+}
+
+/* Ocultar la línea separadora cuando está en modo español solo */
+.verse-content.spanish-only::after {
+    display: none;
 }
 
 .verse-text.tzotzil,

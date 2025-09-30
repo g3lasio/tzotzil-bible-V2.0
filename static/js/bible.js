@@ -49,6 +49,15 @@ function initializeLanguageToggle() {
                 const tzotzilText = content.querySelector('.verse-text.tzotzil');
                 const spanishText = content.querySelector('.verse-text.spanish');
                 
+                // Agregar/quitar clase para controlar la línea separadora
+                if (showBoth) {
+                    content.classList.add('bilingual-mode');
+                    content.classList.remove('spanish-only');
+                } else {
+                    content.classList.remove('bilingual-mode');
+                    content.classList.add('spanish-only');
+                }
+                
                 if (tzotzilText) {
                     tzotzilText.style.display = showBoth ? 'block' : 'none';
                 }
