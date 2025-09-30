@@ -44,7 +44,7 @@ channel = "stable-24_05"
 packages = ["bash", "cacert", "cargo", "freetype", "gitFull", "glibcLocales", "grpc", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "postgresql", "rustc", "tcl", "tk", "which", "xcodebuild", "xsimd", "zlib"]
 
 [workflows]
-runButton = "Flask App"
+runButton = "Project"
 
 [[workflows.workflow]]
 name = "Project"
@@ -80,14 +80,12 @@ author = "agent"
 
 [workflows.workflow.metadata]
 agentRequireRestartOnSave = false
-
-[[workflows.workflow.tasks]]
-task = "packager.installForAll"
+outputType = "webview"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd temp_nevin && EXPO_PORT=8083 npx expo start --web --port=8083"
-waitForPort = 8083
+args = "cd temp_nevin && WEBPACK_DEV_SERVER_PORT=8083 npm run prod:web"
+waitForPort = 19006
 
 [[workflows.workflow]]
 name = "Flask App"
