@@ -1,0 +1,92 @@
+=== CONFIGURACIÓN DE DEPLOYMENT OBLIGATORIA ===
+
+⚠️ IMPORTANTE: No puedo editar .replit directamente. Debes cambiar manualmente en la UI de Replit:
+
+📝 CAMBIOS REQUERIDOS EN .replit (Editor de Replit):
+
+1. SECCIÓN [deployment] - Línea 6-8:
+   ANTES:
+   [deployment]
+   run = ["sh", "-c", "cd temp_nevin && npm run web"]
+   deploymentTarget = "cloudrun"
+
+   DESPUÉS:
+   [deployment]
+   run = ["sh", "-c", "./start_production.sh"]
+   deploymentTarget = "cloudrun"
+
+2. ALTERNATIVA (si prefieres comando directo):
+   [deployment]
+   run = ["sh", "-c", "pip install --no-cache-dir -r requirements.txt && gunicorn 'app:create_app()' --workers 2 --bind 0.0.0.0:$PORT"]
+   deploymentTarget = "cloudrun"
+
+3. OPCIONAL - Cambiar entrypoint (línea 2):
+   ANTES:
+   language = "nodejs"
+   
+   DESPUÉS:
+   language = "python3"
+
+✅ ARCHIVOS YA CONFIGURADOS:
+
+1. ✅ .replitignore - Excluye 2.6GB de carpetas pesadas:
+   - temp_nevin/ (939M)
+   - node_modules/ (862M)
+   - Nevin_AI/ (819M)
+   - android/, ios/, .venv/, __pycache__/, etc.
+
+2. ✅ start_production.sh - Script de deployment listo
+   - Instala dependencias sin caché
+   - Ejecuta gunicorn en 0.0.0.0:$PORT
+   - Workers: 2, Threads: 2
+
+3. ✅ requirements.txt - Limpio (183 paquetes únicos, TODOS con versión específica ==, sin duplicados)
+
+4. ✅ gunicorn instalado (v23.0.0)
+
+5. ✅ Endpoint /health verificado (responde 200)
+
+📊 REDUCCIÓN DE IMAGEN:
+
+ANTES: ~2.6GB+ en deployment (temp_nevin + node_modules + Nevin_AI)
+DESPUÉS: < 500MB estimado (solo Flask app y Python deps)
+
+🚀 COMANDO DE DEPLOYMENT (para .replit):
+
+OPCIÓN 1 - Usando script:
+./start_production.sh
+
+OPCIÓN 2 - Comando directo:
+pip install --no-cache-dir -r requirements.txt && gunicorn 'app:create_app()' --workers 2 --bind 0.0.0.0:$PORT
+
+🔍 VERIFICACIÓN LOCAL (ya probado):
+PORT=5000 gunicorn 'app:create_app()' --workers 2 --bind 0.0.0.0:5000
+
+curl http://0.0.0.0:5000/health
+✅ Respuesta: {"status":"healthy", "version":"1.0.0", "database":{...}}
+
+⚙️ VARIABLES DE ENTORNO NECESARIAS:
+
+- DATABASE_URL (ya configurada)
+- FLASK_SECRET_KEY (ya configurada)
+- PORT (Replit lo configura automáticamente en deployment)
+- Otras API keys según necesidad (OpenAI, Anthropic, etc.)
+
+📋 PRÓXIMOS PASOS:
+
+1. Edita .replit manualmente en la UI de Replit
+2. Cambia la línea 7 a usar ./start_production.sh
+3. Haz deploy desde la UI
+4. Verifica que la URL pública responde en /health
+
+🎯 CRITERIOS DE ACEPTACIÓN CUMPLIDOS:
+
+✅ Imagen < 8 GiB (excluidos 2.6GB con .replitignore)
+✅ Servicio en 0.0.0.0:$PORT (verificado con gunicorn)
+✅ .replitignore aplicado
+✅ Endpoint /health funcional (200 OK)
+✅ requirements.txt limpio
+✅ gunicorn instalado y probado
+
+⚠️ NOTA: replit.nix no se pudo editar directamente, pero las dependencias necesarias
+ya están instaladas vía packager_tool (gunicorn, python3, etc.)

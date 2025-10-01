@@ -1,0 +1,107 @@
+# React Native / Expo (939M)
+temp_nevin/
+android/
+ios/
+web-build/
+.expo/
+.expo-shared/
+
+# Node modules (862M)
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# AI Models / FAISS (819M)
+Nevin_AI/
+nevin_knowledge/
+*.faiss
+*.pkl
+*.joblib
+
+# Python
+.venv/
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.pytest_cache/
+.tox/
+.coverage
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Database local
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs y caches
+*.log
+app.log
+.cache/
+.DS_Store
+*.swp
+*.swo
+*~
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Migrations (no necesarias en deployment, se usan en dev)
+migrations/
+
+# Tests
+tests/
+test_*.py
+*_test.py
+
+# Documentation
+*.md
+README.md
+LICENSE
+GOOGLE_PLAY_COMPLIANCE.md
+APK_BUILD_INSTRUCTIONS.md
+
+# Config files de desarrollo
+.env.local
+.env.development
+metro.config.js
+babel.config.js
+tsconfig.json
+jest.config.js
+eas.json
+
+# Assets de desarrollo
+attached_assets/
+app-store-assets/
+generated-icon.png
+nevin-icon.svg
+
+# CSV y datos de desarrollo
+*.csv
+promesas.csv
+test_bible_data.csv
+Tzotzil_database.csv
+
+# Otros archivos pesados
+other_authors/
+deploy.sh
+build-apk.sh
+er2', 'Doe', '123456789', 'test2@example.com', 'hashedpassword');
+ername VARCHAR(50),
+ername VARCHAR(80) NOT NULL,
+sword_hash VARCHAR(256) NOT NULL,

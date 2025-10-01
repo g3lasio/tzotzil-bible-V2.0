@@ -1,7 +1,7 @@
 
 language = "nodejs"
 run = "cd temp_nevin && npx expo start --web --port=8083"
-modules = ["nodejs-20", "python-3.11"]
+modules = ["nodejs-20", "python-3.11", "python3"]
 
 [deployment]
 run = ["sh", "-c", "cd temp_nevin && npm run web"]
