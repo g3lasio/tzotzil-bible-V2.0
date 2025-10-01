@@ -4,7 +4,7 @@ run = "cd temp_nevin && npx expo start --web --port=8083"
 modules = ["nodejs-20", "python-3.11", "python3"]
 
 [deployment]
-run = ["sh", "-c", "cd temp_nevin && npm run web"]
+run = ["sh", "-c", "./start_production.sh"]
 deploymentTarget = "cloudrun"
 
 [[ports]]
@@ -39,9 +39,13 @@ externalPort = 3002
 localPort = 35629
 externalPort = 5000
 
+[[ports]]
+localPort = 45081
+externalPort = 4200
+
 [nix]
 channel = "stable-24_05"
-packages = ["bash", "cacert", "cargo", "freetype", "gitFull", "glibcLocales", "grpc", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "pkg-config", "postgresql", "rustc", "tcl", "tk", "which", "xcodebuild", "xsimd", "zlib"]
+packages = ["bash", "cacert", "cargo", "freetype", "gitFull", "glibcLocales", "grpc", "gumbo", "harfbuzz", "jbig2dec", "lcms2", "libffi", "libiconv", "libimagequant", "libjpeg", "libjpeg_turbo", "libtiff", "libwebp", "libxcrypt", "libyaml", "mupdf", "openjpeg", "openssl", "pkg-config", "postgresql", "rustc", "swig", "tcl", "tk", "which", "xcbuild", "xcodebuild", "xsimd", "zlib"]
 
 [workflows]
 runButton = "Project"

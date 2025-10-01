@@ -181,3 +181,4 @@ weasel==0.3.4
 werkzeug==2.3.7
 wtforms==3.2.1
 yarl==1.18.3
+gunicorn
