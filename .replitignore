@@ -85,8 +85,7 @@ tsconfig.json
 jest.config.js
 eas.json
 
-# Assets de desarrollo
-attached_assets/
+# Assets de desarrollo (attached_assets/ NO está excluido - contiene código necesario)
 app-store-assets/
 generated-icon.png
 nevin-icon.svg
